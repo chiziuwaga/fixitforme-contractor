@@ -1,36 +1,125 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# FixItForMe Contractor Module
 
-## Getting Started
+A robust, AI-driven platform for contractors built with Next.js, featuring specialized AI agents and a tiered payment system.
 
-First, run the development server:
+## 🏗️ Architecture
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+This application follows a **Decoupled Intelligence** architecture where AI agents (Lexi, Alex, Rex) operate independently, communicating only through a central Supabase database. This ensures robustness, scalability, and an asynchronous user experience.
+
+## 🚀 Tech Stack
+
+- **Frontend:** Next.js 15 with TypeScript and Tailwind CSS
+- **Backend:** Vercel Serverless Functions (Python for AI agents)
+- **Database:** Supabase with Row Level Security
+- **AI:** Vercel AI SDK with Deepseek for reasoning
+- **Payments:** Stripe integration
+- **Authentication:** Supabase Auth with SMS verification
+
+## 🤖 AI Agent Family
+
+- **Lexi the Liaison:** Friendly onboarding guide for new contractors
+- **Alex the Assessor:** Precise bidding assistant with quantity surveyor expertise
+- **Rex the Retriever:** Background lead generation specialist
+- **Felix the Fixer:** Homeowner diagnostic agent (generates referrals)
+
+## 💰 Payment Tiers
+
+### Growth Tier (Free)
+- 10% platform fee
+- 30%/40%/30% payout structure
+- Perfect for solo contractors building their client base
+
+### Scale Tier ($250/month)
+- 7% platform fee
+- 50%/25%/25% payout structure
+- Enhanced cash flow for established businesses
+
+## 🛠️ Development Setup
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/chiziuwaga/fixitforme-contractor.git
+   cd fixitforme-contractor
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Set up environment variables:**
+   ```bash
+   cp .env.local.example .env.local
+   # Edit .env.local with your actual keys
+   ```
+
+4. **Run the development server:**
+   ```bash
+   npm run dev
+   ```
+
+5. **Visit:** http://localhost:3000
+
+## 📁 Project Structure
+
+```
+src/
+├── app/
+│   ├── contractor/          # Contractor-facing pages
+│   │   ├── dashboard/       # Main contractor dashboard
+│   │   ├── bid/            # Job bidding interface
+│   │   └── settings/       # Profile and subscription management
+│   └── api/
+│       ├── agents/         # AI agent endpoints
+│       ├── payments/       # Payment processing
+│       └── health/         # API health check
+├── components/             # Reusable React components
+└── lib/
+    ├── supabase.ts        # Supabase client configuration
+    └── ai.ts              # AI SDK configuration
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🔐 Environment Variables
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Required environment variables (see `.env.local`):
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `NEXT_PUBLIC_SUPABASE_URL` - Your Supabase project URL
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Supabase anonymous key
+- `SUPABASE_SERVICE_ROLE_KEY` - Supabase service role key
+- `DEEPSEEK_API_KEY` - AI model API key
+- `STRIPE_SECRET_KEY` - Stripe secret key (test mode)
+- `TWILIO_ACCOUNT_SID` - Twilio SMS configuration
 
-## Learn More
+## 🚢 Deployment
 
-To learn more about Next.js, take a look at the following resources:
+This project is configured for Vercel deployment:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+vercel --prod
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The project is automatically deployed on pushes to the main branch via Vercel's GitHub integration.
 
-## Deploy on Vercel
+## 📋 Key Features
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **Nested Chat UI:** Interactive agent conversations
+- **Real-time Lead Generation:** Automated opportunity discovery
+- **Secure Payment Processing:** Multi-stage contractor payouts
+- **Row Level Security:** Contractor data isolation
+- **Responsive Design:** Desktop and tablet optimized
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🧪 API Health Check
+
+Visit `/api/health` to verify the system status and database connectivity.
+
+## 📚 Development Guidelines
+
+- Follow the established AI agent personas
+- Implement RLS policies for all contractor data
+- Use streaming responses for AI interactions
+- Store agent conversations in `bids.assistance_data`
+- Follow the decoupled architecture principles
+
+## 📞 Support
+
+For development questions or issues, refer to the project documentation or contact the development team.
