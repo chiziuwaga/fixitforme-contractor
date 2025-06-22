@@ -120,6 +120,15 @@ Visit `/api/health` to verify the system status and database connectivity.
 - Store agent conversations in `bids.assistance_data`
 - Follow the decoupled architecture principles
 
+## 📋 Project Documentation
+
+All project specifications and development plans are located in the `/docs` directory:
+
+- **[Phased Implementation Plan](./docs/Phased_Implementation_Plan.md)** - Complete development roadmap
+- **[Custom Instructions](./docs/Custom_Instructions_Contractor_FixItForMe.md)** - Development guidelines and technical specs
+- **[AgentQL Architecture](./docs/AgentQL_Architecture_for_Contractor_Lead_Generation.md)** - Lead generation system design
+- **[GitHub Instructions](./.github/copilot-instructions.md)** - Copilot workspace configuration
+
 ## 📞 Support
 
 For development questions or issues, refer to the project documentation or contact the development team.
