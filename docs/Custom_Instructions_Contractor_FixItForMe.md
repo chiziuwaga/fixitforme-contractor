@@ -65,3 +65,113 @@ When working with agent-related code, maintain these distinct personas:
 
 ## Agent Prompts & Personas
 - Adhere strictly to the defined system prompts and personas for **Lexi**, **Alex**, and **Rex** to ensure a consistent brand experience.
+
+## AI Agent Interaction System
+
+### @ Mention Protocol
+The system supports both explicit agent calls and intelligent orchestration:
+
+#### Explicit @ Mentions
+- **@lexi** - Directly invokes Lexi for onboarding and setup questions
+- **@alex** - Directly invokes Alex for bidding and cost estimation
+- **@rex** - Directly invokes Rex for lead generation and market insights
+
+#### Orchestrated Agent Routing
+When no explicit @ mention is used, the system automatically routes messages based on content analysis:
+
+**Lexi Keywords:** onboard, getting started, setup, profile, new, help me start
+**Alex Keywords:** bid, price, cost, estimate, quote, material, labor
+**Rex Keywords:** lead, search, generate, opportunities, find work, jobs
+
+#### Fallback Logic
+1. Route to most recently active chat window
+2. Default to Lexi for general queries
+3. Auto-open appropriate agent chat window when routing
+
+### Generative UI Asset Requirements
+
+#### JSON Response Format
+All agent responses must support structured data alongside conversational text:
+
+```json
+{
+  "message": "Conversational response text",
+  "ui_assets": {
+    "type": "cost_breakdown" | "lead_summary" | "onboarding_checklist" | "market_insights",
+    "data": {
+      // Structured data for UI component rendering
+    },
+    "render_hints": {
+      "component": "CostBreakdownCard | LeadCard | ChecklistWidget | InsightChart",
+      "priority": "high" | "medium" | "low",
+      "interactive": true | false
+    }
+  },
+  "actions": [
+    {
+      "type": "update_profile" | "create_bid" | "mark_lead_interested",
+      "label": "Human-readable action text",
+      "data": { /* action payload */ }
+    }
+  ]
+}
+```
+
+#### UI Component Types
+
+**Alex's Cost Breakdown Cards:**
+```json
+{
+  "type": "cost_breakdown",
+  "data": {
+    "total_estimate": 2500,
+    "labor_cost": 1200,
+    "materials": [
+      {"item": "Ceramic tiles", "quantity": "120 sq ft", "unit_cost": 4.50, "total": 540},
+      {"item": "Grout", "quantity": "5 bags", "unit_cost": 12.00, "total": 60}
+    ],
+    "overhead": 300,
+    "profit_margin": 400,
+    "timeline": "3-4 days"
+  }
+}
+```
+
+**Rex's Lead Summary Cards:**
+```json
+{
+  "type": "lead_summary",
+  "data": {
+    "lead_count": 12,
+    "high_value_leads": 3,
+    "geographic_distribution": {...},
+    "trending_services": ["kitchen remodel", "bathroom renovation"],
+    "conversion_probability": 0.68
+  }
+}
+```
+
+**Lexi's Onboarding Checklists:**
+```json
+{
+  "type": "onboarding_checklist",
+  "data": {
+    "steps": [
+      {"id": "profile", "label": "Complete business profile", "status": "completed"},
+      {"id": "services", "label": "Select your services", "status": "in_progress"},
+      {"id": "pricing", "label": "Set pricing strategy", "status": "pending"}
+    ],
+    "completion_percentage": 60
+  }
+}
+```
+
+### Reference Implementation
+See [v0.dev contractor chat example](https://v0.dev/chat/b/b_MX1Ev6PvA7e) for generative UI patterns and component interactions.
+
+### Felix Integration
+All contractor-generated leads reference Felix's 40-problem diagnostic framework (see `Felix_40_Problem_Reference.md`):
+- Problem classification maps to contractor specialties
+- Urgency scoring prioritizes contractor notifications  
+- Quality assessment ensures high-value lead generation
+- Felix's assessments feed the contractor matching algorithm

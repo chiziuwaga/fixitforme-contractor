@@ -11,7 +11,9 @@ This document outlines a phased development plan for the FixItForMe Contractor M
 *   **Primary Specification:** `FixItForMe_Contractor_Module_Specs.md`
 *   **Technical Instructions:** `Custom_Instructions_Contractor_FixItForMe.md`
 *   **Lead Generation Bible:** `AgentQL_Architecture_for_Contractor_Lead_Generation.md`
+*   **Felix's Problem Framework:** `Felix_40_Problem_Reference.md`
 *   **Generative UI Reference:** [v0.dev Chat Example](https://v0.dev/chat/b/b_MX1Ev6PvA7e)
+*   **v0.dev Contractor Reference:** [Contractor Dashboard UI](https://v0.dev/chat/b/b_MX1Ev6PvA7e)
 
 **Rule for Changes:** Any deviation or new feature proposal must be reflected by an update to these core documents *before* implementation begins. This ensures our documentation remains the single source of truth.
 
