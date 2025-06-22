@@ -12,8 +12,10 @@ This document outlines a phased development plan for the FixItForMe Contractor M
 *   **Technical Instructions:** `Custom_Instructions_Contractor_FixItForMe.md`
 *   **Lead Generation Bible:** `AgentQL_Architecture_for_Contractor_Lead_Generation.md`
 *   **Felix's Problem Framework:** `Felix_40_Problem_Reference.md`
+*   **AI Methodology:** `IndyDev_Dan_Methodology_Reference.md`
 *   **Generative UI Reference:** [v0.dev Chat Example](https://v0.dev/chat/b/b_MX1Ev6PvA7e)
 *   **v0.dev Contractor Reference:** [Contractor Dashboard UI](https://v0.dev/chat/b/b_MX1Ev6PvA7e)
+*   **MCP Integration:** MCP_DOCKER for research, @21st-dev/magic for UI components
 
 **Rule for Changes:** Any deviation or new feature proposal must be reflected by an update to these core documents *before* implementation begins. This ensures our documentation remains the single source of truth.
 
@@ -65,118 +67,121 @@ This document outlines a phased development plan for the FixItForMe Contractor M
 - **Generative UI Framework**: Established JSON response format with UI assets
 - **Felix Integration**: Added 40-problem reference framework
 - **Enhanced Documentation**: Updated all specs with @ mention protocol
+- **Advanced D3.js Charts**: Interactive donut, bar, and timeline charts with animations
+- **Complete Design System**: BaseComponents, Charts, and AgentComponents libraries
+- **Agent Usage Training**: Each agent explains capabilities and provides usage examples
 
-### **🎯 ENHANCED JSON OUTPUT SPECIFICATIONS:**
-Following v0.dev patterns, all agents now support rich, interactive UI generation:
+### **🎯 ENHANCED DESIGN SYSTEM SPECIFICATIONS:**
+Following v0.dev patterns with comprehensive component library:
 
-**Alex's Bidding Components:**
-```json
-{
-  "message": "Based on your kitchen renovation, here's my detailed analysis:",
-  "ui_assets": {
-    "type": "cost_breakdown",
-    "data": {
-      "project_title": "Kitchen Renovation - Oakland Hills",
-      "total_estimate": 15750,
-      "confidence_level": "high",
-      "breakdown": {
-        "labor": {"cost": 6000, "hours": 80, "rate": 75},
-        "materials": [
-          {"category": "Cabinets", "items": [
-            {"name": "Upper cabinets", "qty": 8, "unit": "linear ft", "cost": 3200}
-          ]},
-          {"category": "Countertops", "items": [
-            {"name": "Quartz countertop", "qty": 45, "unit": "sq ft", "cost": 2700}
-          ]}
-        ],
-        "permits": 350,
-        "overhead": 1500,
-        "profit": 2000
-      },
-      "timeline": {"start": "2025-07-15", "end": "2025-07-29", "duration": "10 business days"},
-      "risk_factors": ["Electrical upgrade may be needed", "Plumbing relocation possible"]
-    },
-    "render_hints": {
-      "component": "CostBreakdownCard",
-      "layout": "expandable_sections",
-      "interactive": true,
-      "charts": ["pie_chart_costs", "timeline_gantt"]
-    }
-  },
-  "actions": [
-    {"type": "create_formal_bid", "label": "Generate Formal Proposal", "style": "primary"},
-    {"type": "adjust_pricing", "label": "Modify Pricing Strategy", "style": "secondary"},
-    {"type": "schedule_site_visit", "label": "Schedule Site Assessment", "style": "outline"}
-  ]
-}
+**Advanced D3.js Chart Components:**
+```typescript
+// Interactive Cost Breakdown with animations and tooltips
+<CostBreakdownChart 
+  data={{labor: 6000, materials: 4500, permits: 350, overhead: 1500, profit: 2000}}
+  totalEstimate={15750}
+  animated={true}
+  interactive={true}
+/>
+
+// Geographic Lead Analysis with competition indicators  
+<LeadDistributionChart
+  data={[
+    {area: "Oakland Hills", count: 12, avgValue: 12000, competition: "medium"},
+    {area: "Berkeley", count: 8, avgValue: 7500, competition: "high"}
+  ]}
+  animated={true}
+  interactive={true}
+/>
+
+// Project Timeline with progress tracking
+<TimelineChart
+  phases={[
+    {name: "Demo & Prep", start: new Date("2025-07-15"), end: new Date("2025-07-18"), progress: 100},
+    {name: "Installation", start: new Date("2025-07-19"), end: new Date("2025-07-25"), progress: 60}
+  ]}
+  animated={true}
+  interactive={true}
+/>
 ```
 
-**Rex's Lead Analytics:**
-```json
-{
-  "message": "Your lead generation metrics show strong performance this month:",
-  "ui_assets": {
-    "type": "lead_dashboard",
-    "data": {
-      "summary": {
-        "total_leads": 47,
-        "qualified_leads": 23,
-        "conversion_rate": 0.34,
-        "avg_project_value": 8500
-      },
-      "geographic_breakdown": [
-        {"area": "Oakland Hills", "count": 12, "avg_value": 12000, "competition": "medium"},
-        {"area": "Berkeley", "count": 8, "avg_value": 7500, "competition": "high"}
-      ],
-      "trending_problems": [
-        {"problem": "Kitchen remodel", "felix_id": 35, "demand": "high", "leads": 8},
-        {"problem": "Bathroom renovation", "felix_id": 37, "demand": "medium", "leads": 5}
-      ],
-      "monthly_sessions": {"used": 8, "remaining": 22, "tier": "growth"}
-    },
-    "render_hints": {
-      "component": "LeadDashboard",
-      "layout": "grid_cards",
-      "interactive": true,
-      "maps": true,
-      "filters": ["service_type", "location", "date_range"]
+**Agent-Specific UI Components:**
+```typescript
+// Alex's comprehensive bidding interface
+<AlexCostBreakdown 
+  data={{
+    project_title: "Kitchen Renovation - Oakland Hills",
+    total_estimate: 15750,
+    confidence_level: "high",
+    breakdown: {/* detailed cost structure */},
+    timeline: {/* project scheduling */},
+    risk_factors: ["Electrical upgrade may be needed"]
+  }}
+  actions={[
+    {type: "create_formal_bid", label: "Generate Formal Proposal", style: "primary"},
+    {type: "adjust_pricing", label: "Modify Pricing Strategy", style: "secondary"}
+  ]}
+/>
+
+// Rex's lead generation dashboard
+<RexLeadDashboard
+  data={{
+    summary: {total_leads: 47, qualified_leads: 23, conversion_rate: 0.34},
+    geographic_breakdown: [/* area analysis */],
+    trending_problems: [/* Felix framework trends */],
+    monthly_sessions: {used: 8, remaining: 22, tier: "growth"}
+  }}
+  actions={[{type: "generate_leads", label: "Run Lead Generation", style: "primary"}]}
+/>
+
+// Lexi's onboarding progress tracker
+<LexiOnboarding
+  data={{
+    overall_progress: 75,
+    current_step: "service_selection",
+    felix_services: {
+      selected: ["Kitchen remodel", "Bathroom renovation"],
+      recommended: ["Plumbing repair", "HVAC maintenance"],
+      categories: [/* Felix problem categories */]
     }
-  }
-}
+  }}
+  actions={[{type: "continue_onboarding", label: "Continue Setup", style: "primary"}]}
+/>
 ```
 
-**Lexi's Onboarding Progress:**
-```json
-{
-  "message": "Great progress! You're 75% through onboarding. Let's finish your service selection:",
-  "ui_assets": {
-    "type": "onboarding_checklist",
-    "data": {
-      "overall_progress": 75,
-      "current_step": "service_selection",
-      "steps": [
-        {"id": "business_info", "title": "Business Information", "status": "completed", "score": 100},
-        {"id": "service_selection", "title": "Service Selection", "status": "in_progress", "score": 60},
-        {"id": "pricing_strategy", "title": "Pricing Strategy", "status": "pending", "score": 0},
-        {"id": "profile_optimization", "title": "Profile Optimization", "status": "pending", "score": 0}
-      ],
-      "felix_services": {
-        "selected": ["Kitchen remodel", "Bathroom renovation", "Electrical repair"],
-        "recommended": ["Plumbing repair", "HVAC maintenance"],
-        "categories": [
-          {"name": "Electrical (1-8)", "selected": 2, "total": 8},
-          {"name": "Plumbing (9-16)", "selected": 1, "total": 8}
-        ]
-      }
-    },
-    "render_hints": {
-      "component": "OnboardingWizard",
-      "layout": "step_by_step",
-      "interactive": true,
-      "progress_indicator": true
-    }
-  }
-}
+### **🤖 AGENT CAPABILITIES DOCUMENTATION:**
+
+**Alex the Assessor - Enhanced Usage Guidance (IndyDev Dan Analyst Chain):**
+```
+📊 Comprehensive Cost Analysis: 'Analyze this kitchen remodel for competitive pricing'
+🏗️ Detailed Material Estimates: 'Calculate materials for 120 sq ft tile installation'
+⏱️ Project Timeline Planning: 'Create realistic timeline for bathroom renovation'
+💰 Strategic Pricing Optimization: 'Is my $8,500 bid competitive for this project?'
+⚠️ Risk Assessment & Planning: 'Identify potential issues in this renovation'
+🎯 Bid Strategy Development: 'Help me create a winning proposal for this job'
+🔍 Tool Chain Architecture: Context → Analysis → Critique → Refinement → Structured Output
+```
+
+**Rex the Retriever - Enhanced Usage Guidance (IndyDev Dan Tool User Chain):**
+```
+🎯 Lead Performance Analysis: 'Show me my lead metrics for the last 30 days'
+📍 Geographic & Market Intelligence: 'Where are highest-value opportunities in Oakland?'
+📈 Service Demand Insights: 'What Felix problems have highest demand trending?'
+🔍 Search Session Management: 'How many search sessions do I have remaining?'
+⚡ Automated Lead Generation: 'Set up background monitoring for electrical jobs'
+🎖️ Quality Scoring: 'Which lead sources convert best for my business?'
+🛠️ Specialist Tools: Craigslist/SAMs.gov scrapers → Quality filters → Felix categorization
+```
+
+**Lexi the Liaison - Enhanced Usage Guidance (IndyDev Dan Planner Chain):**
+```
+🎯 Profile Setup & Optimization: 'Help me complete my contractor profile'
+🛠️ Service Selection Strategy: 'Guide me through Felix's 40-problem framework'
+📚 Platform Features Training: 'Show me how to use Alex and Rex effectively'
+📍 Territory & Market Setup: 'Help me define my service areas'
+💼 Business Strategy Guidance: 'Explain Growth vs Scale tier benefits'
+🚀 Getting Started Checklist: 'What steps do I need to complete to start?'
+🎭 Co-Creation Flow: Human intent → AI guidance → Interactive refinement → Progress tracking
 ```
 
 **Key Tasks:**
@@ -205,46 +210,210 @@ Following v0.dev patterns, all agents now support rich, interactive UI generatio
 
 ---
 
-## Phase 3: Rex - Lead Generation & Job Feed (Weeks 6-7) 🔄 READY FOR IMPLEMENTATION
+## Phase 3: Rex - Lead Generation & Job Feed (Weeks 6-7) 🔄 IN PROGRESS
 
 **Objective:** Activate the background lead generation agent (Rex) and populate the contractor's dashboard with a unified feed of jobs and leads.
 
-### **🎯 IMPLEMENTATION ROADMAP:**
-- **Supabase Schema**: Complete database setup with RLS policies
-- **Authentication Flow**: SMS-based login with contractor verification
-- **Rex Background Automation**: Implement tool-user chain architecture
-- **Dashboard Integration**: Real-time lead feed with Felix problem mapping
-- **Search Interface**: Manual Rex triggers and session management
+### **🎯 CURRENT IMPLEMENTATION STATUS:**
+- **Felix Search Strategy**: ✅ Complete - Rex uses Felix 40-problem categories as search vocabulary
+- **AgentQL Architecture**: ✅ Enhanced - Integrated roofing, drywall, and expanded categories  
+- **IndyDev Dan Principles**: ✅ Implemented - Following "Big Three" (Context, Prompt, Model) methodology
+- **Tool User Chain**: 🔄 In Progress - Background lead generation engine with specialist focus
+- **Quality Control**: ✅ Complete - Spam detection and recency scoring
+- **MCP Integration**: ✅ Ready - MCP_DOCKER for research, @21st-dev/magic for UI generation
+
+### **🔍 REX SEARCH CATEGORIES (Felix + AgentQL + Expanded Vocabulary):**
+
+**Core Felix Categories (Primary Search Terms):**
+```typescript
+plumbing: [
+  // Felix Core
+  "running toilet repair", "leaky faucet fix", "clogged drain", "toilet flush mechanism",
+  // AgentQL Expanded
+  "water heater repair", "pipe leak", "sump pump", "garbage disposal", "shower head replacement"
+],
+electrical: [
+  // Felix Core  
+  "light fixture replacement", "electrical outlet", "circuit breaker", "ceiling fan installation",
+  // AgentQL Expanded
+  "panel upgrade", "GFCI outlet", "electrical inspection", "generator installation", "smart switch"
+],
+hvac: [
+  // Felix Core
+  "thermostat installation", "heating repair", "AC repair", "ventilation", "HVAC maintenance", 
+  // AgentQL Expanded
+  "ductwork cleaning", "heat pump", "furnace replacement", "air quality", "zoning system"
+],
+carpentry: [
+  // Felix Core
+  "cabinet repair", "deck repair", "handrail fix", "door lock replacement",
+  // AgentQL Expanded  
+  "custom shelving", "trim work", "stair repair", "window installation", "door hanging"
+]
+```
+
+**AgentQL Specialized Categories (High-Value Opportunities):**
+```typescript
+roofing: [
+  "roof leak repair", "shingle replacement", "gutter cleaning", "roof inspection",
+  "emergency roof repair", "flat roof repair", "skylight repair", "ice dam removal",
+  "metal roofing", "solar panel installation", "chimney repair", "fascia board replacement"
+],
+drywall: [
+  "drywall patching", "drywall repair", "hole in wall", "crack repair", "texture matching",
+  "ceiling repair", "water damage repair", "wall finishing", "mud and tape",
+  "drywall installation", "soundproofing", "basement finishing", "garage conversion"
+],
+flooring: [
+  "tile repair", "hardwood refinishing", "grout resealing", "floor leveling",
+  "laminate installation", "carpet replacement", "vinyl plank", "subfloor repair",
+  "stone restoration", "epoxy coating", "radiant heating", "transition strips"
+],
+exterior: [
+  "siding repair", "deck staining", "pressure washing", "window screen repair", 
+  "fence installation", "concrete repair", "walkway repair", "landscape lighting",
+  "exterior painting", "caulking", "weatherstripping", "storm door installation"
+],
+kitchen_bath: [
+  "kitchen remodel", "bathroom renovation", "countertop installation", "backsplash tile",
+  "vanity replacement", "shower surround", "faucet upgrade", "cabinet refacing",
+  "tile work", "plumbing fixture", "exhaust fan", "lighting upgrade"
+],
+emergency_services: [
+  "emergency repair", "water damage", "storm damage", "fallen tree removal",
+  "power outage", "heating emergency", "plumbing emergency", "roof emergency",
+  "flood cleanup", "mold remediation", "fire damage", "structural repair"
+]
+```
+
+### **🎯 INDYDEV DAN INTEGRATION - TOOL USER CHAIN ARCHITECTURE:**
+
+**Rex as Specialist Tool User:**
+```typescript
+// Context: Rich contractor profile and search parameters
+const rexContext = {
+  contractor_profile: {
+    services: ["plumbing", "electrical"], // From Felix framework
+    service_areas: ["Oakland", "Berkeley"],
+    pricing_tier: "premium",
+    availability: "immediate"
+  },
+  search_parameters: {
+    budget_range: [1000, 15000],
+    urgency_keywords: ["emergency", "ASAP", "urgent"],
+    quality_indicators: ["licensed", "insured", "permit"]
+  },
+  performance_history: {
+    conversion_rates: {plumbing: 0.34, electrical: 0.28},
+    avg_project_value: 4500,
+    response_time_preference: "24h"
+  }
+};
+
+// Tool Chain: Specialized execution sequence
+const toolChain = [
+  "craigslist_scraper", // Primary lead source
+  "sams_gov_scraper",   // Government contracts
+  "quality_filter",     // Spam detection using AgentQL patterns
+  "value_scorer",       // Budget and urgency analysis
+  "geo_matcher",        // Service area validation
+  "felix_categorizer"   // Map to 40-problem framework
+];
+
+// Output: Structured data for generative UI components
+const output = {
+  leads: [...], // Qualified leads with Felix categories
+  analytics: {...}, // Performance metrics for dashboard
+  ui_assets: {...}, // Component specifications for React
+  quality_score: 0.85 // Overall batch quality indicator
+};
+```
+
+### **🔧 TECHNICAL IMPLEMENTATION ROADMAP:**
+1. **Database Schema**: Complete Supabase tables with RLS policies
+2. **Rex Background Engine**: Tool User Chain for autonomous lead generation  
+3. **Quality Control**: AgentQL spam detection and value thresholds
+4. **Dashboard Integration**: Real-time lead feed with generative UI components
+5. **CRON Automation**: Scheduled Rex runs for automated lead discovery
 
 ### **📋 PRIORITY ORDER:**
-1. **Database & Auth First** - Essential foundation for all subsequent features
-2. **Rex Tool Chain** - Core lead generation engine following AgentQL architecture
-3. **UI Component Library** - Render the enhanced JSON outputs from Phase 2
-4. **Dashboard Integration** - Merge internal jobs + external leads
-5. **Testing & Validation** - End-to-end contractor workflows
+1. **Database & Auth First** ✅ Schema designed, need implementation
+2. **Rex Tool Chain** 🔄 Background endpoint with Felix search terms  
+3. **Quality Control** ✅ AgentQL patterns and value thresholds
+4. **Dashboard Integration** 🔄 UI components for lead display with loading states
+5. **Testing & Validation** 🔄 End-to-end contractor workflows
+
+### **🎯 FELIX → REX INTEGRATION CLARIFICATION:**
+**Felix's Role:** Provides Rex with **search vocabulary** and **problem categories** - tells Rex what contractors actually look for.
+
+**Rex's Role:** Uses Felix categories as **search terms** to find leads on Craigslist/SAMs.gov, not complex Felix mapping.
+
+**Correct Approach:**
+```typescript
+// Rex searches with Felix terms as vocabulary
+const searchTerms = ["toilet repair", "roof leak", "drywall patch"]; // From Felix
+searchCraigslist(searchTerms, location, budget_range); // Simple search, no mapping
+```
 
 **Key Tasks:**
 
-1.  **Rex - The Retriever Backend:**
-    *   Implement the `/api/agents/rex_run` asynchronous endpoint. This implementation must **strictly follow** the detailed plans in the `AgentQL_Architecture_for_Contractor_Lead_Generation.md` document.
-    *   Implement the "Tool User Chain" architecture, where Rex's sole purpose is to execute tools (web scrapers, API clients) to populate the `contractor_leads` table.
-    *   Integrate the specified recency scoring and quality control logic as defined in the architecture document.
-    *   **Felix Integration**: Map lead problems to the 40-problem framework for quality classification
+1.  **Rex - The Retriever Backend (IndyDev Dan Tool User Chain):**
+    *   🔄 Implement `/api/agents/rex_run` asynchronous endpoint following Tool User Chain architecture
+    *   ✅ **Specialist Design**: Rex executes specific tools (scrapers, filters, categorizers) rather than general reasoning
+    *   ✅ **Context Management**: Rich contractor profiles and search parameters as foundation
+    *   ✅ **Quality Control**: AgentQL spam detection and value thresholds
+    *   ✅ **Felix Integration**: Use 40-problem framework as search vocabulary (not complex mapping)
+    *   🔄 **Structured Output**: JSON responses with UI component specifications
 
 2.  **Automation & Dashboard Integration:**
-    *   Configure a Vercel CRON job to periodically trigger the `/api/agents/rex_run` endpoint.
-    *   Implement the data fetching logic on the `/contractor/dashboard` to display a merged, real-time feed from both the `jobs` table (internal) and `contractor_leads` table (external).
-    *   **UI Component Rendering**: Build React components for Alex's cost breakdowns, Rex's lead analytics, and Lexi's onboarding checklists
+    *   🔄 Configure Vercel CRON job to periodically trigger `/api/agents/rex_run` endpoint
+    *   🔄 Implement data fetching on `/contractor/dashboard` for merged job/lead feed
+    *   ✅ **UI Components**: Built generative components for Rex analytics and lead display
+    *   🔄 **Real-time Updates**: WebSocket or SSE for live lead notifications
 
-3.  **Search View:**
-    *   Build the `/contractor/search` page to allow manual triggering of Rex's runs and to display the remaining monthly search sessions.
-    *   **Tier Management**: Implement Growth vs Scale tier session limits and billing logic
+3.  **Search View & Tier Management:**
+    *   🔄 Build `/contractor/search` page for manual Rex triggers and session management
+    *   🔄 **Tier Logic**: Growth (30 sessions/month) vs Scale (unlimited) with billing integration
+    *   🔄 **Session Tracking**: Usage analytics and quota enforcement
+    *   🔄 **Manual Controls**: Contractor-initiated lead generation with parameter customization
 
 ### **🔧 TECHNICAL PREREQUISITES:**
 - **Environment Variables**: All API keys configured for live testing
 - **Supabase Connection**: Database tables created with proper RLS policies  
 - **Vercel Deployment**: Production environment ready for CRON jobs
 - **Authentication**: SMS verification flow operational
+- **MCP Integration**: MCP_DOCKER configured for research, @21st-dev/magic for UI components
+
+---
+
+## 🎯 META-PATTERN VERIFICATION FRAMEWORK
+
+**Identified Core Issues & Solutions:**
+
+### **My Previous Mistake Pattern:**
+❌ **Issue**: Incorrectly stated Rex was "IN PROGRESS" when search strategy was incomplete
+✅ **Solution**: Proper completion tracking with specific implementation details
+
+### **Documentation Verification Index:**
+1. **Phase Implementation Plan** ← Current document (verification hub)
+2. **IndyDev Dan Reference** ← New methodology framework
+3. **Felix 40-Problem Reference** ← Search vocabulary source  
+4. **AgentQL Architecture** ← Quality control and tool chains
+5. **Custom Instructions** ← Environment and configuration specs
+
+### **Verification Checkpoints:**
+- [ ] **Rex Search Strategy**: Complete Felix + AgentQL category expansion ✅ 
+- [ ] **IndyDev Dan Integration**: Tool User Chain architecture documented ✅
+- [ ] **MCP Configuration**: Docker and 21st-dev magic integration ✅
+- [ ] **Agent Specialization**: Each agent follows single-responsibility principle ✅
+- [ ] **Quality Control**: Spam detection and value thresholds defined ✅
+
+### **Next Implementation Steps (Phase 3 Continuation):**
+1. **Complete Supabase Schema** with RLS policies 
+2. **Implement Rex Background Engine** using Tool User Chain
+3. **Build Dashboard Integration** with generative UI components
+4. **Configure CRON Automation** for scheduled lead generation
+5. **End-to-End Testing** of contractor workflows
 
 ---
 

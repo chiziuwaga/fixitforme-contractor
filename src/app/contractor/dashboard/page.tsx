@@ -1,181 +1,356 @@
 'use client';
 
-import { MantineProvider } from '@mantine/core';
-import { Notifications } from '@mantine/notifications';
+import { useState, useEffect } from 'react';
+import { MantineProvider, Container, Grid, Card, Title, Text, Badge, Button, Stack, Group, Loader, Paper, Affix } from '@mantine/core';
+import { Notifications, notifications } from '@mantine/notifications';
+import { IconBuilding, IconClock, IconCurrencyDollar, IconMapPin, IconStar, IconSearch, IconRobot } from '@tabler/icons-react';
 import { ChatManager } from '@/components/ChatManager';
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
 
+interface Lead {
+  id: string;
+  title: string;
+  description: string;
+  estimated_value: number;
+  location_city: string;
+  location_state: string;
+  quality_score: number;
+  recency_score: number;
+  source: string;
+  posted_at: string;
+  urgency_indicators: string[];
+  contact_info: { phone?: string; email?: string };
+}
+
+interface DashboardStats {
+  totalLeads: number;
+  qualifiedLeads: number;
+  avgValue: number;
+  conversionRate: number;
+}
+
 export default function ContractorDashboard() {
+  const [leads, setLeads] = useState<Lead[]>([]);
+  const [stats, setStats] = useState<DashboardStats>({
+    totalLeads: 0,
+    qualifiedLeads: 0,
+    avgValue: 0,
+    conversionRate: 0
+  });
+  const [loading, setLoading] = useState(true);
+  const [chatOpen, setChatOpen] = useState(false);
+
+  useEffect(() => {
+    loadDashboardData();
+  }, []);
+
+  const loadDashboardData = async () => {
+    try {
+      // Mock data for demonstration - replace with actual API calls
+      const mockLeads: Lead[] = [
+        {
+          id: '1',
+          title: 'Urgent: Kitchen faucet repair needed ASAP',
+          description: 'Need licensed plumber to fix leaky kitchen faucet. Water damage starting.',
+          estimated_value: 350,
+          location_city: 'Oakland',
+          location_state: 'CA',
+          quality_score: 85,
+          recency_score: 95,
+          source: 'craigslist',
+          posted_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+          urgency_indicators: ['urgent', 'ASAP'],
+          contact_info: { phone: '510-555-0123' }
+        },
+        {
+          id: '2',
+          title: 'City Hall HVAC Maintenance Contract',
+          description: 'Annual HVAC maintenance for municipal building. Certified contractors only.',
+          estimated_value: 15000,
+          location_city: 'Berkeley',
+          location_state: 'CA',
+          quality_score: 92,
+          recency_score: 70,
+          source: 'sams_gov',
+          posted_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+          urgency_indicators: [],
+          contact_info: { email: 'procurement@berkeley.gov' }
+        },
+        {
+          id: '3',
+          title: 'Roof leak - emergency repair needed',
+          description: 'Roof started leaking during storm. Need immediate repair. Insurance claim.',
+          estimated_value: 2500,
+          location_city: 'Oakland',
+          location_state: 'CA',
+          quality_score: 78,
+          recency_score: 85,
+          source: 'craigslist',
+          posted_at: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
+          urgency_indicators: ['emergency'],
+          contact_info: { phone: '510-555-0124' }
+        }
+      ];
+
+      setLeads(mockLeads);
+      setStats({
+        totalLeads: mockLeads.length,
+        qualifiedLeads: mockLeads.filter(lead => lead.quality_score >= 70).length,
+        avgValue: Math.round(mockLeads.reduce((sum, lead) => sum + lead.estimated_value, 0) / mockLeads.length),
+        conversionRate: 0.68
+      });
+    } catch (error) {
+      console.error('Error loading dashboard data:', error);
+      notifications.show({
+        title: 'Error',
+        message: 'Failed to load dashboard data',
+        color: 'red'
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const runRexSearch = async () => {
+    try {
+      notifications.show({
+        title: 'Rex Search Started',
+        message: 'Running background lead generation...',
+        color: 'blue'
+      });
+
+      // Call Rex background endpoint
+      const response = await fetch('/api/agents/rex_run', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          location: 'Oakland, CA',
+          categories: ['plumbing', 'electrical', 'roofing']
+        })
+      });
+
+      if (response.ok) {
+        notifications.show({
+          title: 'Search Complete',
+          message: 'Rex found new leads! Refreshing dashboard...',
+          color: 'green'
+        });
+        loadDashboardData();
+      }
+    } catch (error) {
+      console.error('Rex search error:', error);
+      notifications.show({
+        title: 'Search Failed',
+        message: 'Failed to run Rex search',
+        color: 'red'
+      });
+    }
+  };
+
+  const formatTimeAgo = (dateString: string) => {
+    const diff = Date.now() - new Date(dateString).getTime();
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const days = Math.floor(hours / 24);
+    
+    if (days > 0) return `${days} day${days > 1 ? 's' : ''} ago`;
+    if (hours > 0) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+    return 'Just now';
+  };
+
+  const getQualityColor = (score: number) => {
+    if (score >= 85) return 'green';
+    if (score >= 70) return 'yellow';
+    return 'red';
+  };
+
+  if (loading) {
+    return (
+      <MantineProvider>
+        <Container size="xl" py="xl">
+          <Stack align="center" justify="center" h="50vh">
+            <Loader size="lg" />
+            <Text>Loading dashboard...</Text>
+          </Stack>
+        </Container>
+      </MantineProvider>
+    );
+  }
+
   return (
     <MantineProvider>
       <Notifications />
-      <div className="min-h-screen bg-gray-50">
+      <Container size="xl" py="md">
         {/* Header */}
-        <header className="bg-white shadow-sm border-b border-gray-200">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center h-16">
-              <div className="flex items-center">
-                <h1 className="text-2xl font-bold text-gray-900">FixItForMe</h1>
-                <span className="ml-2 text-sm text-gray-500">Contractor Dashboard</span>
-              </div>
-              <div className="flex items-center space-x-4">
-                <span className="text-sm text-gray-700">Welcome back, Contractor</span>
-                <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                  <span className="text-white text-sm font-medium">C</span>
-                </div>
-              </div>
-            </div>
+        <Group justify="space-between" mb="xl">
+          <div>
+            <Title order={1}>Contractor Dashboard</Title>
+            <Text c="dimmed">Manage your leads and projects with AI-powered insights</Text>
           </div>
-        </header>
+          <Button 
+            leftSection={<IconSearch />} 
+            onClick={runRexSearch}
+            loading={loading}
+          >
+            Run Rex Search
+          </Button>
+        </Group>
 
-        {/* Main Content */}
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Dashboard Overview */}
-            <div className="lg:col-span-2">
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-6">Dashboard Overview</h2>
-                
-                {/* Stats Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                  <div className="bg-blue-50 rounded-lg p-4">
-                    <div className="flex items-center">
-                      <div className="p-2 bg-blue-100 rounded-lg">
-                        <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                        </svg>
-                      </div>
-                      <div className="ml-4">
-                        <p className="text-sm font-medium text-gray-600">Active Leads</p>
-                        <p className="text-2xl font-bold text-gray-900">12</p>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="bg-green-50 rounded-lg p-4">
-                    <div className="flex items-center">
-                      <div className="p-2 bg-green-100 rounded-lg">
-                        <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-                        </svg>
-                      </div>
-                      <div className="ml-4">
-                        <p className="text-sm font-medium text-gray-600">Monthly Revenue</p>
-                        <p className="text-2xl font-bold text-gray-900">$8,450</p>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="bg-purple-50 rounded-lg p-4">
-                    <div className="flex items-center">
-                      <div className="p-2 bg-purple-100 rounded-lg">
-                        <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                        </svg>
-                      </div>
-                      <div className="ml-4">
-                        <p className="text-sm font-medium text-gray-600">Win Rate</p>
-                        <p className="text-2xl font-bold text-gray-900">68%</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Recent Activity */}
+        {/* Stats Cards */}
+        <Grid mb="xl">
+          <Grid.Col span={3}>
+            <Card withBorder>
+              <Group justify="space-between">
                 <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-4">Recent Activity</h3>
-                  <div className="space-y-4">
-                    <div className="flex items-center p-4 bg-gray-50 rounded-lg">
-                      <div className="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                        <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-1l-4 4z" />
-                        </svg>
-                      </div>
-                      <div className="ml-4 flex-1">
-                        <p className="text-sm font-medium text-gray-900">New lead: Kitchen renovation in Oakland</p>
-                        <p className="text-sm text-gray-500">2 hours ago</p>
-                      </div>
-                    </div>
+                  <Text c="dimmed" size="sm">Total Leads</Text>
+                  <Title order={2}>{stats.totalLeads}</Title>
+                </div>
+                <IconBuilding size={24} color="var(--mantine-color-blue-6)" />
+              </Group>
+            </Card>
+          </Grid.Col>
+          
+          <Grid.Col span={3}>
+            <Card withBorder>
+              <Group justify="space-between">
+                <div>
+                  <Text c="dimmed" size="sm">Qualified</Text>
+                  <Title order={2}>{stats.qualifiedLeads}</Title>
+                </div>
+                <IconStar size={24} color="var(--mantine-color-green-6)" />
+              </Group>
+            </Card>
+          </Grid.Col>
+          
+          <Grid.Col span={3}>
+            <Card withBorder>
+              <Group justify="space-between">
+                <div>
+                  <Text c="dimmed" size="sm">Avg Value</Text>
+                  <Title order={2}>${stats.avgValue.toLocaleString()}</Title>
+                </div>
+                <IconCurrencyDollar size={24} color="var(--mantine-color-yellow-6)" />
+              </Group>
+            </Card>
+          </Grid.Col>
+          
+          <Grid.Col span={3}>
+            <Card withBorder>
+              <Group justify="space-between">
+                <div>
+                  <Text c="dimmed" size="sm">Win Rate</Text>
+                  <Title order={2}>{Math.round(stats.conversionRate * 100)}%</Title>
+                </div>
+                <IconStar size={24} color="var(--mantine-color-purple-6)" />
+              </Group>
+            </Card>
+          </Grid.Col>
+        </Grid>
+
+        {/* Lead Feed */}
+        <Title order={2} mb="md">Active Leads</Title>
+        <Grid>
+          {leads.map((lead) => (
+            <Grid.Col key={lead.id} span={4}>
+              <Card withBorder h="100%">
+                <Stack h="100%" justify="space-between">
+                  <div>
+                    <Group justify="space-between" mb="xs">
+                      <Badge 
+                        color={getQualityColor(lead.quality_score)} 
+                        variant="light"
+                        size="sm"
+                      >
+                        {lead.quality_score}% Quality
+                      </Badge>
+                      <Badge variant="outline" size="sm">
+                        {lead.source}
+                      </Badge>
+                    </Group>
+
+                    <Title order={4} mb="xs" lineClamp={2}>
+                      {lead.title}
+                    </Title>
                     
-                    <div className="flex items-center p-4 bg-gray-50 rounded-lg">
-                      <div className="flex-shrink-0 w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                        <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                      </div>
-                      <div className="ml-4 flex-1">
-                        <p className="text-sm font-medium text-gray-900">Bid accepted: Bathroom tile replacement</p>
-                        <p className="text-sm text-gray-500">5 hours ago</p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center p-4 bg-gray-50 rounded-lg">
-                      <div className="flex-shrink-0 w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                        <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                        </svg>
-                      </div>
-                      <div className="ml-4 flex-1">
-                        <p className="text-sm font-medium text-gray-900">Profile optimization completed</p>
-                        <p className="text-sm text-gray-500">1 day ago</p>
-                      </div>
-                    </div>
+                    <Text size="sm" c="dimmed" mb="md" lineClamp={3}>
+                      {lead.description}
+                    </Text>
+
+                    <Stack gap="xs">
+                      <Group gap="xs">
+                        <IconCurrencyDollar size={16} color="var(--mantine-color-green-6)" />
+                        <Text size="sm" fw={500}>${lead.estimated_value.toLocaleString()}</Text>
+                      </Group>
+                      
+                      <Group gap="xs">
+                        <IconMapPin size={16} color="var(--mantine-color-blue-6)" />
+                        <Text size="sm">{lead.location_city}, {lead.location_state}</Text>
+                      </Group>
+                      
+                      <Group gap="xs">
+                        <IconClock size={16} color="var(--mantine-color-gray-6)" />
+                        <Text size="sm" c="dimmed">{formatTimeAgo(lead.posted_at)}</Text>
+                      </Group>
+                    </Stack>
+
+                    {lead.urgency_indicators.length > 0 && (
+                      <Group gap="xs" mt="xs">
+                        {lead.urgency_indicators.map((indicator, index) => (
+                          <Badge key={index} size="xs" color="red" variant="light">
+                            {indicator}
+                          </Badge>
+                        ))}
+                      </Group>
+                    )}
                   </div>
-                </div>
-              </div>
-            </div>
 
-            {/* Quick Actions Sidebar */}
-            <div className="space-y-6">
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <h3 className="text-lg font-medium text-gray-900 mb-4">Quick Actions</h3>
-                <div className="space-y-3">
-                  <button className="w-full text-left p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
-                    <div className="flex items-center">
-                      <svg className="w-5 h-5 text-blue-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                      </svg>
-                      <span className="text-sm font-medium text-gray-900">View Active Leads</span>
-                    </div>
-                  </button>
-                  
-                  <button className="w-full text-left p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
-                    <div className="flex items-center">
-                      <svg className="w-5 h-5 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                      </svg>
-                      <span className="text-sm font-medium text-gray-900">Create New Bid</span>
-                    </div>
-                  </button>
-                  
-                  <button className="w-full text-left p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
-                    <div className="flex items-center">
-                      <svg className="w-5 h-5 text-purple-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                      </svg>
-                      <span className="text-sm font-medium text-gray-900">Update Profile</span>
-                    </div>
-                  </button>
-                </div>
-              </div>
+                  <Group justify="space-between" mt="md">
+                    <Button variant="light" size="xs" fullWidth>
+                      View Details
+                    </Button>
+                    <Button size="xs" fullWidth ml="xs">
+                      Create Bid
+                    </Button>
+                  </Group>
+                </Stack>
+              </Card>
+            </Grid.Col>
+          ))}
+        </Grid>
 
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <h3 className="text-lg font-medium text-gray-900 mb-4">AI Assistants</h3>
-                <p className="text-sm text-gray-600 mb-4">
-                  Get help from our specialized AI agents for onboarding, bidding, and lead generation.
-                </p>
-                <div className="text-sm text-blue-600 font-medium">
-                  Click the chat icons in the bottom right to get started!
-                </div>
-              </div>
-            </div>
+        {leads.length === 0 && (
+          <Paper p="xl" withBorder>
+            <Stack align="center">
+              <IconBuilding size={48} color="var(--mantine-color-gray-4)" />
+              <Title order={3} c="dimmed">No leads found</Title>
+              <Text c="dimmed" ta="center">
+                Run a Rex search to find new leads in your area, or check back later for updates.
+              </Text>
+              <Button onClick={runRexSearch}>Run Rex Search</Button>
+            </Stack>
+          </Paper>
+        )}
+
+        {/* Floating Chat Button */}
+        <Affix position={{ bottom: 20, right: 20 }}>
+          <Button
+            onClick={() => setChatOpen(!chatOpen)}
+            size="lg"
+            radius="xl"
+            variant="filled"
+            leftSection={<IconRobot />}
+          >
+            AI Assistant
+          </Button>
+        </Affix>
+
+        {/* Chat Interface */}
+        {chatOpen && (
+          <div style={{ position: 'fixed', bottom: 80, right: 20, zIndex: 1000 }}>
+            <ChatManager />
           </div>
-        </main>
-
-        {/* Chat Manager - This will handle the floating chat windows */}
-        <ChatManager />
-      </div>
+        )}
+      </Container>
     </MantineProvider>
   );
 }

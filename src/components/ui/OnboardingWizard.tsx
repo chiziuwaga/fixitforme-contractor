@@ -10,13 +10,6 @@ interface OnboardingStep {
   score: number
 }
 
-interface FelixService {
-  name: string
-  selected: boolean
-  category: string
-  felix_id: number
-}
-
 interface ServiceCategory {
   name: string
   selected: number
