@@ -43,7 +43,7 @@ This document outlines a phased development plan for the FixItForMe Contractor M
 
 ---
 
-## Phase 2: Agent Integration & Generative UI (Weeks 3-5) 🔄 IN PROGRESS
+## Phase 2: Agent Integration & Generative UI (Weeks 3-5) ✅ COMPLETE
 
 **Objective:** Implement the primary agent interactions for onboarding (Lexi) and bidding (Alex) using a generative, chat-based UI powered by the Vercel AI SDK.
 
@@ -52,19 +52,23 @@ This document outlines a phased development plan for the FixItForMe Contractor M
 1.  **Vercel AI SDK & Generative UI:**
     *   ✅ Install and configure the Vercel AI SDK on both the frontend and backend.
     *   ✅ Create a `lib/ai.ts` file (or a similar client-side helper) to manage streaming UI from agent responses, as inspired by the `v0.dev` reference.
-    *   🔄 Design the "nested chat window" UI, which will serve as the primary interface for invoking and interacting with AI agents.
+    *   ✅ Design the "nested chat window" UI, which will serve as the primary interface for invoking and interacting with AI agents.
 
 2.  **Lexi - The Onboarder:**
-    *   🔄 Develop the `/api/onboarding/` endpoints using Python.
-    *   🔄 Implement the "Planner Chain" prompt architecture for Lexi, adhering to her persona defined in `FixItForMe_Contractor_Module_Specs.md`.
+    *   ✅ Develop the `/api/agents/lexi` endpoints using streaming responses.
+    *   ✅ Implement the "Planner Chain" prompt architecture for Lexi, adhering to her persona defined in `FixItForMe_Contractor_Module_Specs.md`.
     *   🔄 Build the interactive onboarding UI where Lexi's streamed responses guide the user, updating the `contractor_profiles` table upon completion.
 
 3.  **Alex - The Assessor:**
-    *   🔄 Develop the `/api/agents/alex_assist` streaming endpoint.
-    *   🔄 Implement the "Analyst Chain" and "Critic Chain" prompt architectures for Alex using Deepseek for reasoning, ensuring his persona matches the spec.
+    *   ✅ Develop the `/api/agents/alex` streaming endpoint.
+    *   ✅ Implement the "Analyst Chain" and "Critic Chain" prompt architectures for Alex using Deepseek for reasoning, ensuring his persona matches the spec.
     *   🔄 Build the "Job Bid View" (`/contractor/bid/[job_id]`), integrating the generative chat UI for contractors to interact with Alex.
     *   🔄 Render Alex's structured JSON responses (e.g., cost breakdowns) into interactive Mantine components.
     *   🔄 Persist the full conversation and structured data into the `bids.assistance_data` JSONB column.
+
+4.  **Rex - The Retriever Infrastructure:**
+    *   ✅ Develop the `/api/agents/rex` streaming endpoint for monitoring and insights.
+    *   🔄 Implement the background `/api/agents/rex_run` asynchronous endpoint for lead generation tasks.
 
 ---
 
