@@ -42,11 +42,8 @@ export default function ContractorLogin() {
       return;
     }
 
-    setAuthState(prev => ({ ...prev, step: 'loading', error: null }));
-
-    try {
-      // TODO: Integrate with Supabase Auth
-      const response = await fetch('/api/auth/send-verification', {
+    setAuthState(prev => ({ ...prev, step: 'loading', error: null }));    try {
+      const response = await fetch('/api/auth/send-sms', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone: authState.phone })
@@ -76,16 +73,13 @@ export default function ContractorLogin() {
       return;
     }
 
-    setAuthState(prev => ({ ...prev, step: 'loading', error: null }));
-
-    try {
-      // TODO: Integrate with Supabase Auth
-      const response = await fetch('/api/auth/verify-code', {
+    setAuthState(prev => ({ ...prev, step: 'loading', error: null }));    try {
+      const response = await fetch('/api/auth/verify-sms', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           phone: authState.phone, 
-          code: authState.verificationCode 
+          token: authState.verificationCode 
         })
       });
 
