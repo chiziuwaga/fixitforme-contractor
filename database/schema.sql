@@ -19,7 +19,11 @@ CREATE TABLE contractor_profiles (
     business_license VARCHAR(100),
     service_areas JSONB, -- Geographic areas they serve
     services_offered JSONB, -- Felix 40-problem IDs they handle
-    pricing_tier VARCHAR(20) DEFAULT 'growth' CHECK (pricing_tier IN ('growth', 'scale')),
+    tier VARCHAR(20) DEFAULT 'growth' CHECK (tier IN ('growth', 'scale')),
+    stripe_customer_id VARCHAR(255),
+    rex_search_usage INTEGER DEFAULT 0,
+    max_bids_per_month INTEGER DEFAULT 10,
+    current_bids_this_month INTEGER DEFAULT 0,
     onboarding_completed BOOLEAN DEFAULT FALSE,
     profile_score INTEGER DEFAULT 0, -- Completion percentage
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -37,6 +41,25 @@ CREATE POLICY "Contractors can update own profile" ON contractor_profiles
 
 CREATE POLICY "Contractors can insert own profile" ON contractor_profiles
     FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+-- ================================
+-- CONTRACTOR DOCUMENTS
+-- ================================
+CREATE TABLE contractor_documents (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    contractor_id UUID NOT NULL REFERENCES contractor_profiles(id) ON DELETE CASCADE,
+    document_type VARCHAR(100) NOT NULL, -- e.g., 'business_license', 'certification'
+    file_url TEXT NOT NULL,
+    verification_status VARCHAR(50) DEFAULT 'pending' CHECK (verification_status IN ('pending', 'verified', 'rejected')),
+    uploaded_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    verified_at TIMESTAMP WITH TIME ZONE
+);
+
+-- RLS Policies for contractor_documents
+ALTER TABLE contractor_documents ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Contractors can manage their own documents" ON contractor_documents
+    FOR ALL USING (auth.uid() = (SELECT user_id FROM contractor_profiles WHERE id = contractor_id));
 
 -- ================================
 -- JOBS (Internal Platform Jobs)
@@ -156,6 +179,30 @@ CREATE POLICY "Contractors can manage own bids" ON bids
             SELECT id FROM contractor_profiles WHERE user_id = auth.uid()
         )
     );
+
+CREATE POLICY "Bids can be managed by the bidder" ON bids
+    FOR ALL USING (auth.uid() = (SELECT user_id FROM contractor_profiles WHERE id = contractor_id))
+    WITH CHECK (auth.uid() = (SELECT user_id FROM contractor_profiles WHERE id = contractor_id));
+
+-- ================================
+-- TRANSACTIONS
+-- ================================
+CREATE TABLE transactions (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    job_id UUID REFERENCES jobs(id) ON DELETE SET NULL,
+    contractor_id UUID NOT NULL REFERENCES contractor_profiles(id) ON DELETE CASCADE,
+    amount DECIMAL(10, 2) NOT NULL,
+    type VARCHAR(50) NOT NULL CHECK (type IN ('subscription', 'payout', 'refund')),
+    status VARCHAR(50) NOT NULL CHECK (status IN ('pending', 'succeeded', 'failed')),
+    stripe_charge_id VARCHAR(255),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- RLS Policies for transactions
+ALTER TABLE transactions ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Contractors can view their own transactions" ON transactions
+    FOR SELECT USING (auth.uid() = (SELECT user_id FROM contractor_profiles WHERE id = contractor_id));
 
 -- ================================
 -- REX SEARCH SESSIONS

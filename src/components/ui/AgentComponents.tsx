@@ -3,8 +3,9 @@
 import { useState } from 'react'
 import { BaseCard, Metric, ProgressIndicator, DataTable } from './BaseComponents'
 import { CostBreakdownCard, LeadDistributionCard } from './Charts'
-import { Stack, Group, Text, Button, Tabs, Badge, Collapse } from '@mantine/core'
-import { IconChevronDown, IconChevronUp, IconCalculator, IconFileText, IconClock } from '@tabler/icons-react'
+import { Stack, Group, Text, Button, Tabs, Badge, Collapse, List, ThemeIcon, Paper, Box, rem } from '@mantine/core'
+import { IconChevronDown, IconChevronUp, IconCalculator, IconFileText, IconClock, IconCheck } from '@tabler/icons-react'
+import { loadStripe } from '@stripe/stripe-js'
 
 // Alex's Enhanced Cost Breakdown Component
 interface AlexCostBreakdownProps {
@@ -353,3 +354,89 @@ export function LexiOnboarding({ data, actions }: LexiOnboardingProps) {
     </BaseCard>
   )
 }
+
+// Component for Conversational Tier Upgrades
+interface UpgradePromptProps {
+  data: {
+    title: string;
+    description: string;
+    features: string[];
+    cta: string;
+  };
+}
+
+export const UpgradePrompt = ({ data }: UpgradePromptProps) => {
+  const handleUpgrade = async () => {
+    try {
+      const response = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+      });
+      const session = await response.json();
+      if (response.ok) {
+        const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+        if (stripe) {
+          stripe.redirectToCheckout({ sessionId: session.sessionId });
+        } else {
+          console.error('Stripe.js has not loaded yet.');
+        }
+      } else {
+        console.error(`Error creating checkout session: ${session.error}`);
+      }
+    } catch (error) {
+      console.error('Error during upgrade process:', error);
+    }
+  };
+
+  return (
+    <BaseCard
+      title={data.title}
+      agent="lexi" // Lexi handles all user-facing account interactions
+      priority="high"
+      interactive={false}
+    >
+      <Stack gap="md">
+        <Text>{data.description}</Text>
+        <List
+          spacing="xs"
+          size="sm"
+          center
+          icon={
+            <ThemeIcon color="teal" size={24} radius="xl">
+              <IconCheck size={16} />
+            </ThemeIcon>
+          }
+        >
+          {data.features.map((feature, index) => (
+            <List.Item key={index}>{feature}</List.Item>
+          ))}
+        </List>
+        <Button 
+          fullWidth 
+          size="lg" 
+          onClick={handleUpgrade}
+          gradient={{ from: 'blue', to: 'cyan' }}
+          variant="gradient"
+        >
+          {data.cta}
+        </Button>
+      </Stack>
+    </BaseCard>
+  );
+}
+
+/**
+ * A component for displaying system-level messages in the chat interface.
+ * Used for notifications like chat limits, errors, or other system feedback.
+ * Renders with a distinct style to differentiate from user and agent messages.
+ */
+export const SystemMessage = ({ message, icon: Icon }: { message: string; icon?: React.ElementType }) => (
+    <Paper p="md" withBorder radius="lg" style={{ background: 'var(--mantine-color-gray-0)' }}>
+        <Group>
+            {Icon && <ThemeIcon variant="light" size="lg"><Icon style={{ width: rem(24), height: rem(24) }} /></ThemeIcon>}
+            <Box>
+                <Text fw={500} size="sm">System Message</Text>
+                <Text>{message}</Text>
+            </Box>
+        </Group>
+    </Paper>
+);

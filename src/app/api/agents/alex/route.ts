@@ -13,7 +13,45 @@ export async function POST(request: NextRequest) {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }    // Alex's system prompt - The precise bidding assistant (quantity surveyor persona)
+    }
+
+    // Tier-based access control
+    const { data: profile, error: profileError } = await supabase
+      .from('contractor_profiles')
+      .select('tier')
+      .eq('user_id', user.id)
+      .single();
+
+    if (profileError && profileError.code !== 'PGRST116') {
+      console.error('Error fetching profile for tier check:', profileError);
+      return NextResponse.json({ error: 'Error verifying user tier.' }, { status: 500 });
+    }
+
+    const userTier = profile?.tier ?? 'growth';
+
+    if (userTier === 'growth') {
+      const upgradePayload = {
+        role: 'assistant',
+        content: `Hi! I'm Alex, your analytical bidding assistant. My advanced cost analysis and bidding strategy tools are part of the **Scale** tier. Upgrading will give you a powerful advantage in winning more profitable projects.`,
+        ui_assets: {
+            type: 'upgrade_prompt',
+            data: {
+              title: 'Unlock Alex the Assessor',
+              description: 'Upgrade to the Scale tier to access:',
+              features: [
+                'Comprehensive Cost Analysis & Breakdown',
+                'Detailed Material & Labor Estimates',
+                'Strategic Pricing & Bidding Advice',
+                'Project Timeline & Risk Analysis'
+              ],
+              cta: 'Upgrade to Scale'
+            }
+          }
+      };
+      return NextResponse.json(upgradePayload);
+    }
+    
+    // Alex's system prompt - The precise bidding assistant (quantity surveyor persona)
     const systemPrompt = `You are Alex the Assessor, the analytical bidding assistant for FixItForMe contractors. You embody the expertise of a seasoned quantity surveyor with a keen eye for accurate cost estimation and competitive pricing.
 
 PERSONALITY:

@@ -13,7 +13,45 @@ export async function POST(request: NextRequest) {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }    // Rex's system prompt - The background lead generation agent
+    }
+
+    // Tier-based access control
+    const { data: profile, error: profileError } = await supabase
+      .from('contractor_profiles')
+      .select('tier')
+      .eq('user_id', user.id)
+      .single();
+
+    if (profileError && profileError.code !== 'PGRST116') {
+      console.error('Error fetching profile for tier check:', profileError);
+      return NextResponse.json({ error: 'Error verifying user tier.' }, { status: 500 });
+    }
+
+    const userTier = profile?.tier ?? 'growth';
+
+    if (userTier === 'growth') {
+      const upgradePayload = {
+        role: 'assistant',
+        content: `I'm Rex, your lead generation specialist. My powerful lead analysis, market intelligence, and automated search tools are available on the **Scale** tier. Let's get you upgraded so you can start finding higher-value leads.`,
+        ui_assets: {
+            type: 'upgrade_prompt',
+            data: {
+              title: 'Activate Rex the Retriever',
+              description: 'Upgrade to the Scale tier for full access to:',
+              features: [
+                'Automated Lead Generation & Monitoring',
+                'Geographic & Service Demand Insights',
+                'Advanced Lead Performance Analytics',
+                'Unlimited Targeted Lead Searches'
+              ],
+              cta: 'Upgrade to Scale'
+            }
+          }
+      };
+      return NextResponse.json(upgradePayload);
+    }
+
+    // Rex's system prompt - The background lead generation agent
     const systemPrompt = `You are Rex the Retriever, the silent but efficient lead generation agent for FixItForMe contractors. You work tirelessly in the background to identify and qualify potential opportunities.
 
 PERSONALITY:

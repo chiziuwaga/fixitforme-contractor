@@ -1,134 +1,139 @@
 # FixItForMe Contractor Module
 
-A robust, AI-driven platform for contractors built with Next.js, featuring specialized AI agents and a tiered payment system.
+This is the contractor-facing module for FixItForMe, a robust, AI-driven platform built with Next.js, Vercel, and Supabase. It features a decoupled agentic architecture, a generative design system for UI, and a tiered payment system for contractors.
 
-## 🏗️ Architecture
+**Live Demo:** [Link to Deployed Application]
 
-This application follows a **Decoupled Intelligence** architecture where AI agents (Lexi, Alex, Rex) operate independently, communicating only through a central Supabase database. This ensures robustness, scalability, and an asynchronous user experience.
+## 🏗️ Architecture & Core Principles
+
+- **Decoupled Intelligence:** AI agents (Lexi, Alex, Rex) operate independently, communicating only through a central Supabase database. This ensures robustness, scalability, and an asynchronous user experience.
+- **Generative UI:** The application uses a generative design system where AI agents return structured JSON payloads that are rendered into dynamic, interactive UI components, including D3.js charts.
+- **Desktop-First Experience:** The UI is optimized for professional use on desktop and tablet devices, with a dedicated mobile redirect.
+- **Tiered Access:** Features and limits are controlled by a tiered subscription model (Growth vs. Scale) managed through Stripe.
 
 ## 🚀 Tech Stack
 
-- **Frontend:** Next.js 15 with TypeScript and Tailwind CSS
-- **Backend:** Vercel Serverless Functions (Python for AI agents)
+- **Frontend:** Next.js 15 with TypeScript, Tailwind CSS, and Mantine UI
+- **Data Visualization:** D3.js and Recharts
+- **Backend:** Vercel Serverless Functions
 - **Database:** Supabase with Row Level Security
 - **AI:** Vercel AI SDK with Deepseek for reasoning
-- **Payments:** Stripe integration
+- **Payments:** Stripe
 - **Authentication:** Supabase Auth with SMS verification
 
 ## 🤖 AI Agent Family
 
-- **Lexi the Liaison:** Friendly onboarding guide for new contractors
-- **Alex the Assessor:** Precise bidding assistant with quantity surveyor expertise
-- **Rex the Retriever:** Background lead generation specialist
-- **Felix the Fixer:** Homeowner diagnostic agent (generates referrals)
+- **Lexi the Liaison:** A friendly onboarding guide for new contractors.
+- **Alex the Assessor:** A precise bidding assistant with quantity surveyor expertise.
+- **Rex the Retriever:** A background lead generation specialist that uses a Tool User Chain.
+- **Felix the Fixer:** A homeowner-facing diagnostic agent whose 40-problem reference framework is used for lead categorization.
 
 ## 💰 Payment Tiers
 
-### Growth Tier (Free)
-- 10% platform fee
-- 30%/40%/30% payout structure
-- Perfect for solo contractors building their client base
-
-### Scale Tier ($250/month)
-- 7% platform fee
-- 50%/25%/25% payout structure
-- Enhanced cash flow for established businesses
+| Feature            | Growth Tier (Free)                        | Scale Tier ($250/month)                   |
+| ------------------ | ----------------------------------------- | ----------------------------------------- |
+| **Platform Fee**   | 10% of job value                          | 7% of job value                           |
+| **Payout Structure** | 30% Upfront, 40% Mid, 30% Completion      | 50% Upfront, 25% Mid, 25% Completion      |
+| **Max Bids/Month** | 10                                        | 50                                        |
+| **Max Services**   | 5 (from Felix Reference)                  | 15 (from Felix Reference)                 |
+| **Rex Search Agent** | ❌ Disabled (Visible but grayed out)      | ✅ Enabled (10 sessions/month)            |
+| **Alex Quote Agent** | ❌ Disabled (Visible but grayed out)      | ✅ Enabled                                |
 
 ## 🛠️ Development Setup
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/chiziuwaga/fixitforme-contractor.git
-   cd fixitforme-contractor
-   ```
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/your-username/fixitforme-contractor.git
+    cd fixitforme-contractor
+    ```
 
-2. **Install dependencies:**
-   ```bash
-   npm install
-   ```
+2.  **Install dependencies:**
+    ```bash
+    npm install
+    ```
 
-3. **Set up environment variables:**
-   ```bash
-   cp .env.local.example .env.local
-   # Edit .env.local with your actual keys
-   ```
+3.  **Set up environment variables:**
+    Create a `.env.local` file by copying the example:
+    ```bash
+    cp .env.local.example .env.local
+    ```
+    Then, edit `.env.local` with your actual keys from Supabase, Stripe, etc.
 
-4. **Run the development server:**
-   ```bash
-   npm run dev
-   ```
+4.  **Run the development server:**
+    ```bash
+    npm run dev
+    ```
 
-5. **Visit:** http://localhost:3000
+5.  **Open your browser** to `http://localhost:3000`.
 
-## 📁 Project Structure
+## 📁 Key Project Structure
 
 ```
 src/
 ├── app/
-│   ├── contractor/          # Contractor-facing pages
-│   │   ├── dashboard/       # Main contractor dashboard
-│   │   ├── bid/            # Job bidding interface
-│   │   └── settings/       # Profile and subscription management
+│   ├── contractor/          # Contractor-facing pages (dashboard, settings)
 │   └── api/
-│       ├── agents/         # AI agent endpoints
-│       ├── payments/       # Payment processing
-│       └── health/         # API health check
-├── components/             # Reusable React components
+│       ├── agents/         # Streaming AI agent endpoints (lexi, alex, rex)
+│       ├── admin/          # Admin API endpoints (see Admin_API_Endpoints.md)
+│       └── payments/       # Stripe webhooks and payment logic
+├── components/
+│   ├── ui/                 # Generative UI components (Base, Charts, Agents)
+│   ├── settings/           # Components for the settings page
+│   └── EnhancedChatManager.tsx # Core multi-agent chat orchestrator
 └── lib/
-    ├── supabase.ts        # Supabase client configuration
-    └── ai.ts              # AI SDK configuration
+    ├── supabase.ts         # Supabase client configuration
+    ├── supabase/admin.ts   # Supabase admin client for server-side operations
+    ├── ai.ts               # Vercel AI SDK configuration
+    ├── brand.ts            # Centralized brand assets and styles
+    └── felix.ts            # Felix 40-problem reference module
 ```
+
+## 📚 Documentation
+
+- **[Admin API Endpoints](./docs/Admin_API_Endpoints.md)** - Complete admin-side API documentation
+- **[Phased Implementation Plan](./docs/Phased_Implementation_Plan.md)** - Development roadmap and progress
+- **[Notification Rationale](./docs/Notification_Rationale.md)** - Notification system architecture
+- **[Felix 40-Problem Reference](./docs/Felix_40_Problem_Reference.md)** - Lead categorization framework
 
 ## 🔐 Environment Variables
 
-Required environment variables (see `.env.local`):
+Ensure the following variables are set in your `.env.local` file:
 
-- `NEXT_PUBLIC_SUPABASE_URL` - Your Supabase project URL
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Supabase anonymous key
-- `SUPABASE_SERVICE_ROLE_KEY` - Supabase service role key
-- `DEEPSEEK_API_KEY` - AI model API key
-- `STRIPE_SECRET_KEY` - Stripe secret key (test mode)
-- `TWILIO_ACCOUNT_SID` - Twilio SMS configuration
+**Database & Core Services:**
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
+
+**AI & Reasoning:**
+- `DEEPSEEK_API_KEY`
+- `VERCEL_AI_SDK_TOKEN`
+
+**Payments (Stripe):**
+- `STRIPE_SECRET_KEY`
+- `STRIPE_WEBHOOK_SECRET`
+- `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`
+
+**Communications (Twilio):**
+- `TWILIO_ACCOUNT_SID`
+- `TWILIO_AUTH_TOKEN`
+- `TWILIO_PHONE_NUMBER`
+
+**Admin & Security:**
+- `ADMIN_JWT_SECRET`
+- `NEXTAUTH_SECRET`
+- `NEXTAUTH_URL`
+
+**Monitoring (Optional):**
+- `SENTRY_DSN`
+- `VERCEL_ANALYTICS_ID`
+
+*See [Admin API Endpoints Documentation](./docs/Admin_API_Endpoints.md) for complete environment variable requirements.*
 
 ## 🚢 Deployment
 
-This project is configured for Vercel deployment:
+This project is configured for continuous deployment on Vercel. Simply push to the `main` branch.
 
 ```bash
+# Manual deployment
 vercel --prod
 ```
-
-The project is automatically deployed on pushes to the main branch via Vercel's GitHub integration.
-
-## 📋 Key Features
-
-- **Nested Chat UI:** Interactive agent conversations
-- **Real-time Lead Generation:** Automated opportunity discovery
-- **Secure Payment Processing:** Multi-stage contractor payouts
-- **Row Level Security:** Contractor data isolation
-- **Responsive Design:** Desktop and tablet optimized
-
-## 🧪 API Health Check
-
-Visit `/api/health` to verify the system status and database connectivity.
-
-## 📚 Development Guidelines
-
-- Follow the established AI agent personas
-- Implement RLS policies for all contractor data
-- Use streaming responses for AI interactions
-- Store agent conversations in `bids.assistance_data`
-- Follow the decoupled architecture principles
-
-## 📋 Project Documentation
-
-All project specifications and development plans are located in the `/docs` directory:
-
-- **[Phased Implementation Plan](./docs/Phased_Implementation_Plan.md)** - Complete development roadmap
-- **[Custom Instructions](./docs/Custom_Instructions_Contractor_FixItForMe.md)** - Development guidelines and technical specs
-- **[AgentQL Architecture](./docs/AgentQL_Architecture_for_Contractor_Lead_Generation.md)** - Lead generation system design
-- **[GitHub Instructions](./.github/copilot-instructions.md)** - Copilot workspace configuration
-
-## 📞 Support
-
-For development questions or issues, refer to the project documentation or contact the development team.
