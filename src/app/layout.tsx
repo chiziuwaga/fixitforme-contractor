@@ -5,6 +5,8 @@ import { UserProvider } from "@/providers/UserProvider";
 import { SupabaseProvider } from "@/providers/SupabaseProvider";
 import { AppSystemWrapper } from "@/components/AppSystemWrapper";
 import { BRAND } from '@/lib/brand';
+import { MantineProvider } from "@mantine/core";
+import { theme } from "../theme";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -35,21 +37,20 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <link rel="icon" href="/favicon.ico" />
-        <meta name="theme-color" content="#D4A574" />
+        <meta name="theme-color" content={BRAND.colors.primary} />
       </head>
       <body
         className={`${inter.variable} antialiased font-sans bg-gray-50 min-h-screen`}
-        style={{
-          fontFamily: 'var(--font-inter), system-ui, sans-serif'
-        }}
       >
-        <SupabaseProvider>
-          <UserProvider>
-            <AppSystemWrapper>
-              {children}
-            </AppSystemWrapper>
-          </UserProvider>
-        </SupabaseProvider>
+        <MantineProvider theme={theme}>
+          <SupabaseProvider>
+            <UserProvider>
+              <AppSystemWrapper>
+                {children}
+              </AppSystemWrapper>
+            </UserProvider>
+          </SupabaseProvider>
+        </MantineProvider>
       </body>
     </html>
   );

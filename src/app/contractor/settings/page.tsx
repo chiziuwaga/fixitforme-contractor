@@ -18,7 +18,7 @@ export default function SettingsPage() {
       style={{ 
         padding: '2rem', 
         backgroundColor: BRAND.colors.background.secondary, 
-        minHeight: '100vh' 
+        minHeight: 'calc(100vh - var(--app-shell-header-height, 0px))' 
       }}
     >
       <Container size="lg">
@@ -27,8 +27,8 @@ export default function SettingsPage() {
             order={1} 
             mb="xl" 
             style={{ 
-              fontSize: '2rem', 
-              fontWeight: 700, 
+              fontFamily: BRAND.typography.fontFamily.sans.join(','), 
+              fontWeight: BRAND.typography.fontWeight.bold, 
               color: BRAND.colors.text.primary 
             }}
           >
@@ -37,26 +37,48 @@ export default function SettingsPage() {
         </motion.div>
         
         <motion.div variants={itemVariants}>
-          <Tabs defaultValue="profile" variant="pills" orientation="vertical">
+          <Tabs 
+            defaultValue="profile" 
+            variant="pills" 
+            orientation="vertical"
+            styles={{
+              tab: {
+                color: BRAND.colors.text.primary,
+                fontSize: BRAND.typography.fontSize.sm,
+                padding: `1rem 1.5rem`,
+                borderRadius: BRAND.borderRadius.lg,
+                '&[data-active]': {
+                  backgroundColor: BRAND.colors.primary,
+                  color: BRAND.colors.text.inverse,
+                },
+                '&[data-active] .mantine-Tabs-tabSection': {
+                  color: BRAND.colors.text.inverse,
+                },
+              },
+              panel: {
+                backgroundColor: BRAND.colors.background.primary,
+                padding: '2rem',
+                borderRadius: BRAND.borderRadius.lg,
+                boxShadow: BRAND.shadows.md,
+              }
+            }}
+          >
             <Tabs.List>
               <Tabs.Tab 
                 value="profile" 
                 leftSection={<IconUserCircle size={20} />}
-                style={{ color: BRAND.colors.text.primary }}
               >
                 Profile
               </Tabs.Tab>
               <Tabs.Tab 
                 value="subscription" 
                 leftSection={<IconCreditCard size={20} />}
-                style={{ color: BRAND.colors.text.primary }}
               >
                 Subscription & Billing
               </Tabs.Tab>
               <Tabs.Tab 
                 value="documents" 
                 leftSection={<IconFileText size={20} />}
-                style={{ color: BRAND.colors.text.primary }}
               >
                 Documents & Verification
               </Tabs.Tab>

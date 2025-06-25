@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import {
-  MantineProvider,
   Container,
   Paper,
   Title,
@@ -24,8 +23,8 @@ import {
 import { notifications } from '@mantine/notifications';
 import { IconBuilding, IconCertificate, IconMapPin, IconCheck } from '@tabler/icons-react';
 import { BRAND } from '@/lib/brand';
-import '@mantine/core/styles.css';
-import '@mantine/notifications/styles.css';
+import { motion } from 'framer-motion';
+import { containerVariants, itemVariants } from '@/lib/animations';
 
 interface OnboardingData {
   company_name: string;
@@ -312,16 +311,21 @@ export default function ContractorOnboarding() {
   };
 
   return (
-    <MantineProvider>
-      <div style={{ 
+    <motion.div 
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      style={{ 
         minHeight: '100vh', 
         background: `linear-gradient(135deg, ${BRAND.colors.background.secondary} 0%, ${BRAND.colors.background.tertiary} 100%)`,
         padding: '2rem 0'
-      }}>
-        <Container size="md">
+      }}
+    >
+      <Container size="md">
+        <motion.div variants={itemVariants}>
           <Paper withBorder p="xl" radius="lg" shadow="lg">
             {/* Header */}
-            <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+            <motion.div variants={itemVariants} style={{ textAlign: 'center', marginBottom: '2rem' }}>
               <div style={{ 
                 fontSize: '48px', 
                 marginBottom: '1rem',
@@ -329,80 +333,80 @@ export default function ContractorOnboarding() {
               }}>
                 🔧
               </div>
-              <Title order={1} style={{ color: BRAND.colors.secondary }}>
+              <Title order={1} style={{ color: BRAND.colors.text.primary }}>
                 Welcome to FixItForMe
               </Title>
               <Text c="dimmed" size="lg">
                 Let&apos;s set up your contractor profile
               </Text>
-            </div>
+            </motion.div>
 
-            {/* Progress */}
-            <div style={{ marginBottom: '2rem' }}>
-              <Progress 
-                value={(currentStep + 1) / 4 * 100} 
-                size="lg" 
-                color={BRAND.colors.primary}
-                mb="md"
-              />
-              <Group justify="center">
-                <Text size="sm" c="dimmed">
-                  Step {currentStep + 1} of 4
-                </Text>
-              </Group>
-            </div>
-
-            {/* Stepper */}
-            <Stepper active={currentStep} size="sm" mb="xl">
-              <Stepper.Step 
-                icon={<IconBuilding size={18} />}
-                label="Company Info"
-                description="Basic information"
-              />
-              <Stepper.Step 
-                icon={<IconCertificate size={18} />}
-                label="Services"
-                description="What you offer"
-              />
-              <Stepper.Step 
-                icon={<IconMapPin size={18} />}
-                label="Location"
-                description="Service areas"
-              />
-              <Stepper.Step 
-                icon={<IconCheck size={18} />}
-                label="Review"
-                description="Confirm details"
-              />
-            </Stepper>
-
-            {/* Step Content */}
-            <div style={{ minHeight: '400px', marginBottom: '2rem' }}>
-              {getStepContent()}
-            </div>
-
-            {/* Navigation */}
-            <Group justify="space-between">
-              <Button 
-                variant="subtle"
-                onClick={() => setCurrentStep(prev => Math.max(0, prev - 1))}
-                disabled={currentStep === 0}
-              >
-                Back
-              </Button>
-              
-              <Button
-                onClick={handleNext}
-                disabled={!isStepValid()}
-                loading={loading}
-                style={{ backgroundColor: BRAND.colors.primary }}
-              >
-                {currentStep === 3 ? 'Complete Setup' : 'Next Step'}
-              </Button>
+          {/* Progress */}
+          <div style={{ marginBottom: '2rem' }}>
+            <Progress 
+              value={(currentStep + 1) / 4 * 100} 
+              size="lg" 
+              color={BRAND.colors.primary}
+              mb="md"
+            />
+            <Group justify="center">
+              <Text size="sm" c="dimmed">
+                Step {currentStep + 1} of 4
+              </Text>
             </Group>
+          </div>
+
+          {/* Stepper */}
+          <Stepper active={currentStep} size="sm" mb="xl">
+            <Stepper.Step 
+              icon={<IconBuilding size={18} />}
+              label="Company Info"
+              description="Basic information"
+            />
+            <Stepper.Step 
+              icon={<IconCertificate size={18} />}
+              label="Services"
+              description="What you offer"
+            />
+            <Stepper.Step 
+              icon={<IconMapPin size={18} />}
+              label="Location"
+              description="Service areas"
+            />
+            <Stepper.Step 
+              icon={<IconCheck size={18} />}
+              label="Review"
+              description="Confirm details"
+            />
+          </Stepper>
+
+          {/* Step Content */}
+          <div style={{ minHeight: '400px', marginBottom: '2rem' }}>
+            {getStepContent()}
+          </div>
+
+          {/* Navigation */}
+          <Group justify="space-between">
+            <Button 
+              variant="subtle"
+              onClick={() => setCurrentStep(prev => Math.max(0, prev - 1))}
+              disabled={currentStep === 0}
+            >
+              Back
+            </Button>
+            
+            <Button
+              onClick={handleNext}
+              disabled={!isStepValid()}
+              loading={loading}
+              style={{ backgroundColor: BRAND.colors.primary }}
+            >
+              {currentStep === 3 ? 'Complete Setup' : 'Next Step'}
+            </Button>
+          </Group>
           </Paper>
-        </Container>
-      </div>
-    </MantineProvider>
+        </motion.div>
+      </Container>
+    </motion.div>
   );
 }

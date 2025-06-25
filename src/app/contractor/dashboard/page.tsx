@@ -27,18 +27,18 @@ interface Lead {
 
 const LeadCard = ({ lead }: { lead: Lead }) => (
   <motion.div variants={itemVariants} whileHover={{ y: -5, transition: { duration: 0.2 } }}>
-    <Paper withBorder p="md" radius="lg" shadow="md" style={{ overflow: 'hidden' }}>
+    <Paper withBorder p="md" radius="lg" shadow="sm">
         <Stack>
             <Group justify="space-between">
-                <Title order={4} style={{ maxWidth: '80%' }}>{lead.title}</Title>
-                <Badge color={lead.quality_score > 80 ? 'teal' : 'orange'} variant="light">
+                <Title order={4} style={{ color: BRAND.colors.text.primary, maxWidth: '80%' }}>{lead.title}</Title>
+                <Badge color={lead.quality_score > 80 ? 'green' : 'orange'} variant="light">
                     <Group gap="xs">
                         <IconStar size={14} />
                         {lead.quality_score}
                     </Group>
                 </Badge>
             </Group>
-            <Text c="dimmed" size="sm">{lead.description}</Text>
+            <Text c="dimmed" size="sm" lineClamp={2}>{lead.description}</Text>
             <Grid>
                 <Grid.Col span={{ base: 12, sm: 6 }}>
                     <Group gap="xs">
@@ -75,8 +75,7 @@ const LeadCard = ({ lead }: { lead: Lead }) => (
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
               <Button 
                 fullWidth
-                variant="gradient" 
-                gradient={{ from: BRAND.colors.primary, to: BRAND.colors.text.accent, deg: 90 }}
+                color="brand-primary"
               >
                   View & Bid
               </Button>
@@ -146,16 +145,16 @@ export default function ContractorDashboard() {
       style={{ display: 'flex', height: 'calc(100vh - var(--app-shell-header-height, 0px) - 2px)' }}
     >
         {/* Main Chat Interface */}
-        <motion.div variants={itemVariants} style={{ flex: '1 1 70%', height: '100%', borderRight: '1px solid var(--mantine-color-gray-3)' }}>
+        <motion.div variants={itemVariants} style={{ flex: '1 1 70%', height: '100%', borderRight: `1px solid ${BRAND.colors.background.tertiary}` }}>
             <EnhancedChatManager />
         </motion.div>
 
         {/* Lead Feed Sidebar */}
-        <motion.div variants={itemVariants} style={{ flex: '1 1 30%', height: '100%' }}>
+        <motion.div variants={itemVariants} style={{ flex: '1 1 30%', height: '100%', backgroundColor: BRAND.colors.background.secondary }}>
             <ScrollArea h="100%">
                 <Container fluid p="lg">
                     <motion.div variants={itemVariants}>
-                      <Title order={3} mb="lg">Your Lead Feed</Title>
+                      <Title order={3} mb="lg" style={{ color: BRAND.colors.text.primary }}>Your Lead Feed</Title>
                     </motion.div>
                     {loading && <Loader />}
                     {!loading && leads.length === 0 && (
