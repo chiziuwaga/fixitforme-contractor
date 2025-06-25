@@ -61,8 +61,6 @@
 - ✅ `/contractor/onboarding` - Guided setup process
 - ✅ `/contractor/settings` - Profile, billing, documents
 - ✅ `/contractor/bid/[job_id]` - Job bidding interface
-- ✅ `/showcase` - Component library showcase
-- ✅ `/test-stripe` - Payment testing interface
 - ✅ All API routes functional
 
 ### **AI Agent Endpoints**

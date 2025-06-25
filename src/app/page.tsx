@@ -1,6 +1,6 @@
 'use client';
 
-import { createClient } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 import { useEffect, useState } from 'react';
 import ContractorAuth from '@/components/auth/ContractorAuth';
 import ContractorDashboard from '@/components/dashboard/ContractorDashboard';
@@ -10,7 +10,7 @@ import type { User } from '@supabase/supabase-js';
 export default function HomePage() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const supabase = createClient();
+  // Use imported supabase directly
 
   useEffect(() => {
     // Check for existing session

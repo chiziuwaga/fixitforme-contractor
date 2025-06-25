@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient, withTimeout, supabaseAdmin } from '@/lib/supabase';
+import { supabase, withTimeout, supabaseAdmin } from '@/lib/supabase';
 
 // Felix's 40-problem framework search categories
 const FELIX_SEARCH_CATEGORIES = {
@@ -126,8 +126,6 @@ async function performRexSearch(request: NextRequest) {
     const body: SearchRequest = await request.json();
     const { location = 'Oakland, CA', categories = ['plumbing', 'electrical'], maxResults = 10, execution_id } = body;
 
-    const supabase = createClient();
-    
     // Verify contractor authentication
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) {

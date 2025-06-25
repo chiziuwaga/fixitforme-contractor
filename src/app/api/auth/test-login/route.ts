@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 
 /**
  * Test Authentication Endpoint
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    const supabase = createClient();
+    // Use imported supabase directly
 
     // Create a test user session
     const testUserId = `test-${phone.replace(/\+/g, '')}`;

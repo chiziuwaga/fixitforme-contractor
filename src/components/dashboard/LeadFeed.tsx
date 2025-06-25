@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Card, Text, Badge, Group, Stack, Button, ActionIcon, Loader, Center } from '@mantine/core';
 import { IconMapPin, IconClock, IconCurrencyDollar, IconRefresh } from '@tabler/icons-react';
-import { createClient } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 
 interface Lead {
   id: string;
@@ -29,7 +29,8 @@ export default function LeadFeed({ contractorId }: LeadFeedProps) {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const supabase = createClient();  const fetchLeads = useCallback(async () => {
+  // Remove this line - use the imported supabase directly
+  const fetchLeads = useCallback(async () => {
     try {
       // Fetch both Felix referrals and Rex discoveries
       const { data, error } = await supabase
@@ -48,7 +49,7 @@ export default function LeadFeed({ contractorId }: LeadFeedProps) {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [contractorId, supabase]);
+  }, [contractorId]);
   useEffect(() => {
     fetchLeads();
   }, [contractorId, fetchLeads]);

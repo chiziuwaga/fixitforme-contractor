@@ -22,10 +22,6 @@ function NotificationWrapper() {
     markAsRead,
     clearAll
   } = useNotifications();
-  const handleActionClick = (action: { type: string; data?: unknown }) => {
-    // Handle notification actions
-    console.log('Notification action clicked:', action);
-  };
 
   return (
     <NotificationCenter
@@ -33,7 +29,9 @@ function NotificationWrapper() {
       onDismiss={dismissNotification}
       onMarkAsRead={markAsRead}
       onClearAll={clearAll}
-      onActionClick={handleActionClick}
+      onActionClick={() => {
+        // TODO: Implement proper action handling
+      }}
     />
   );
 }

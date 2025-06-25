@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Card, Text, Group, Stack, Grid, Badge, RingProgress, Loader, Center } from '@mantine/core';
 import { IconTrendingUp, IconCurrencyDollar, IconClock, IconEye } from '@tabler/icons-react';
-import { createClient } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 
 interface ContractorStats {
   total_bids: number;
@@ -23,7 +23,7 @@ interface QuickStatsProps {
 export default function QuickStats({ contractorId }: QuickStatsProps) {
   const [stats, setStats] = useState<ContractorStats | null>(null);
   const [loading, setLoading] = useState(true);
-  const supabase = createClient();
+  // Remove this line - use the imported supabase directly
 
   const fetchStats = useCallback(async () => {
     try {
@@ -72,7 +72,7 @@ export default function QuickStats({ contractorId }: QuickStatsProps) {
     } finally {
       setLoading(false);
     }
-  }, [contractorId, supabase]);
+  }, [contractorId]);
 
   useEffect(() => {
     fetchStats();

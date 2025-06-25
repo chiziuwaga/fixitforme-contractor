@@ -319,7 +319,7 @@ export function EnhancedChatManager() {
             }}
             onCancel={() => {
               // Cancel execution logic would go here
-              console.log('Cancel execution:', session.id);
+              // TODO: Implement proper cancellation logic
             }}
           />
         ))}

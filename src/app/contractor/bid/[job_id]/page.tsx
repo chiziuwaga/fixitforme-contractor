@@ -17,7 +17,7 @@ import {
   Center
 } from '@mantine/core';
 import { IconMapPin, IconClock, IconCurrencyDollar, IconUser } from '@tabler/icons-react';
-import { createClient } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 import EnhancedChatManager from '@/components/dashboard/EnhancedChatManager';
 
 interface JobDetails {
@@ -42,7 +42,6 @@ export default function JobBidView() {
   const jobId = params?.job_id as string;
   const [job, setJob] = useState<JobDetails | null>(null);
   const [loading, setLoading] = useState(true);
-  const supabase = createClient();
 
   useEffect(() => {
     const fetchJobDetails = async () => {
@@ -65,7 +64,7 @@ export default function JobBidView() {
     if (jobId) {
       fetchJobDetails();
     }
-  }, [jobId, supabase]);
+  }, [jobId]);
 
   const getUrgencyColor = (urgency: string) => {
     switch (urgency) {
@@ -197,8 +196,7 @@ export default function JobBidView() {
                     variant="outline" 
                     fullWidth
                     onClick={() => {
-                      // Focus on chat input or trigger Alex
-                      console.log('Analyzing job with Alex...');
+                      // TODO: Implement Alex analysis trigger
                     }}
                   >
                     Get Alex&apos;s Analysis

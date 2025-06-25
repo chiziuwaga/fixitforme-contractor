@@ -22,11 +22,13 @@ const contractorSessionConfig = {
     persistSession: true,
     detectSessionInUrl: true,
     flowType: 'pkce' as const,
-    debug: process.env.NODE_ENV === 'development'
+    debug: process.env.NODE_ENV === 'development',
+    // Add unique storage key to prevent conflicts
+    storageKey: 'fixitforme_contractor_auth'
   }
 }
 
-// Main client instance for authenticated operations
+// SINGLE CLIENT INSTANCE - Use this everywhere for consistency
 export const supabase = createSupabaseClient(supabaseUrl, supabaseAnonKey, contractorSessionConfig)
 
 // Admin client for server-side operations (only if service key is available)
@@ -34,17 +36,17 @@ export const supabaseAdmin = supabaseServiceKey
   ? createSupabaseClient(supabaseUrl, supabaseServiceKey, {
       auth: {
         autoRefreshToken: false,
-        persistSession: false
+        persistSession: false,
+        storageKey: 'fixitforme_admin_auth' // Separate storage key
       }
     })
   : null
 
-// Create a new client instance (for server-side use)
+// DEPRECATED: Use 'supabase' export instead of creating new instances
+// This function exists for backward compatibility but should be avoided
 export function createClient() {
-  if (!supabaseUrl || !supabaseAnonKey) {
-    throw new Error('Supabase configuration is missing')
-  }
-  return createSupabaseClient(supabaseUrl, supabaseAnonKey, contractorSessionConfig)
+  console.warn('createClient() is deprecated. Use the supabase export instead to prevent multiple client instances.')
+  return supabase
 }
 
 // Agent operation timeout (10 minutes)

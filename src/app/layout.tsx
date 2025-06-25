@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     template: `%s | ${BRAND.name}`,
   },
   description: BRAND.tagline,
-  icons: [{ rel: 'icon', url: '/fixitforme_logo_concept.png' }],
+  icons: [{ rel: 'icon', url: '/logo.png' }],
 };
 
 export const viewport: Viewport = {

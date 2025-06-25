@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
-import { createClient } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 
 // Lazy initialization function
 function getStripe() {
@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create or retrieve Stripe customer
-    const supabase = createClient();
+    // Use imported supabase directly
     
     const { data: contractor, error } = await supabase
       .from('contractor_profiles')
