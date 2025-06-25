@@ -31,7 +31,7 @@ import {
   IconPlus,
   IconMessage
 } from '@tabler/icons-react';
-import { EnhancedChatManager } from '@/components/chat/EnhancedChatManager';
+import { EnhancedChatManager } from '@/components/EnhancedChatManager';
 import LeadFeed from '@/components/dashboard/LeadFeed';
 import QuickStats from '@/components/dashboard/QuickStats';
 

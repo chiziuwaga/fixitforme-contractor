@@ -94,8 +94,8 @@ export async function POST(request: NextRequest) {
   try {
     // Wrap the entire operation in timeout
     return await withTimeout(performRexSearch(request), 600000); // 10 minutes
-  } catch (error: any) {
-    if (error.message === 'Operation timeout') {
+  } catch (error: unknown) {
+    if (error instanceof Error && error.message === 'Operation timeout') {
       return NextResponse.json({
         error: 'search_timeout',
         message: 'Rex search operation timed out after 10 minutes. This may be due to high demand or connectivity issues.',
@@ -123,6 +123,7 @@ export async function POST(request: NextRequest) {
 }
 
 async function performRexSearch(request: NextRequest) {
+  try {
     const body: SearchRequest = await request.json();
     const { location = 'Oakland, CA', categories = ['plumbing', 'electrical'], maxResults = 10, execution_id } = body;
 
@@ -631,7 +632,9 @@ async function performRexSearch(request: NextRequest) {
           }
         }
       }
-    };    console.log('Rex Search: Complete', searchResults.search_summary);
+    };
+    
+    console.log('Rex Search: Complete', searchResults.search_summary);
 
     // Mark execution as complete
     if (execution_id) {
@@ -643,7 +646,9 @@ async function performRexSearch(request: NextRequest) {
           progress: 100
         })
         .eq('id', execution_id);
-    }    return NextResponse.json(searchResults);
+    }
+    
+    return NextResponse.json(searchResults);
   } catch (error) {
     console.error('Rex Search: Error during lead generation:', error);
     return NextResponse.json(

@@ -3,7 +3,6 @@
 import { useEffect, useState, createContext, useContext, ReactNode } from 'react';
 import { useSessionContext, useUser as useSupaUser } from '@supabase/auth-helpers-react';
 import { User } from '@supabase/supabase-js';
-import { supabase } from '@/lib/supabase';
 
 // NEW: Add Subscription details to the context
 export interface Subscription {
@@ -32,7 +31,7 @@ export interface UserContextType {
   profile: ContractorProfile | null;
   subscription: Subscription | null; // Add subscription
   loading: boolean;
-  error: any;
+  error: Error | null;
 }
 
 export const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -49,7 +48,7 @@ export const UserProvider = ({ children }: UserProviderProps) => {
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<ContractorProfile | null>(null);
   const [subscription, setSubscription] = useState<Subscription | null>(null); // Add subscription state
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -77,8 +76,8 @@ export const UserProvider = ({ children }: UserProviderProps) => {
             setSubscription(subscriptionResponse.data as Subscription);
           }
 
-        } catch (e: any) {
-          setError(e);
+        } catch (e: unknown) {
+          setError(e instanceof Error ? e : new Error('Unknown error'));
         } finally {
           setLoading(false);
         }

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { 
+import {
   MantineProvider, 
   Container, 
   Paper, 
@@ -14,7 +14,6 @@ import {
   PinInput,
   Alert,
   Loader,
-  Switch,
   Divider,
   Card
 } from '@mantine/core';
