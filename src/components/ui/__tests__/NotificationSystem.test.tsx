@@ -14,7 +14,6 @@ import { MantineProvider } from '@mantine/core';
 import { NotificationCenter, useNotifications } from '@/components/ui/NotificationCenter';
 import { AgentWorkingIndicator } from '@/components/ui/AgentWorkingIndicator';
 import { ConcurrentExecutionProvider, useExecutionManager } from '@/components/ui/ConcurrentExecutionManager';
-import { EnhancedChatManager } from '@/components/EnhancedChatManager';
 
 // Mock user provider
 const mockUser = {
@@ -162,8 +161,8 @@ describe('Notification & Agentic Execution System', () => {
     });
 
     test('should handle notification actions correctly', () => {
-      const mockDismiss = jest.fn();
-      const mockMarkAsRead = jest.fn();
+      // const mockDismiss = jest.fn();
+      // const mockMarkAsRead = jest.fn();
       
       const TestNotificationManager = () => {
         const { notifications, addNotification, dismissNotification, markAsRead } = useNotifications();

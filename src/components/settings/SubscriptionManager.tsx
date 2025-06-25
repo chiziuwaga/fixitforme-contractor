@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import { Button, Card, Text, Badge, Loader } from '@mantine/core';
-import { useUser } from '@/hooks/useUser';
+import { useUser } from '@/providers/UserProvider';
 import { supabase } from '@/lib/supabase';
 
 // Make sure to add your Stripe publishable key to your .env.local file

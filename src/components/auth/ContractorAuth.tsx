@@ -20,9 +20,9 @@ import { IconPhone, IconShield, IconCheck, IconAlertCircle } from '@tabler/icons
 
 interface AuthFormProps {
   onSuccess?: (data: {
-    user: any;
-    session: any;
-    contractor_profile: any;
+    user: unknown;
+    session: unknown;
+    contractor_profile: unknown;
     is_new_user: boolean;
     redirect_url: string;
   }) => void;

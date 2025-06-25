@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import {
-  MantineProvider, 
   Container, 
   Paper, 
   Title, 
@@ -20,8 +19,6 @@ import {
 import { notifications } from '@mantine/notifications';
 import { IconPhone, IconShieldCheck, IconAlertCircle } from '@tabler/icons-react';
 import { BRAND } from '@/lib/brand';
-import '@mantine/core/styles.css';
-import '@mantine/notifications/styles.css';
 
 interface AuthStep {
   step: 'phone' | 'verification' | 'loading';
@@ -149,15 +146,14 @@ export default function ContractorLogin() {
   };
 
   return (
-    <MantineProvider>
-      <div style={{ 
-        minHeight: '100vh', 
-        background: `linear-gradient(135deg, ${BRAND.colors.background.secondary} 0%, ${BRAND.colors.background.tertiary} 100%)`,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '1rem'
-      }}>
+    <div style={{ 
+      minHeight: '100vh', 
+      background: `linear-gradient(135deg, ${BRAND.colors.background.secondary} 0%, ${BRAND.colors.background.tertiary} 100%)`,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '1rem'
+    }}>
         <Container size="xs">
           <Paper withBorder p="xl" radius="lg" shadow="lg">
             <Stack gap="lg">
@@ -343,6 +339,5 @@ export default function ContractorLogin() {
           </Paper>
         </Container>
       </div>
-    </MantineProvider>
   );
 }

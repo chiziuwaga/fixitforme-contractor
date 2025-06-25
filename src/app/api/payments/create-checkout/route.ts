@@ -3,7 +3,7 @@ import Stripe from 'stripe';
 import { createClient } from '@/lib/supabase';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-06-20',
+  apiVersion: '2025-05-28.basil',
 });
 
 export async function POST(request: NextRequest) {
@@ -76,7 +76,6 @@ export async function POST(request: NextRequest) {
       success_url: `${process.env.NEXT_PUBLIC_APP_URL}/contractor/settings?success=true`,
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/contractor/settings?canceled=true`,
       allow_promotion_codes: true,
-      trial_period_days: 7, // 7-day free trial
     });
 
     return NextResponse.json({ url: session.url });

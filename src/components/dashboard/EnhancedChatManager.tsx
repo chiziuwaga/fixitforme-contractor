@@ -5,13 +5,23 @@ import { Card, TextInput, Stack, Text, Group, ActionIcon, ScrollArea, Loader, Ba
 import { IconSend, IconUser, IconRobot, IconAt } from '@tabler/icons-react';
 import GenerativeAgentAssets from '@/components/agent-ui/GenerativeAgentAssets';
 
+interface UIAssets {
+  type: string;
+  data: Record<string, unknown>;
+  actions?: Array<{
+    type: string;
+    label: string;
+    style: 'primary' | 'secondary' | 'outline';
+  }>;
+}
+
 interface Message {
   id: string;
   role: 'user' | 'assistant';
   content: string;
   timestamp: Date;
   agent?: 'lexi' | 'alex' | 'rex';
-  ui_assets?: any;
+  ui_assets?: UIAssets;
 }
 
 interface EnhancedChatManagerProps {
@@ -208,9 +218,15 @@ export default function EnhancedChatManager({ contractorId, className }: Enhance
                     {message.ui_assets && (
                       <div style={{ marginTop: '12px' }}>
                         <GenerativeAgentAssets 
-                          agent={message.agent || 'lexi'}
-                          assetType={message.ui_assets.type}
-                          data={message.ui_assets.data}
+                          ui_assets={{
+                            type: message.ui_assets.type as 'onboarding_progress' | 'tier_comparison' | 'feature_education' | 'system_message' | 'material_breakdown' | 'lead_opportunity' | 'bid_analysis' | 'market_intelligence',
+                            data: message.ui_assets.data,
+                            render_hints: {
+                              component: 'default',
+                              priority: 'medium',
+                              interactive: true
+                            }
+                          }}
                           actions={message.ui_assets.actions}
                         />
                       </div>

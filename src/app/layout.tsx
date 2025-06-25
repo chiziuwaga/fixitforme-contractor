@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { UserProvider } from "@/providers/UserProvider";
@@ -15,7 +15,12 @@ export const metadata: Metadata = {
   description: "AI-powered lead generation and project management for professional contractors",
   keywords: "contractor, leads, AI, project management, bidding, construction",
   authors: [{ name: "FixItForMe" }],
-  viewport: "width=device-width, initial-scale=1, maximum-scale=1",
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
 };
 
 export default function RootLayout({

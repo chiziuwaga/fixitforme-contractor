@@ -1,3 +1,5 @@
+'use client';
+
 import { Tabs } from '@mantine/core';
 import { IconUserCircle, IconCreditCard, IconFileText } from '@tabler/icons-react';
 import SubscriptionManager from '@/components/settings/SubscriptionManager';

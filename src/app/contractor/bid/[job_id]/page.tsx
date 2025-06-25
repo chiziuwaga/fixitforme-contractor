@@ -39,10 +39,9 @@ interface JobDetails {
 
 export default function JobBidView() {
   const params = useParams();
-  const jobId = params.job_id as string;
+  const jobId = params?.job_id as string;
   const [job, setJob] = useState<JobDetails | null>(null);
   const [loading, setLoading] = useState(true);
-  const [chatMinimized, setChatMinimized] = useState(false);
   const supabase = createClient();
 
   useEffect(() => {
@@ -197,7 +196,10 @@ export default function JobBidView() {
                   <Button 
                     variant="outline" 
                     fullWidth
-                    onClick={() => setChatMinimized(false)}
+                    onClick={() => {
+                      // Focus on chat input or trigger Alex
+                      console.log('Analyzing job with Alex...');
+                    }}
                   >
                     Get Alex&apos;s Analysis
                   </Button>
@@ -272,8 +274,6 @@ export default function JobBidView() {
       {/* Enhanced Chat Manager for Alex Integration */}
       <EnhancedChatManager
         contractorId="mock-contractor-id" // Replace with actual contractor ID
-        isMinimized={chatMinimized}
-        onToggleMinimize={() => setChatMinimized(!chatMinimized)}
       />
     </Container>
   );

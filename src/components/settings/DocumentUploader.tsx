@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Button, List, ThemeIcon, rem, Paper, Title, Text, Group, FileButton, LoadingOverlay, Alert } from '@mantine/core';
 import { IconUpload, IconFile, IconTrash, IconAlertCircle } from '@tabler/icons-react';
-import { useUser } from '@/hooks/useUser';
+import { useUser } from '@/providers/UserProvider';
 import { supabase } from '@/lib/supabase';
 
 const BUCKET_NAME = 'contractor-documents';

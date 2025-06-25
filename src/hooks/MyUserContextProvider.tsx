@@ -11,7 +11,7 @@ export const MyUserContextProvider = ({ children }: { children: ReactNode }) => 
 
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<ContractorProfile | null>(null);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -31,8 +31,8 @@ export const MyUserContextProvider = ({ children }: { children: ReactNode }) => 
           if (data) {
             setProfile(data as ContractorProfile);
           }
-        } catch (e: any) {
-          setError(e);
+        } catch (e: unknown) {
+          setError(e instanceof Error ? e : new Error('Unknown error'));
         } finally {
           setLoading(false);
         }
@@ -51,6 +51,7 @@ export const MyUserContextProvider = ({ children }: { children: ReactNode }) => 
     accessToken,
     user,
     profile,
+    subscription: null, // Add subscription - can be implemented later
     loading: loading || isLoadingUser,
     error,
   };

@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase/admin';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-06-20', // Use the latest stable version
+  apiVersion: '2025-05-28.basil', // Use the latest stable version
   typescript: true,
 });
 
@@ -28,7 +28,7 @@ async function handleSubscriptionChange(subscription: Stripe.Subscription) {
 }
 
 async function handleSuccessfulInvoice(invoice: Stripe.Invoice) {
-  if (!invoice.customer || !invoice.subscription) {
+  if (!invoice.customer) {
     console.log("Invoice doesn't have customer or subscription, skipping");
     return;
   }
@@ -44,7 +44,7 @@ async function handleSuccessfulInvoice(invoice: Stripe.Invoice) {
     return;
   }
 
-  const chargeId = typeof invoice.charge === 'string' ? invoice.charge : null;
+  const chargeId = (invoice as unknown as Record<string, unknown>).charge as string || null;
 
   const { error } = await supabaseAdmin.from('transactions').insert({
     contractor_id: profile.id,
