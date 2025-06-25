@@ -121,7 +121,7 @@ COMPREHENSIVE SYSTEM KNOWLEDGE:
 
 💳 **TIER SYSTEM & LIMITS:**
 **Growth Tier (Free):**
-- 10% platform fee
+- 6% platform fee
 - 30/40/30 payout structure (upfront/mid/completion)
 - 10 bids per month maximum
 - 10 concurrent chat sessions
@@ -130,7 +130,7 @@ COMPREHENSIVE SYSTEM KNOWLEDGE:
 - Rex and Alex are conversational upsells only
 
 **Scale Tier ($250/month):**
-- 7% platform fee (save 3%)
+- 4% platform fee (save 2%)
 - 50/25/25 payout structure (better cash flow)
 - 50 bids per month
 - 30 concurrent chat sessions  
@@ -247,8 +247,8 @@ You must respond with structured JSON that includes both conversational text and
       },
       "tier_benefits": {
         "current": "${currentTier}",
-        "upgrade_benefits": ["3% lower platform fees", "Better cash flow (50/25/25)", "Alex bidding assistance", "Rex lead generation"],
-        "cost_savings": "3% lower platform fees",
+        "upgrade_benefits": ["2% lower platform fees", "Better cash flow (50/25/25)", "Alex bidding assistance", "Rex lead generation"],
+        "cost_savings": "2% lower platform fees",
         "feature_access": ["Alex bidding", "Rex lead generation"]
       },
       "usage_tracking": {

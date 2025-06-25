@@ -13,7 +13,10 @@ import {
   Group,
   PinInput,
   Alert,
-  Loader
+  Loader,
+  Switch,
+  Divider,
+  Card
 } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { IconPhone, IconShieldCheck, IconAlertCircle } from '@tabler/icons-react';
@@ -26,6 +29,7 @@ interface AuthStep {
   phone: string;
   verificationCode: string;
   error: string | null;
+  testMode: boolean;
 }
 
 export default function ContractorLogin() {
@@ -33,7 +37,8 @@ export default function ContractorLogin() {
     step: 'phone',
     phone: '',
     verificationCode: '',
-    error: null
+    error: null,
+    testMode: false
   });
 
   const handlePhoneSubmit = async () => {
@@ -98,6 +103,39 @@ export default function ContractorLogin() {
         ...prev, 
         step: 'verification', 
         error: 'Invalid code. Please try again or request a new code.' 
+      }));
+    }
+  };
+
+  const handleTestLogin = async (testPhone: string) => {
+    setAuthState(prev => ({ ...prev, step: 'loading', error: null, phone: testPhone }));
+    
+    try {
+      const response = await fetch('/api/auth/test-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: testPhone })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        notifications.show({
+          title: 'Test Login Successful',
+          message: `Logged in as test contractor: ${data.contractor_profile.company_name || 'Test Contractor'}`,
+          color: 'green'
+        });
+        
+        // Redirect based on onboarding status
+        window.location.href = data.redirect_url;
+      } else {
+        throw new Error(data.error || 'Test login failed');
+      }
+    } catch (error) {
+      setAuthState(prev => ({ 
+        ...prev, 
+        step: 'phone', 
+        error: error instanceof Error ? error.message : 'Test login failed. Please try again.' 
       }));
     }
   };
@@ -186,6 +224,49 @@ export default function ContractorLogin() {
                   >
                     Send Verification Code
                   </Button>
+
+                  {/* Test Mode Section */}
+                  <Divider label="OR" labelPosition="center" my="md" />
+                  
+                  <Card withBorder p="md" radius="md" style={{ backgroundColor: '#f8f9fa' }}>
+                    <Stack gap="sm">
+                      <div>
+                        <Text fw={500} size="sm" mb="xs">
+                          Test Login (Development Mode)
+                        </Text>
+                        <Text size="xs" c="dimmed">
+                          Skip SMS verification with test accounts
+                        </Text>
+                      </div>
+                      
+                      <Group grow>
+                        <Button 
+                          variant="light"
+                          size="sm"
+                          onClick={() => handleTestLogin('+1234567890')}
+                          style={{ fontSize: '11px' }}
+                        >
+                          Basic Test Account
+                        </Button>
+                        <Button 
+                          variant="light"
+                          size="sm"
+                          onClick={() => handleTestLogin('+1234567891')}
+                          style={{ fontSize: '11px' }}
+                        >
+                          Premium Test Account
+                        </Button>
+                        <Button 
+                          variant="light"
+                          size="sm"
+                          onClick={() => handleTestLogin('+1234567892')}
+                          style={{ fontSize: '11px' }}
+                        >
+                          Complete Profile
+                        </Button>
+                      </Group>
+                    </Stack>
+                  </Card>
                 </Stack>
               )}
 
@@ -254,6 +335,9 @@ export default function ContractorLogin() {
               <div style={{ textAlign: 'center', marginTop: '2rem' }}>
                 <Text size="xs" c="dimmed">
                   Secure contractor access • SMS verification required
+                </Text>
+                <Text size="xs" c="dimmed" mt="xs">
+                  Test accounts available for development and testing
                 </Text>
               </div>
             </Stack>

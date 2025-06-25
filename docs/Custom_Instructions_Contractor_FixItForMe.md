@@ -23,7 +23,7 @@ When working with agent-related code, maintain these distinct personas:
 - **Decoupled Intelligence:** Agents communicate only through Supabase, never directly
 - **Async UX:** UI never blocks on AI processes
 - **Desktop-first:** Professional-grade contractor experience
-- **Tiered Payments:** Growth (10% fee, 30/40/30 payouts) vs Scale ($250/mo, 7% fee, 50/25/25 payouts)
+- **Tiered Payments:** Growth (6% fee, 30/40/30 payouts) vs Scale ($250/mo, 4% fee, 50/25/25 payouts)
 
 ## Development Guidelines
 - Always implement Row Level Security (RLS) policies for contractor data isolation

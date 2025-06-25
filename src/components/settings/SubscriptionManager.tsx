@@ -13,13 +13,13 @@ const plans = {
   growth: {
     name: 'Growth Tier',
     price: 'Free',
-    features: ['10% Platform Fee', '10 Bids / Month', 'Limited Agent Access'],
+    features: ['6% Platform Fee', '10 Bids / Month', 'Limited Agent Access'],
   },
   scale: {
     name: 'Scale Tier',
     price: '$250/month',
     priceId: process.env.NEXT_PUBLIC_STRIPE_SCALE_PRICE_ID, // Add this to your .env.local
-    features: ['7% Platform Fee', '50 Bids / Month', 'Full Agent Access'],
+    features: ['4% Platform Fee', '50 Bids / Month', 'Full Agent Access'],
   },
 };
 

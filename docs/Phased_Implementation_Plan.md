@@ -504,7 +504,7 @@ To ensure a robust and fair platform, the following system-level constraints wil
 
 | Feature | Growth Tier (Free) | Scale Tier ($250/month) |
 | :--- | :--- | :--- |
-| **Platform Fee** | 10% of job value | 7% of job value |
+| **Platform Fee** | 6% of job value | 4% of job value |
 | **Payout Structure** | 30% Upfront, 40% Mid-Project, 30% Completion | 50% Upfront, 25% Mid-Project, 25% Completion |
 | **Max Bids / Month**| 10 | 50 |
 | **Max Active Chats** | 10 | 30 |

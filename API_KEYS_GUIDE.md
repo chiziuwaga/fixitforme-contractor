@@ -15,11 +15,12 @@ These services are required for core functionality:
 - **Cost**: Free tier available, paid plans start at $25/month
 
 #### 2. Deepseek AI (Primary AI Provider)
-- **Service**: AI reasoning for all contractor agents
+- **Service**: AI reasoning for all contractor agents (Lexi, Alex, Rex)
 - **Required Keys**:
   - `DEEPSEEK_API_KEY`
 - **Setup**: Get API key from https://platform.deepseek.com
 - **Cost**: Pay-per-use, very competitive pricing
+- **Note**: Felix the Fixer operates on homeowner platform, not this module
 
 #### 3. Stripe (Payment Processing)
 - **Service**: Subscription management and commission processing
