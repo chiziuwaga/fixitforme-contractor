@@ -349,7 +349,7 @@ export function EnhancedChatManager() {
       <Affix position={{ bottom: 20, right: 20 }}>
         <Group>
           <Tooltip label="Chat with Lexi, your onboarding assistant">
-            <Button onClick={() => openChat('lexi')} variant="gradient" gradient={{ from: BRAND.colors.primary, to: BRAND.colors.accent }}>
+            <Button onClick={() => openChat('lexi')} variant="gradient" gradient={{ from: BRAND.colors.primary, to: BRAND.colors.text.accent }}>
               @lexi
             </Button>
           </Tooltip>
@@ -358,7 +358,7 @@ export function EnhancedChatManager() {
             <Button
               onClick={() => openChat('alex')}
               variant={isScaleTier ? "gradient" : "default"}
-              gradient={isScaleTier ? { from: BRAND.colors.primary, to: BRAND.colors.accent } : undefined}
+              gradient={isScaleTier ? { from: BRAND.colors.primary, to: BRAND.colors.text.accent } : undefined}
               disabled={!isScaleTier}
               rightSection={!isScaleTier ? <IconLock size={14} /> : undefined}
             >
@@ -370,7 +370,7 @@ export function EnhancedChatManager() {
             <Button
               onClick={() => openChat('rex')}
               variant={isScaleTier ? "gradient" : "default"}
-              gradient={isScaleTier ? { from: BRAND.colors.primary, to: BRAND.colors.accent } : undefined}
+              gradient={isScaleTier ? { from: BRAND.colors.primary, to: BRAND.colors.text.accent } : undefined}
               disabled={!isScaleTier}
               rightSection={!isScaleTier ? <IconLock size={14} /> : undefined}
             >

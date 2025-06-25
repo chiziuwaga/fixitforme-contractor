@@ -60,13 +60,13 @@ const AGENT_CONFIG = {
   },
   rex: {
     name: 'Rex the Retriever',
-    color: BRAND.colors.accent,
+    color: BRAND.colors.text.accent,
     avatar: '🔍',
     description: 'Lead Generator',
   },
   system: {
     name: 'System',
-    color: BRAND.colors.gray,
+    color: BRAND.colors.warmGray,
     avatar: '⚙️',
     description: 'System Notification',
  },

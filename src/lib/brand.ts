@@ -7,7 +7,6 @@ export const BRAND = {
     // Primary Brand Colors (from official brand guide)
     primary: '#DA427A',      // Felix Gold - Primary brand color
     secondary: '#1A2F1A',    // Forest Green - Primary text color
-    background: '#FFFFFF',   // Pure White - Primary background
     
     // Secondary Colors
     warmGray: '#8FGF95',     // Warm Gray

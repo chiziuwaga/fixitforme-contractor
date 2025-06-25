@@ -273,7 +273,7 @@ export default function ContractorLogin() {
                           error={!!authState.error}
                           styles={{
                             root: { justifyContent: 'center' },
-                            pin: { 
+                            input: { 
                               borderColor: BRAND.colors.background.tertiary, 
                               '&:focus': { borderColor: BRAND.colors.primary }
                             }

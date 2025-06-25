@@ -46,7 +46,7 @@ export const scaleIn: Variants = {
 };
 
 // Hover variant for subtle scaling
-export const hoverVariant = {
+export const hoverVariant: Variants = {
   hover: {
     scale: 1.03,
     transition: {
