@@ -1,7 +1,7 @@
 import Stripe from 'stripe';
 import { NextResponse } from 'next/server';
 
-import { supabaseAdmin } from '@/lib/supabase/admin';
+import { supabaseAdmin } from '@/lib/supabase';
 
 // Lazy initialization function
 function getStripe() {
@@ -22,6 +22,11 @@ function getWebhookSecret() {
 }
 
 async function handleSubscriptionChange(subscription: Stripe.Subscription) {
+  if (!supabaseAdmin) {
+    console.error('supabaseAdmin not available for subscription update');
+    return;
+  }
+  
   const customerId = subscription.customer as string;
   const isScaleTier = subscription.items.data.some(
     (item) => item.price.id === process.env.STRIPE_SCALE_PRICE_ID
@@ -39,8 +44,8 @@ async function handleSubscriptionChange(subscription: Stripe.Subscription) {
 }
 
 async function handleSuccessfulInvoice(invoice: Stripe.Invoice) {
-  if (!invoice.customer) {
-    console.log("Invoice doesn't have customer or subscription, skipping");
+  if (!invoice.customer || !supabaseAdmin) {
+    console.log("Invoice doesn't have customer or supabaseAdmin not available, skipping");
     return;
   }
 

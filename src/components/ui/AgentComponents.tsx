@@ -368,7 +368,7 @@ interface UpgradePromptProps {
 export const UpgradePrompt = ({ data }: UpgradePromptProps) => {
   const handleUpgrade = async () => {
     try {
-      const response = await fetch('/api/create-checkout-session', {
+      const response = await fetch('/api/payments/create-checkout', {
         method: 'POST',
       });
       const session = await response.json();

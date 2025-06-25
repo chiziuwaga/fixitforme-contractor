@@ -55,7 +55,7 @@ export default function SubscriptionManager() {
     setLoading(true);
 
     try {
-      const response = await fetch('/api/create-checkout-session', {
+      const response = await fetch('/api/payments/create-checkout', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

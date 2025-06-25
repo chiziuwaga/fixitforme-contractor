@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient, withTimeout } from '@/lib/supabase';
-import { supabaseAdmin } from '@/lib/supabase/admin';
+import { createClient, withTimeout, supabaseAdmin } from '@/lib/supabase';
 
 // Felix's 40-problem framework search categories
 const FELIX_SEARCH_CATEGORIES = {
@@ -136,7 +135,7 @@ async function performRexSearch(request: NextRequest) {
     }
 
     // If execution_id is provided, update execution status to track progress
-    if (execution_id) {
+    if (execution_id && supabaseAdmin) {
       await supabaseAdmin
         .from('execution_sessions')
         .update({ 
@@ -197,7 +196,7 @@ async function performRexSearch(request: NextRequest) {
     console.log(`Session ${sessionsUsed + 1}/${sessionLimit}`);
 
     // Update execution progress
-    if (execution_id) {
+    if (execution_id && supabaseAdmin) {
       await supabaseAdmin
         .from('execution_sessions')
         .update({ 
@@ -218,7 +217,7 @@ async function performRexSearch(request: NextRequest) {
     console.log(`Rex Search: Using ${searchTerms.length} search terms from Felix framework`);
 
     // Update execution progress
-    if (execution_id) {
+    if (execution_id && supabaseAdmin) {
       await supabaseAdmin
         .from('execution_sessions')
         .update({ 
@@ -505,7 +504,7 @@ async function performRexSearch(request: NextRequest) {
     console.log('Top lead scores:', topLeads.slice(0, 3).map(l => `${l.title}: ${l.relevance_score!.toFixed(1)}`));
 
     // Update execution progress
-    if (execution_id) {
+    if (execution_id && supabaseAdmin) {
       await supabaseAdmin
         .from('execution_sessions')
         .update({ 
@@ -637,7 +636,7 @@ async function performRexSearch(request: NextRequest) {
     console.log('Rex Search: Complete', searchResults.search_summary);
 
     // Mark execution as complete
-    if (execution_id) {
+    if (execution_id && supabaseAdmin) {
       await supabaseAdmin
         .from('execution_sessions')
         .update({ 
