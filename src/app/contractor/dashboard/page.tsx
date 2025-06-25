@@ -1,12 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Container, Grid, Title, Text, Loader, Paper, ScrollArea, Group, Badge, Stack, Box, Button } from '@mantine/core';
+import { Container, Grid, Title, Text, Loader, Paper, ScrollArea, Group, Badge, Stack, Button } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { IconBuilding, IconClock, IconCurrencyDollar, IconMapPin, IconStar } from '@tabler/icons-react';
 import { EnhancedChatManager } from '@/components/EnhancedChatManager';
 import { useUser } from '@/providers/UserProvider';
 import { BRAND } from '@/lib/brand';
+import { motion } from 'framer-motion';
+import { containerVariants, itemVariants } from '@/lib/animations';
 
 interface Lead {
   id: string;
@@ -24,7 +26,8 @@ interface Lead {
 }
 
 const LeadCard = ({ lead }: { lead: Lead }) => (
-    <Paper withBorder p="md" radius="md" shadow="sm">
+  <motion.div variants={itemVariants} whileHover={{ y: -5, transition: { duration: 0.2 } }}>
+    <Paper withBorder p="md" radius="lg" shadow="md" style={{ overflow: 'hidden' }}>
         <Stack>
             <Group justify="space-between">
                 <Title order={4} style={{ maxWidth: '80%' }}>{lead.title}</Title>
@@ -39,25 +42,25 @@ const LeadCard = ({ lead }: { lead: Lead }) => (
             <Grid>
                 <Grid.Col span={{ base: 12, sm: 6 }}>
                     <Group gap="xs">
-                        <IconCurrencyDollar size={16} color={BRAND.colors.gray[600]} />
+                        <IconCurrencyDollar size={16} color={BRAND.colors.text.secondary} />
                         <Text>Est. Value: ${lead.estimated_value.toLocaleString()}</Text>
                     </Group>
                 </Grid.Col>
                 <Grid.Col span={{ base: 12, sm: 6 }}>
                     <Group gap="xs">
-                        <IconMapPin size={16} color={BRAND.colors.gray[600]} />
+                        <IconMapPin size={16} color={BRAND.colors.text.secondary} />
                         <Text>{lead.location_city}, {lead.location_state}</Text>
                     </Group>
                 </Grid.Col>
                 <Grid.Col span={{ base: 12, sm: 6 }}>
                     <Group gap="xs">
-                        <IconClock size={16} color={BRAND.colors.gray[600]} />
+                        <IconClock size={16} color={BRAND.colors.text.secondary} />
                         <Text>{new Date(lead.posted_at).toLocaleDateString()}</Text>
                     </Group>
                 </Grid.Col>
                 <Grid.Col span={{ base: 12, sm: 6 }}>
                     <Group gap="xs">
-                        <IconBuilding size={16} color={BRAND.colors.gray[600]} />
+                        <IconBuilding size={16} color={BRAND.colors.text.secondary} />
                         <Text>Source: {lead.source}</Text>
                     </Group>
                 </Grid.Col>
@@ -69,11 +72,18 @@ const LeadCard = ({ lead }: { lead: Lead }) => (
                     ))}
                 </Group>
             )}
-            <Button variant="gradient" gradient={{ from: BRAND.colors.primary, to: BRAND.colors.accent }}>
-                View & Bid
-            </Button>
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <Button 
+                fullWidth
+                variant="gradient" 
+                gradient={{ from: BRAND.colors.primary, to: BRAND.colors.text.accent, deg: 90 }}
+              >
+                  View & Bid
+              </Button>
+            </motion.div>
         </Stack>
     </Paper>
+  </motion.div>
 );
 
 export default function ContractorDashboard() {
@@ -129,29 +139,38 @@ export default function ContractorDashboard() {
   }
 
   return (
-    <Box style={{ display: 'flex', height: 'calc(100vh - var(--app-shell-header-height, 0px) - 2px)' /* Adjust for layout borders */ }}>
+    <motion.div 
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      style={{ display: 'flex', height: 'calc(100vh - var(--app-shell-header-height, 0px) - 2px)' }}
+    >
         {/* Main Chat Interface */}
-        <Box style={{ flex: '1 1 70%', height: '100%', borderRight: '1px solid var(--mantine-color-gray-3)' }}>
+        <motion.div variants={itemVariants} style={{ flex: '1 1 70%', height: '100%', borderRight: '1px solid var(--mantine-color-gray-3)' }}>
             <EnhancedChatManager />
-        </Box>
+        </motion.div>
 
         {/* Lead Feed Sidebar */}
-        <Box style={{ flex: '1 1 30%', height: '100%' }}>
+        <motion.div variants={itemVariants} style={{ flex: '1 1 30%', height: '100%' }}>
             <ScrollArea h="100%">
                 <Container fluid p="lg">
-                    <Title order={3} mb="lg">Your Lead Feed</Title>
+                    <motion.div variants={itemVariants}>
+                      <Title order={3} mb="lg">Your Lead Feed</Title>
+                    </motion.div>
                     {loading && <Loader />}
                     {!loading && leads.length === 0 && (
-                        <Paper p="lg" withBorder style={{ textAlign: 'center' }}>
-                            <Text>No new leads matching your profile right now. Check back later!</Text>
-                        </Paper>
+                        <motion.div variants={itemVariants}>
+                          <Paper p="lg" withBorder style={{ textAlign: 'center' }}>
+                              <Text>No new leads matching your profile right now. Check back later!</Text>
+                          </Paper>
+                        </motion.div>
                     )}
                     <Stack>
                         {leads.map(lead => <LeadCard key={lead.id} lead={lead} />)}
                     </Stack>
                 </Container>
             </ScrollArea>
-        </Box>
-    </Box>
+        </motion.div>
+    </motion.div>
   );
 }

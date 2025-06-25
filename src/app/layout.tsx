@@ -4,6 +4,7 @@ import "./globals.css";
 import { UserProvider } from "@/providers/UserProvider";
 import { SupabaseProvider } from "@/providers/SupabaseProvider";
 import { AppSystemWrapper } from "@/components/AppSystemWrapper";
+import { BRAND } from '@/lib/brand';
 
 const inter = Inter({
   subsets: ["latin"],
@@ -11,10 +12,12 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "FixItForMe - Contractor Dashboard",
-  description: "AI-powered lead generation and project management for professional contractors",
-  keywords: "contractor, leads, AI, project management, bidding, construction",
-  authors: [{ name: "FixItForMe" }],
+  title: {
+    default: BRAND.name,
+    template: `%s | ${BRAND.name}`,
+  },
+  description: BRAND.tagline,
+  icons: [{ rel: 'icon', url: '/fixitforme_logo_concept.png' }],
 };
 
 export const viewport: Viewport = {

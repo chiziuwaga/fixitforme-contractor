@@ -1,42 +1,150 @@
 @import "tailwindcss";
 
+/* FixItForMe Brand System - CSS Variables */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-  --agent-color-lexi: #D4A574;
-  --agent-color-alex: #4F8EF7;
-  --agent-color-rex: #FF6B6B;
-  --brand-primary: #D4A574;
-  --brand-accent: #BC9A68;
+  /* Primary Brand Colors */
+  --color-primary: #DA427A;
+  --color-secondary: #1A2F1A;
+  --color-background: #FFFFFF;
+  
+  /* Secondary Colors */
+  --color-warm-gray: #8FGF95;
+  --color-charcoal: #2C2CDC;
+  
+  /* Accent Colors */
+  --color-steel-blue: #A46F45;
+  --color-success: #228745;
+  --color-warning: #FFC107;
+  --color-error: #DC3845;
+  
+  /* Agent Colors */
+  --agent-color-lexi: #DA427A;
+  --agent-color-alex: #228745;
+  --agent-color-rex: #FFC107;
+  --agent-color-felix: #1A2F1A;
+  
+  /* Typography Colors */
+  --color-text-primary: #1A2F1A;
+  --color-text-secondary: #8FGF95;
+  --color-text-accent: #DA427A;
+  --color-text-inverse: #FFFFFF;
+  
+  /* Background Variations */
+  --color-bg-primary: #FFFFFF;
+  --color-bg-secondary: #F8F9FA;
+  --color-bg-tertiary: #F1F3F4;
+  --color-bg-dark: #1A2F1A;
+  
+  /* Typography Scales */
+  --font-family-primary: 'Inter', system-ui, sans-serif;
+  --font-family-secondary: 'Roboto Slab', serif;
+  --font-family-mono: 'JetBrains Mono', monospace;
+  
+  /* Responsive Typography */
+  --text-h1: 32px;
+  --text-h2: 28px;
+  --text-h3: 24px;
+  --text-body: 16px;
+  --text-caption: 14px;
+  
+  /* Spacing Scale */
+  --spacing-xs: 8px;
+  --spacing-sm: 16px;
+  --spacing-md: 24px;
+  --spacing-lg: 32px;
+  --spacing-xl: 48px;
+  
+  /* Border Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
 }
 
-@media (prefers-color-scheme: dark) {
+/* Responsive Breakpoints */
+@media (max-width: 767px) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --text-h1: 24px;
+    --text-h2: 20px;
+    --text-h3: 18px;
+    --text-body: 14px;
+    --text-caption: 12px;
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 12px;
+    --spacing-lg: 16px;
+    --spacing-xl: 24px;
   }
 }
 
+/* 8 Tablet Breakpoints */
+@media (min-width: 768px) and (max-width: 834px) { /* Mini Tablet Portrait */ }
+@media (min-width: 835px) and (max-width: 1023px) { /* Standard Tablet Portrait */ }
+@media (min-width: 1024px) and (max-width: 1112px) { /* Mini Tablet Landscape */ }
+@media (min-width: 1113px) and (max-width: 1366px) { /* Standard Tablet Landscape */ }
+@media (min-width: 1024px) and (max-width: 1366px) and (orientation: portrait) { /* Pro Tablet Portrait */ }
+@media (min-width: 1366px) and (max-width: 1536px) and (orientation: landscape) { /* Pro Tablet Landscape */ }
+@media (min-width: 1080px) and (max-width: 1440px) and (orientation: portrait) { /* Large Tablet Portrait */ }
+@media (min-width: 1440px) and (max-width: 1920px) and (orientation: landscape) { /* Large Tablet Landscape */ }
+
+/* 8 Desktop Breakpoints */
+@media (min-width: 1024px) and (max-width: 1199px) { /* Small Desktop */ }
+@media (min-width: 1200px) and (max-width: 1365px) { /* Medium Desktop */ }
+@media (min-width: 1366px) and (max-width: 1535px) { /* Large Desktop */ }
+@media (min-width: 1536px) and (max-width: 1919px) { /* XL Desktop */ }
+@media (min-width: 1920px) and (max-width: 2559px) { /* Ultrawide */ 
+  :root {
+    --text-h1: 48px;
+    --text-h2: 36px;
+    --text-h3: 28px;
+    --text-body: 18px;
+    --text-caption: 16px;
+  }
+}
+@media (min-width: 2560px) and (max-width: 3439px) { /* Superwide */ 
+  :root {
+    --text-h1: 64px;
+    --text-h2: 48px;
+    --text-h3: 36px;
+    --text-body: 20px;
+    --text-caption: 18px;
+  }
+}
+@media (min-width: 3440px) and (max-width: 4095px) { /* Cinema Display */ }
+@media (min-width: 4096px) { /* Massive Display */ }
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+  background-color: #f0f2f5; /* A soft, neutral background */
+  background-image: radial-gradient(#dce1e8 1px, transparent 0);
+  background-size: 20px 20px;
 }
 
-/* Agent Working Indicator Animations */
+/* Agent Working Indicator Animations - Updated Brand Colors */
 @keyframes pulse-lexi {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(212, 165, 116, 0.7); }
-  50% { box-shadow: 0 0 0 10px rgba(212, 165, 116, 0); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(218, 66, 122, 0.7); }
+  50% { box-shadow: 0 0 0 10px rgba(218, 66, 122, 0); }
 }
 
 @keyframes pulse-alex {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(79, 142, 247, 0.7); }
-  50% { box-shadow: 0 0 0 10px rgba(79, 142, 247, 0); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(34, 135, 69, 0.7); }
+  50% { box-shadow: 0 0 0 10px rgba(34, 135, 69, 0); }
 }
 
 @keyframes pulse-rex {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.7); }
-  50% { box-shadow: 0 0 0 10px rgba(255, 107, 107, 0); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7); }
+  50% { box-shadow: 0 0 0 10px rgba(255, 193, 7, 0); }
+}
+
+@keyframes pulse-felix {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(26, 47, 26, 0.7); }
+  50% { box-shadow: 0 0 0 10px rgba(26, 47, 26, 0); }
 }
 
 @keyframes thinking-dots {
@@ -131,4 +239,12 @@ body {
 
 .agent-chat-window.rex {
   border-top: 3px solid var(--agent-color-rex);
+}
+
+@layer utilities {
+  /* Custom Utilities for Enhanced Styling */
+  .bg-dot-grid {
+    background-image: radial-gradient(#dce1e8 1px, transparent 0);
+    background-size: 20px 20px;
+  }
 }

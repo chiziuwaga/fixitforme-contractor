@@ -1,45 +1,55 @@
-// FixItForMe Brand System
+// FixItForMe Brand System - Official Design Specification
 export const BRAND = {
   name: 'FixItForMe',
-  tagline: 'AI-Powered Contractor Platform',
-    colors: {
-    // Primary Brand Colors
-    primary: '#D4A574',      // Felix Gold
-    secondary: '#1A2E1A',    // Forest Green
-    accent: '#6B7280',       // Slate Gray
+  tagline: 'Professional Home Repairs',
+  
+  colors: {
+    // Primary Brand Colors (from official brand guide)
+    primary: '#DA427A',      // Felix Gold - Primary brand color
+    secondary: '#1A2F1A',    // Forest Green - Primary text color
+    background: '#FFFFFF',   // Pure White - Primary background
     
-    // UI Colors
-    success: '#10B981',      // Emerald
-    warning: '#F59E0B',      // Amber
-    error: '#EF4444',        // Red
-    info: '#3B82F6',         // Blue
+    // Secondary Colors
+    warmGray: '#8FGF95',     // Warm Gray
+    charcoal: '#2C2CDC',     // Charcoal
     
-    // Agent Colors (from FixItForMe branding)
+    // Accent Colors
+    steelBlue: '#A46F45',    // Steel Blue
+    success: '#228745',      // Success Green (QPFEA)
+    warning: '#FFC107',      // Warning Orange (O'srkes)
+    error: '#DC3845',        // Error Red
+    
+    // Agent Colors (brand-aligned)
     agents: {
-      lexi: '#1e40af',       // Blue - Liaison/Guide
-      alex: '#059669',       // Green - Assessor/Analysis
-      rex: '#d97706',        // Orange - Retriever/Search
+      lexi: '#DA427A',       // Felix Gold - Liaison/Guide
+      alex: '#228745',       // Success Green - Assessor/Analysis  
+      rex: '#FFC107',        // Warning Orange - Retriever/Search
+      felix: '#1A2F1A',      // Forest Green - Diagnostic Agent
     },
     
-    // Grays
-    gray: {
-      50: '#F9FAFB',
-      100: '#F3F4F6',
-      200: '#E5E7EB',
-      300: '#D1D5DB',
-      400: '#9CA3AF',
-      500: '#6B7280',
-      600: '#4B5563',
-      700: '#374151',
-      800: '#1F2937',
-      900: '#111827',
+    // Typography Colors
+    text: {
+      primary: '#1A2F1A',    // Forest Green for primary text
+      secondary: '#8FGF95',  // Warm Gray for secondary text
+      accent: '#DA427A',     // Felix Gold for highlights
+      inverse: '#FFFFFF',    // White for dark backgrounds
     },
     
-    // Background Colors
+    // UI State Colors
+    state: {
+      success: '#228745',
+      warning: '#FFC107', 
+      error: '#DC3845',
+      info: '#A46F45',
+      disabled: '#8FGF95',
+    },
+    
+    // Background Variations
     background: {
-      primary: '#FFFFFF',
-      secondary: '#F9FAFB',
-      tertiary: '#F3F4F6',
+      primary: '#FFFFFF',    // Pure white
+      secondary: '#F8F9FA',  // Light gray
+      tertiary: '#F1F3F4',   // Lighter gray
+      dark: '#1A2F1A',       // Forest green for dark sections
     }
   },
   
@@ -134,16 +144,19 @@ export const CSS_VARIABLES = `
   :root {
     --color-primary: ${BRAND.colors.primary};
     --color-secondary: ${BRAND.colors.secondary};
-    --color-accent: ${BRAND.colors.accent};
     
     --color-success: ${BRAND.colors.success};
     --color-warning: ${BRAND.colors.warning};
     --color-error: ${BRAND.colors.error};
-    --color-info: ${BRAND.colors.info};
+    --color-info: ${BRAND.colors.steelBlue};
     
     --color-bg-primary: ${BRAND.colors.background.primary};
     --color-bg-secondary: ${BRAND.colors.background.secondary};
     --color-bg-tertiary: ${BRAND.colors.background.tertiary};
+    
+    --color-text-primary: ${BRAND.colors.text.primary};
+    --color-text-secondary: ${BRAND.colors.text.secondary};
+    --color-text-accent: ${BRAND.colors.text.accent};
     
     --font-family-sans: ${BRAND.typography.fontFamily.sans.join(', ')};
     --font-family-mono: ${BRAND.typography.fontFamily.mono.join(', ')};
