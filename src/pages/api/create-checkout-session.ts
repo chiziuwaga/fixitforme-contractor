@@ -3,12 +3,19 @@ import Stripe from 'stripe';
 import { getURL } from '@/lib/helpers';
 import { supabaseAdmin } from '@/lib/supabase/admin';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-05-28.basil',
-});
+// Lazy initialization function
+function getStripe() {
+  if (!process.env.STRIPE_SECRET_KEY) {
+    throw new Error('STRIPE_SECRET_KEY is not configured');
+  }
+  return new Stripe(process.env.STRIPE_SECRET_KEY, {
+    apiVersion: '2025-05-28.basil',
+  });
+}
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
+    const stripe = getStripe(); // Initialize Stripe client
     const { price, quantity = 1, metadata = {}, user_id } = req.body;
 
     try {
