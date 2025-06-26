@@ -173,6 +173,23 @@
   .brand-transition {
     @apply transition-all duration-200 ease-in-out;
   }
+
+  /* Brand-specific component styles */
+  .brand-focus:focus-visible {
+    @apply ring-2 ring-offset-2 ring-[rgb(var(--primary-orange))];
+  }
+
+  .brand-shadow {
+    @apply shadow-[0_4px_14px_0_rgb(0,0,0,0.05)];
+  }
+
+  .brand-shadow-lg {
+    @apply shadow-[0_8px_30px_rgb(0,0,0,0.12)];
+  }
+
+  .brand-transition {
+    @apply transition-all duration-200 ease-in-out;
+  }
 }
 
 @layer utilities {

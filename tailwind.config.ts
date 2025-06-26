@@ -70,10 +70,10 @@ const config: Config = {
         sm: "4px",
       },
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
-        serif: ['Roboto Slab', 'serif'],
-        mono: ['JetBrains Mono', 'monospace'],
-        heading: ['Inter', 'sans-serif'], // Added heading font family
+        sans: ["Inter", "system-ui", "sans-serif"],
+        serif: ["Roboto Slab", "Georgia", "serif"],
+        heading: ["Roboto Slab", "Georgia", "serif"],
+        mono: ["JetBrains Mono", "Menlo", "Monaco", "monospace"],
       },
       keyframes: {
         "accordion-down": {
