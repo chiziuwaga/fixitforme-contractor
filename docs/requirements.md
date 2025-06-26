@@ -7,7 +7,7 @@ This document outlines the key dependencies for the FixItForMe Contractor Module
 - **Framework:** Next.js 15
 - **Language:** TypeScript
 - **Styling:** Tailwind CSS
-- **UI Components:** Mantine UI
+- **UI Components:** Shadcn/ui
 - **Database:** Supabase (PostgreSQL)
 - **Authentication:** Supabase Auth
 - **AI:** Vercel AI SDK
@@ -15,9 +15,8 @@ This document outlines the key dependencies for the FixItForMe Contractor Module
 
 ## Key npm Packages
 
-- `@mantine/core`
-- `@mantine/hooks`
-- `@mantine/form`
+- `@radix-ui/react-*` (various components)
+- `shadcn/ui`
 - `@supabase/supabase-js`
 - `@supabase/auth-helpers-nextjs`
 - `ai`

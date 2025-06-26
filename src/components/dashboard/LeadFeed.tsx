@@ -1,9 +1,11 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { Card, Text, Badge, Group, Stack, Button, ActionIcon, Loader, Center } from '@mantine/core';
-import { IconMapPin, IconClock, IconCurrencyDollar, IconRefresh } from '@tabler/icons-react';
-import { supabase } from '@/lib/supabase';
+import { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { MapPin, Clock, DollarSign, Star, Eye, MessageSquare } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface Lead {
   id: string;
@@ -17,8 +19,7 @@ interface Lead {
   felix_category: string;
   source: 'felix_referral' | 'rex_discovery' | 'direct_inquiry';
   quality_score: number;
-  homeowner_id?: string; // Only for Felix referrals
-  external_url?: string; // Only for Rex discoveries
+  viewed: boolean;
 }
 
 interface LeadFeedProps {
@@ -28,181 +29,221 @@ interface LeadFeedProps {
 export default function LeadFeed({ contractorId }: LeadFeedProps) {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  // Remove this line - use the imported supabase directly
-  const fetchLeads = useCallback(async () => {
-    try {
-      // Fetch both Felix referrals and Rex discoveries
-      const { data, error } = await supabase
-        .from('leads')
-        .select('*')
-        .eq('contractor_id', contractorId)
-        .in('source', ['felix_referral', 'rex_discovery'])
-        .order('posted_at', { ascending: false })
-        .limit(10);
 
-      if (error) throw error;
-      setLeads(data || []);
-    } catch (error) {
-      console.error('Error fetching leads:', error);
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  }, [contractorId]);
   useEffect(() => {
-    fetchLeads();
-  }, [contractorId, fetchLeads]);
+    // Mock data for now - replace with actual Supabase queries
+    const mockLeads: Lead[] = [
+      {
+        id: '1',
+        title: 'Kitchen Cabinet Installation',
+        description: 'Need professional installation of new kitchen cabinets and countertops',
+        budget_min: 2500,
+        budget_max: 4000,
+        location: 'Oakland, CA',
+        posted_at: '2024-01-20T10:00:00Z',
+        urgency: 'medium',
+        felix_category: 'Kitchen Remodel',
+        source: 'felix_referral',
+        quality_score: 8.5,
+        viewed: false
+      },
+      {
+        id: '2',
+        title: 'Bathroom Tile Repair',
+        description: 'Several tiles need replacement in master bathroom shower',
+        budget_min: 800,
+        budget_max: 1200,
+        location: 'Berkeley, CA',
+        posted_at: '2024-01-20T08:30:00Z',
+        urgency: 'high',
+        felix_category: 'Bathroom Repair',
+        source: 'rex_discovery',
+        quality_score: 7.2,
+        viewed: true
+      },
+      {
+        id: '3',
+        title: 'Fence Installation',
+        description: 'Need new privacy fence installed around backyard perimeter',
+        budget_min: 1500,
+        budget_max: 2500,
+        location: 'San Leandro, CA',
+        posted_at: '2024-01-19T16:00:00Z',
+        urgency: 'low',
+        felix_category: 'Outdoor Work',
+        source: 'direct_inquiry',
+        quality_score: 6.8,
+        viewed: false
+      }
+    ];
 
-  const handleRefresh = async () => {
-    setRefreshing(true);
-    await fetchLeads();
-  };  const getUrgencyColor = (urgency: string) => {
-    switch (urgency) {
-      case 'high': return 'red';
-      case 'medium': return 'orange';
-      case 'low': return 'green';
-      default: return 'gray';
-    }
-  };
-
-  const getSourceColor = (source: string) => {
-    switch (source) {
-      case 'felix_referral': return 'blue';
-      case 'rex_discovery': return 'green';
-      case 'direct_inquiry': return 'purple';
-      default: return 'gray';
-    }
-  };
-
-  const getSourceLabel = (source: string) => {
-    switch (source) {
-      case 'felix_referral': return 'Felix Referral';
-      case 'rex_discovery': return 'Rex Discovery';
-      case 'direct_inquiry': return 'Direct Inquiry';
-      default: return source;
-    }
-  };
+    setTimeout(() => {
+      setLeads(mockLeads);
+      setLoading(false);
+    }, 800);
+  }, [contractorId]);
 
   const formatBudget = (min: number, max: number) => {
     if (min === max) return `$${min.toLocaleString()}`;
     return `$${min.toLocaleString()} - $${max.toLocaleString()}`;
   };
 
-  const getRelativeTime = (dateString: string) => {
-    const date = new Date(dateString);
+  const formatTimeAgo = (dateString: string) => {
     const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-    const diffDays = Math.floor(diffHours / 24);
+    const posted = new Date(dateString);
+    const diffInHours = Math.floor((now.getTime() - posted.getTime()) / (1000 * 60 * 60));
+    
+    if (diffInHours < 1) return 'Just posted';
+    if (diffInHours < 24) return `${diffInHours}h ago`;
+    const diffInDays = Math.floor(diffInHours / 24);
+    return `${diffInDays}d ago`;
+  };
 
-    if (diffHours < 1) return 'Just posted';
-    if (diffHours < 24) return `${diffHours}h ago`;
-    if (diffDays < 7) return `${diffDays}d ago`;
-    return date.toLocaleDateString();
+  const getUrgencyColor = (urgency: string) => {
+    switch (urgency) {
+      case 'high': return 'bg-red-100 text-red-800 border-red-200';
+      case 'medium': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'low': return 'bg-green-100 text-green-800 border-green-200';
+      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+    }
+  };
+
+  const getSourceColor = (source: string) => {
+    switch (source) {
+      case 'felix_referral': return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'rex_discovery': return 'bg-brand-secondary/10 text-brand-secondary border-brand-secondary/20';
+      case 'direct_inquiry': return 'bg-purple-100 text-purple-800 border-purple-200';
+      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+    }
   };
 
   if (loading) {
     return (
-      <Center h={200}>
-        <Loader size="md" />
-      </Center>
+      <Card>
+        <CardHeader>
+          <CardTitle>Recent Leads</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="animate-pulse border rounded-lg p-4">
+                <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                <div className="h-3 bg-gray-200 rounded w-1/2 mb-3"></div>
+                <div className="flex gap-2">
+                  <div className="h-6 bg-gray-200 rounded w-16"></div>
+                  <div className="h-6 bg-gray-200 rounded w-20"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
     );
   }
 
-  return (    <Stack gap="md">
-      <Group justify="space-between" align="center">
-        <Text size="lg" fw={600}>Recent Leads</Text>
-        <ActionIcon 
-          variant="outline" 
-          onClick={handleRefresh}
-          loading={refreshing}
-        >
-          <IconRefresh size={16} />
-        </ActionIcon>
-      </Group>
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center justify-between">
+          <span>Recent Leads</span>
+          <Badge variant="outline">{leads.length} active</Badge>
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          {leads.map((lead, index) => (
+            <motion.div
+              key={lead.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+              className={`border rounded-lg p-4 transition-all hover:shadow-md ${
+                !lead.viewed ? 'bg-blue-50/30 border-blue-200' : 'bg-white'
+              }`}
+            >
+              <div className="flex justify-between items-start mb-3">
+                <div className="flex-1">
+                  <h3 className="font-semibold text-gray-900 mb-1 flex items-center gap-2">
+                    {lead.title}
+                    {!lead.viewed && (
+                      <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                    )}
+                  </h3>
+                  <p className="text-sm text-muted-foreground line-clamp-2">
+                    {lead.description}
+                  </p>
+                </div>
+                
+                <div className="flex items-center gap-1 ml-4">
+                  <Star className="h-4 w-4 text-yellow-500" />
+                  <span className="text-sm font-medium">{lead.quality_score}/10</span>
+                </div>
+              </div>
 
-      {leads.length === 0 ? (
-        <Card withBorder>
-          <Center py="xl">
-            <Stack align="center" gap="sm">
-              <Text c="dimmed">No leads available</Text>
-              <Text size="sm" c="dimmed">
-                Rex is working to find opportunities for you
-              </Text>
-            </Stack>
-          </Center>
-        </Card>
-      ) : (
-        <Stack gap="sm">
-          {leads.map((lead) => (
-            <Card key={lead.id} withBorder p="md" radius="sm">
-              <Stack gap="xs">
-                <Group justify="space-between" align="start">
-                  <div style={{ flex: 1 }}>
-                    <Text fw={500} size="sm" lineClamp={2}>
-                      {lead.title}
-                    </Text>
-                    <Text size="xs" c="dimmed" mt={2}>
-                      {lead.description}
-                    </Text>
-                  </div>
-                  <Badge 
-                    size="xs" 
-                    color={getUrgencyColor(lead.urgency)}
-                    variant="light"
-                  >
-                    {lead.urgency}
-                  </Badge>
-                </Group>
+              <div className="flex flex-wrap gap-2 mb-3">
+                <Badge 
+                  className={getSourceColor(lead.source)}
+                  variant="outline"
+                >
+                  {lead.source === 'felix_referral' ? 'Felix' : 
+                   lead.source === 'rex_discovery' ? 'Rex' : 'Direct'}
+                </Badge>
+                <Badge 
+                  className={getUrgencyColor(lead.urgency)}
+                  variant="outline"
+                >
+                  {lead.urgency} priority
+                </Badge>
+                <Badge variant="outline">
+                  {lead.felix_category}
+                </Badge>
+              </div>
 
-                <Group gap="xs" align="center">
-                  <Group gap={4} align="center">
-                    <IconCurrencyDollar size={12} color="#666" />
-                    <Text size="xs" c="dimmed">
-                      {formatBudget(lead.budget_min, lead.budget_max)}
-                    </Text>
-                  </Group>
-                  
-                  <Group gap={4} align="center">
-                    <IconMapPin size={12} color="#666" />
-                    <Text size="xs" c="dimmed">
-                      {lead.location}
-                    </Text>
-                  </Group>
-                  
-                  <Group gap={4} align="center">
-                    <IconClock size={12} color="#666" />
-                    <Text size="xs" c="dimmed">
-                      {getRelativeTime(lead.posted_at)}
-                    </Text>
-                  </Group>
-                </Group>                <Group justify="space-between" align="center" mt="xs">
-                  <Group gap="xs">
-                    <Badge size="xs" variant="outline">
-                      {lead.felix_category}
-                    </Badge>
-                    <Badge 
-                      size="xs" 
-                      variant="outline" 
-                      color={getSourceColor(lead.source)}
-                    >
-                      {getSourceLabel(lead.source)}
-                    </Badge>
-                    <Text size="xs" c="dimmed">
-                      Score: {lead.quality_score}/100
-                    </Text>
-                  </Group>
-                  
-                  <Button size="xs" variant="outline">
-                    {lead.source === 'felix_referral' ? 'View Referral' : 'View Details'}
+              <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mb-4">
+                <div className="flex items-center gap-1">
+                  <DollarSign className="h-4 w-4 text-brand-primary" />
+                  <span className="font-medium">{formatBudget(lead.budget_min, lead.budget_max)}</span>
+                </div>
+                
+                <div className="flex items-center gap-1">
+                  <MapPin className="h-4 w-4 text-brand-primary" />
+                  <span>{lead.location}</span>
+                </div>
+                
+                <div className="flex items-center gap-1">
+                  <Clock className="h-4 w-4 text-brand-primary" />
+                  <span>{formatTimeAgo(lead.posted_at)}</span>
+                </div>
+              </div>
+
+              <div className="flex gap-2">
+                <Button 
+                  size="sm" 
+                  className="bg-brand-primary hover:bg-brand-primary/90"
+                >
+                  View Details
+                </Button>
+                <Button size="sm" variant="outline">
+                  <MessageSquare className="h-4 w-4 mr-1" />
+                  Ask Alex
+                </Button>
+                {!lead.viewed && (
+                  <Button size="sm" variant="ghost">
+                    <Eye className="h-4 w-4 mr-1" />
+                    Mark Read
                   </Button>
-                </Group>
-              </Stack>
-            </Card>
+                )}
+              </div>
+            </motion.div>
           ))}
-        </Stack>
-      )}
-    </Stack>
+        </div>
+
+        <div className="mt-6 text-center">
+          <Button variant="outline" className="w-full">
+            View All Leads
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

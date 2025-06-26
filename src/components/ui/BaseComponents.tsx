@@ -1,223 +1,207 @@
-// Design System - Base Components for FixItForMe Contractor Module
-// Following v0.dev patterns for consistency and reusability
+'use client';
 
-import { ReactNode } from 'react'
-import { Card, Badge, Button, Progress, Group, Text, Stack, ActionIcon } from '@mantine/core'
-import { IconChevronDown, IconChevronUp } from '@tabler/icons-react'
+import { ReactNode } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import { BRAND } from '@/lib/brand';
+import { motion } from 'framer-motion';
 
-// Base Card Component for all agent outputs
 interface BaseCardProps {
-  title: string
-  agent: 'lexi' | 'alex' | 'rex'
-  priority?: 'high' | 'medium' | 'low'
-  interactive?: boolean
-  children: ReactNode
-  actions?: Array<{
-    type: string
-    label: string
-    style?: 'primary' | 'secondary' | 'outline'
-    onClick?: () => void
-  }>
+  title?: string;
+  description?: string;
+  children: ReactNode;
+  className?: string;
+  headerActions?: ReactNode;
+  footer?: ReactNode;
+  status?: 'default' | 'success' | 'warning' | 'error';
+  animated?: boolean;
 }
 
-export function BaseCard({ title, agent, priority = 'medium', interactive = false, children, actions }: BaseCardProps) {
-  const agentColors = {
-    lexi: '#D4A574', // Warm gold
-    alex: '#1A2E1A', // Professional green  
-    rex: '#6B7280'   // Neutral gray
-  }
+export function BaseCard({ 
+  title, 
+  description, 
+  children, 
+  className,
+  headerActions,
+  footer,
+  status = 'default',
+  animated = false
+}: BaseCardProps) {
+  const statusColors = {
+    default: 'border-border',
+    success: 'border-green-200 bg-green-50/50',
+    warning: 'border-yellow-200 bg-yellow-50/50',
+    error: 'border-red-200 bg-red-50/50'
+  };
 
-  const priorityColors = {
-    high: 'red',
-    medium: 'blue', 
-    low: 'gray'
-  }
+  const CardWrapper = animated ? motion.div : 'div';
+  const animationProps = animated ? {
+    initial: { opacity: 0, y: 20 },
+    animate: { opacity: 1, y: 0 },
+    transition: { duration: 0.3 }
+  } : {};
 
   return (
-    <Card 
-      shadow="sm" 
-      padding="lg" 
-      radius="md" 
-      withBorder
-      className={interactive ? 'hover:shadow-lg transition-shadow cursor-pointer' : ''}
-    >
-      <Group justify="space-between" mb="xs">
-        <Group gap="xs">
-          <Badge color={agentColors[agent]} variant="light">
-            {agent.charAt(0).toUpperCase() + agent.slice(1)}
-          </Badge>
-          <Badge color={priorityColors[priority]} size="sm">
-            {priority}
-          </Badge>
-        </Group>
-        <Text fw={500} size="lg">{title}</Text>
-      </Group>
-
-      {children}
-
-      {actions && actions.length > 0 && (
-        <Group gap="sm" mt="md">
-          {actions.map((action, index) => (
-            <Button
-              key={index}
-              variant={action.style === 'primary' ? 'filled' : action.style === 'outline' ? 'outline' : 'light'}
-              size="sm"
-              onClick={action.onClick}
-            >
-              {action.label}
-            </Button>
-          ))}
-        </Group>
-      )}
-    </Card>
-  )
+    <CardWrapper {...animationProps}>
+      <Card className={cn(statusColors[status], className)}>
+        {(title || description || headerActions) && (
+          <CardHeader className="pb-3">
+            <div className="flex items-start justify-between">
+              <div className="space-y-1">
+                {title && (
+                  <CardTitle className="text-lg font-semibold text-foreground">
+                    {title}
+                  </CardTitle>
+                )}
+                {description && (
+                  <CardDescription className="text-sm text-muted-foreground">
+                    {description}
+                  </CardDescription>
+                )}
+              </div>
+              {headerActions && (
+                <div className="flex items-center gap-2">
+                  {headerActions}
+                </div>
+              )}
+            </div>
+          </CardHeader>
+        )}
+        <CardContent className="pt-0">
+          {children}
+        </CardContent>
+        {footer && (
+          <div className="px-6 py-3 border-t border-border bg-muted/25">
+            {footer}
+          </div>
+        )}
+      </Card>
+    </CardWrapper>
+  );
 }
 
-// Metric Display Component
-interface MetricProps {
-  label: string
-  value: string | number
-  trend?: 'up' | 'down' | 'neutral'
-  format?: 'currency' | 'percentage' | 'number'
+interface BaseStatProps {
+  label: string;
+  value: string | number;
+  change?: {
+    value: number;
+    type: 'increase' | 'decrease';
+    period?: string;
+  };
+  icon?: ReactNode;
+  className?: string;
+  format?: 'currency' | 'percentage' | 'number';
 }
 
-export function Metric({ label, value, trend, format = 'number' }: MetricProps) {
+export function BaseStat({ 
+  label, 
+  value, 
+  change, 
+  icon, 
+  className,
+  format = 'number'
+}: BaseStatProps) {
   const formatValue = (val: string | number) => {
-    const numVal = typeof val === 'string' ? parseFloat(val) : val
+    if (typeof val === 'string') return val;
+    
     switch (format) {
       case 'currency':
-        return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(numVal)
+        return new Intl.NumberFormat('en-US', {
+          style: 'currency',
+          currency: 'USD'
+        }).format(val);
       case 'percentage':
-        return `${(numVal * 100).toFixed(1)}%`
+        return `${val}%`;
       default:
-        return val.toString()
+        return val.toLocaleString();
     }
-  }
-
-  const trendColors = {
-    up: 'green',
-    down: 'red', 
-    neutral: 'gray'
-  }
+  };
 
   return (
-    <div className="text-center">
-      <Text size="xs" c="dimmed" tt="uppercase" fw={700}>
-        {label}
-      </Text>
-      <Group gap="xs" justify="center" mt={4}>
-        <Text size="xl" fw={700}>
-          {formatValue(value)}
-        </Text>
-        {trend && (
-          <ActionIcon size="sm" color={trendColors[trend]} variant="subtle">
-            {trend === 'up' ? <IconChevronUp size={16} /> : <IconChevronDown size={16} />}
-          </ActionIcon>
+    <div className={cn("space-y-2", className)}>
+      <div className="flex items-center justify-between">
+        <span className="text-sm font-medium text-muted-foreground">
+          {label}
+        </span>
+        {icon && (
+          <div className="text-muted-foreground">
+            {icon}
+          </div>
         )}
-      </Group>
-    </div>
-  )
-}
-
-// Progress Indicator Component
-interface ProgressIndicatorProps {
-  steps: Array<{
-    id: string
-    title: string
-    status: 'completed' | 'in_progress' | 'pending'
-    score?: number
-  }>
-  currentStep?: string
-}
-
-export function ProgressIndicator({ steps, currentStep }: ProgressIndicatorProps) {
-  const getStepColor = (status: string) => {
-    switch (status) {
-      case 'completed': return 'green'
-      case 'in_progress': return 'blue'
-      default: return 'gray'
-    }
-  }
-
-  const overallProgress = Math.round(
-    (steps.filter(s => s.status === 'completed').length / steps.length) * 100
-  )
-
-  return (
-    <Stack gap="md">
-      <Group justify="space-between">
-        <Text fw={500}>Overall Progress</Text>
-        <Text size="sm" c="dimmed">{overallProgress}%</Text>
-      </Group>
+      </div>
       
-      <Progress value={overallProgress} color="blue" size="lg" radius="md" />
-      
-      <Stack gap="xs">
-        {steps.map((step) => (
-          <Group key={step.id} justify="space-between" className={
-            currentStep === step.id ? 'bg-blue-50 p-2 rounded' : 'p-2'
-          }>
-            <Group gap="sm">
-              <Badge color={getStepColor(step.status)} size="sm">
-                {step.status.replace('_', ' ')}
-              </Badge>
-              <Text size="sm">{step.title}</Text>
-            </Group>
-            {step.score !== undefined && (
-              <Text size="xs" c="dimmed">{step.score}%</Text>
-            )}
-          </Group>
-        ))}
-      </Stack>
-    </Stack>
-  )
-}
-
-// Data Table Component for structured information
-interface DataTableProps {
-  headers: string[]
-  rows: Array<Record<string, string | number | boolean>>
-  actionColumn?: {
-    header: string
-    render: (row: Record<string, string | number | boolean>) => ReactNode
-  }
-}
-
-export function DataTable({ headers, rows, actionColumn }: DataTableProps) {
-  return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="border-b border-gray-200">
-            {headers.map((header) => (
-              <th key={header} className="text-left p-2 font-medium text-gray-600">
-                {header}
-              </th>
-            ))}
-            {actionColumn && (
-              <th className="text-left p-2 font-medium text-gray-600">
-                {actionColumn.header}
-              </th>
-            )}
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row, index) => (
-            <tr key={index} className="border-b border-gray-100 hover:bg-gray-50">
-              {headers.map((header) => (
-                <td key={header} className="p-2">
-                  {row[header.toLowerCase().replace(/\s+/g, '_')]}
-                </td>
-              ))}
-              {actionColumn && (
-                <td className="p-2">
-                  {actionColumn.render(row)}
-                </td>
+      <div className="space-y-1">
+        <div className="text-2xl font-bold text-foreground">
+          {formatValue(value)}
+        </div>
+        
+        {change && (
+          <div className="flex items-center gap-2">
+            <Badge 
+              variant={change.type === 'increase' ? 'default' : 'secondary'}
+              className={cn(
+                "text-xs",
+                change.type === 'increase' 
+                  ? "bg-green-100 text-green-800 hover:bg-green-100" 
+                  : "bg-red-100 text-red-800 hover:bg-red-100"
               )}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+            >
+              {change.type === 'increase' ? '+' : '-'}{Math.abs(change.value)}%
+            </Badge>
+            {change.period && (
+              <span className="text-xs text-muted-foreground">
+                vs {change.period}
+              </span>
+            )}
+          </div>
+        )}
+      </div>
     </div>
-  )
+  );
 }
+
+interface BaseButtonProps {
+  children: ReactNode;
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
+  size?: 'sm' | 'default' | 'lg';
+  disabled?: boolean;
+  loading?: boolean;
+  onClick?: () => void;
+  className?: string;
+}
+
+export function BaseButton({ 
+  children, 
+  variant = 'primary', 
+  size = 'default',
+  disabled = false,
+  loading = false,
+  onClick,
+  className
+}: BaseButtonProps) {
+  const variantStyles = {
+    primary: 'bg-primary text-primary-foreground hover:bg-primary/90',
+    secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
+    outline: 'border border-input bg-background hover:bg-accent hover:text-accent-foreground',
+    ghost: 'hover:bg-accent hover:text-accent-foreground'
+  };
+
+  return (
+    <Button
+      variant={variant === 'primary' ? 'default' : variant}
+      size={size}
+      disabled={disabled || loading}
+      onClick={onClick}
+      className={cn(variantStyles[variant], className)}
+    >
+      {loading && (
+        <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+      )}
+      {children}
+    </Button>
+  );
+}
+
+export default { BaseCard, BaseStat, BaseButton };

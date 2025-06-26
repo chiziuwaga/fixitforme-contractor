@@ -533,7 +533,7 @@ export function CostBreakdownCard({
   interactive = true 
 }: CostBreakdownChartProps & { title?: string }) {
   return (
-    <BaseCard title={title} agent="alex" priority="high" interactive>
+    <BaseCard title={title}>
       <div className="flex flex-col items-center">
         <CostBreakdownChart 
           data={data} 
@@ -561,7 +561,7 @@ export function LeadDistributionCard({
   interactive = true
 }: LeadDistributionChartProps & { title?: string }) {
   return (
-    <BaseCard title={title} agent="rex" priority="medium" interactive>
+    <BaseCard title={title}>
       <div className="flex flex-col items-center">
         <LeadDistributionChart 
           data={data} 
@@ -597,7 +597,7 @@ export function TimelineCard({
   interactive = true
 }: TimelineChartProps & { title?: string }) {
   return (
-    <BaseCard title={title} agent="alex" priority="medium" interactive>
+    <BaseCard title={title}>
       <div className="flex flex-col items-center">
         <TimelineChart 
           phases={phases} 

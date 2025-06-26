@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabase';
 import { useEffect, useState } from 'react';
 import ContractorAuth from '@/components/auth/ContractorAuth';
 import ContractorDashboard from '@/components/dashboard/ContractorDashboard';
-import { Loader, Center } from '@mantine/core';
+import { Loader2 } from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
 
 export default function HomePage() {
@@ -41,9 +41,9 @@ export default function HomePage() {
 
   if (loading) {
     return (
-      <Center h="100vh">
-        <Loader size="lg" />
-      </Center>
+      <div className="flex items-center justify-center h-screen">
+        <Loader2 className="h-8 w-8 animate-spin text-[rgb(var(--primary-orange))]" />
+      </div>
     );
   }
 

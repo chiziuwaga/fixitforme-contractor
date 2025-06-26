@@ -1,8 +1,28 @@
 'use client';
 
 import React from 'react';
-import { Card, Progress, Badge, Group, Text, Stack, Button, List, ThemeIcon, Grid, NumberFormatter } from '@mantine/core';
-import { IconCheck, IconX, IconBuilding, IconMapPin, IconStar, IconInfoCircle, IconChevronRight, IconTarget, IconCurrencyDollar } from '@tabler/icons-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { 
+  Check, 
+  Building, 
+  MapPin, 
+  Star, 
+  Info, 
+  ChevronRight, 
+  Target, 
+  DollarSign,
+  Users,
+  Calendar,
+  Clock,
+  CheckCircle,
+  Plus
+} from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface OnboardingData {
   overall_progress: number;
@@ -49,429 +69,527 @@ interface MaterialBreakdownData {
     availability: string;
     alternative_options: number;
   }>;
-  location_insights?: {
-    message: string;
+  labor_estimate?: {
+    hours: number;
+    rate: number;
+    complexity: string;
+    skill_requirements: string[];
+  };
+  timeline?: {
+    total_days: number;
+    phases: Array<{
+      name: string;
+      duration: number;
+      dependencies: string[];
+    }>;
+  };
+  risk_assessment?: {
+    level: string;
+    factors: string[];
+    mitigation: string[];
+  };
+  market_comparison?: {
+    competitor_range: { min: number; max: number };
+    your_position: string;
+    win_probability: number;
   };
 }
 
-interface LeadOpportunityData {
-  quality_score: number;
-  urgency: 'high' | 'medium' | 'low';
-  project_details?: {
-    title: string;
-    location: string;
-    description: string;
-    budget: number;
-    posted_date: string;
-  };
-  match_reasoning?: string[];
-  competition_analysis?: {
-    level: 'low' | 'medium' | 'high';
-    insight: string;
+interface RexLeadData {
+  total_leads: number;
+  qualified_leads: number;
+  conversion_rate: number;
+  avg_lead_value: number;
+  pipeline_value: number;
+  geographic_breakdown: Array<{
+    area: string;
+    count: number;
+    avg_value: number;
+    competition: string;
+    drive_time: string;
+    opportunity_score: number;
+  }>;
+  trending_problems: Array<{
+    felix_id: number;
+    name: string;
+    demand_change: string;
+    avg_value: number;
+    competition_level: string;
+  }>;
+  lead_sources: Array<{
+    source: string;
+    count: number;
+    quality_score: number;
+    conversion_rate: number;
+    avg_response_time: string;
+  }>;
+  market_intelligence: {
+    seasonal_trends: string[];
+    pricing_insights: string[];
+    opportunity_alerts: string[];
   };
 }
 
-interface SystemMessageData {
-  type: 'warning' | 'error' | 'info';
+interface LeadData {
+  id: string;
   title: string;
-  message: string;
-  upgrade_hint?: string;
-}
-
-type AgentUIData = OnboardingData | MaterialBreakdownData | LeadOpportunityData | SystemMessageData;
-
-interface AgentUIAsset {
-  type: 'onboarding_progress' | 'tier_comparison' | 'feature_education' | 'system_message' | 'material_breakdown' | 'lead_opportunity' | 'bid_analysis' | 'market_intelligence';
-  data: AgentUIData;
-  render_hints: {
-    component: string;
-    priority: 'high' | 'medium' | 'low';
-    interactive: boolean;
-    progress_tracking?: boolean;
-  };
-}
-
-interface AgentAction {
-  type: string;
-  label: string;
-  style: 'primary' | 'secondary' | 'outline';
+  budget_range: string;
+  location: string;
+  urgency: string;
+  felix_category: string;
+  quality_score: number;
+  distance: string;
+  posted_time: string;
+  competition_level: string;
 }
 
 interface GenerativeAgentAssetsProps {
-  ui_assets: AgentUIAsset;
-  actions?: AgentAction[];
-  follow_up_prompts?: string[];
-  onAction?: (action: AgentAction) => void;
-  onPrompt?: (prompt: string) => void;
+  type: string;
+  data: OnboardingData | MaterialBreakdownData | RexLeadData | LeadData[] | Record<string, unknown>;
+  actions?: Array<{
+    type: string;
+    label: string;
+    style: string;
+    disabled?: boolean;
+  }>;
 }
 
-export function GenerativeAgentAssets({ 
-  ui_assets, 
-  actions = [], 
-  follow_up_prompts = [],
-  onAction,
-  onPrompt 
-}: GenerativeAgentAssetsProps) {
-    const renderOnboardingProgress = () => {
-    const data = ui_assets.data as OnboardingData;
-    
-    return (
-      <Card shadow="sm" padding="lg" radius="md" withBorder>
-        <Stack gap="md">
-          <Group justify="space-between">
-            <Text fw={600} size="lg">Profile Setup Progress</Text>
-            <Badge color={data.overall_progress === 100 ? 'green' : 'blue'} size="lg">
-              {data.overall_progress}% Complete
-            </Badge>
-          </Group>
+const GenerativeAgentAssets: React.FC<GenerativeAgentAssetsProps> = ({ type, data, actions }) => {
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+    }).format(amount);
+  };
+
+  const formatPercentage = (value: number) => {
+    return `${(value * 100).toFixed(1)}%`;
+  };
+
+  const renderOnboardingWizard = (onboardingData: OnboardingData) => (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="space-y-6"
+    >
+      <Card className="border-2 border-brand-primary/10 bg-gradient-to-r from-brand-primary/5 to-transparent">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Target className="h-5 w-5 text-brand-primary" />
+            Onboarding Progress
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm">
+              <span>Overall Progress</span>
+              <span className="font-semibold">{onboardingData.overall_progress}%</span>
+            </div>
+            <Progress value={onboardingData.overall_progress} className="h-3" />
+          </div>
           
-          <Progress value={data.overall_progress} size="lg" radius="xl" />
-          
-          <Grid>
-            <Grid.Col span={6}>
-              <Stack gap="xs">
-                <Text size="sm" fw={500} c="green">✅ Completed Steps</Text>
-                <List size="sm" spacing="xs">
-                  {data.completed_steps.map((step: string, idx: number) => (
-                    <List.Item key={idx} icon={<ThemeIcon color="green" size={16} radius="xl"><IconCheck size={12} /></ThemeIcon>}>
-                      {step.replace('_', ' ').toUpperCase()}
-                    </List.Item>
-                  ))}
-                </List>
-              </Stack>
-            </Grid.Col>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <h4 className="font-semibold mb-2 text-green-700">Completed Steps</h4>
+              <div className="space-y-1">
+                {onboardingData.completed_steps.map((step, index) => (
+                  <div key={index} className="flex items-center gap-2 text-sm">
+                    <CheckCircle className="h-4 w-4 text-green-500" />
+                    <span>{step}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
             
-            <Grid.Col span={6}>
-              <Stack gap="xs">
-                <Text size="sm" fw={500} c="orange">🔄 Remaining Steps</Text>
-                <List size="sm" spacing="xs">
-                  {data.remaining_steps.map((step: string, idx: number) => (
-                    <List.Item key={idx} icon={<ThemeIcon color="orange" size={16} radius="xl"><IconX size={12} /></ThemeIcon>}>
-                      {step.replace('_', ' ').toUpperCase()}
-                    </List.Item>
-                  ))}
-                </List>
-              </Stack>
-            </Grid.Col>
-          </Grid>
-
-          {data.felix_services && (
-            <Card withBorder p="sm">
-              <Text size="sm" fw={500} mb="xs">Felix Service Categories</Text>
-              <Group gap="xs" mb="xs">
-                {data.felix_services.selected.map((service: string, idx: number) => (
-                  <Badge key={idx} color="blue" variant="filled" size="sm">{service}</Badge>
+            <div>
+              <h4 className="font-semibold mb-2 text-orange-700">Remaining Steps</h4>
+              <div className="space-y-1">
+                {onboardingData.remaining_steps.map((step, index) => (
+                  <div key={index} className="flex items-center gap-2 text-sm">
+                    <Clock className="h-4 w-4 text-orange-500" />
+                    <span>{step}</span>
+                  </div>
                 ))}
-              </Group>
-              {data.felix_services.recommended.length > 0 && (
-                <>
-                  <Text size="xs" c="dimmed" mb="xs">Recommended for your market:</Text>
-                  <Group gap="xs">
-                    {data.felix_services.recommended.map((service: string, idx: number) => (
-                      <Badge key={idx} color="gray" variant="outline" size="sm">{service}</Badge>
-                    ))}
-                  </Group>
-                </>
-              )}
-            </Card>
-          )}
+              </div>
+            </div>
+          </div>
 
-          {data.profile_strength && (
-            <Card withBorder p="sm">
-              <Group justify="space-between" mb="xs">
-                <Text size="sm" fw={500}>Profile Strength</Text>
-                <Badge color={data.profile_strength.score >= 80 ? 'green' : data.profile_strength.score >= 60 ? 'yellow' : 'red'}>
-                  {data.profile_strength.score}/100
+          {onboardingData.profile_strength && (
+            <div className="pt-4 border-t">
+              <h4 className="font-semibold mb-2">Profile Strength</h4>
+              <div className="flex items-center gap-4">
+                <div className="flex-1">
+                  <Progress value={onboardingData.profile_strength.score} className="h-2" />
+                </div>
+                <Badge variant={onboardingData.profile_strength.score > 80 ? 'default' : 'secondary'}>
+                  {onboardingData.profile_strength.score}%
                 </Badge>
-              </Group>
-              <Progress value={data.profile_strength.score} size="sm" mb="xs" />
-              <Text size="xs" c="dimmed">{data.profile_strength.impact}</Text>
-            </Card>
+              </div>
+              <p className="text-sm text-muted-foreground mt-2">
+                {onboardingData.profile_strength.impact}
+              </p>
+            </div>
           )}
-        </Stack>
+        </CardContent>
       </Card>
-    );
-  };
 
-  const renderTierComparison = () => {
-    const data = ui_assets.data as OnboardingData;
-    
-    return (
-      <Card shadow="sm" padding="lg" radius="md" withBorder>
-        <Stack gap="md">
-          <Group justify="space-between">
-            <Text fw={600} size="lg">Tier Benefits</Text>
-            <Badge color={data.tier_benefits?.current === 'scale' ? 'green' : 'blue'} size="lg">
-              {data.tier_benefits?.current.toUpperCase()} TIER
-            </Badge>
-          </Group>
-          
-          {data.tier_benefits?.current === 'growth' && (
-            <Card withBorder p="md" bg="blue.0">
-              <Stack gap="xs">
-                <Text fw={500} c="blue">Upgrade to Scale Tier Benefits:</Text>
-                <List size="sm" spacing="xs">
-                  {data.tier_benefits.upgrade_benefits.map((benefit: string, idx: number) => (
-                    <List.Item key={idx} icon={<ThemeIcon color="blue" size={16} radius="xl"><IconStar size={12} /></ThemeIcon>}>
-                      {benefit}
-                    </List.Item>
-                  ))}
-                </List>
-                <Text size="sm" fw={500} c="green">💰 {data.tier_benefits.cost_savings}</Text>
-              </Stack>
-            </Card>
-          )}
+      {onboardingData.felix_services && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Felix Service Categories</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Tabs defaultValue="selected">
+              <TabsList className="grid grid-cols-2 w-full">
+                <TabsTrigger value="selected">Selected Services</TabsTrigger>
+                <TabsTrigger value="recommended">Recommended</TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="selected" className="space-y-2">
+                {onboardingData.felix_services.selected.map((service, index) => (
+                  <div key={index} className="flex items-center gap-2 p-2 bg-green-50 rounded-lg">
+                    <Check className="h-4 w-4 text-green-600" />
+                    <span className="text-sm">{service}</span>
+                  </div>
+                ))}
+              </TabsContent>
+              
+              <TabsContent value="recommended" className="space-y-2">
+                {onboardingData.felix_services.recommended.map((service, index) => (
+                  <div key={index} className="flex items-center gap-2 p-2 bg-blue-50 rounded-lg">
+                    <Plus className="h-4 w-4 text-blue-600" />
+                    <span className="text-sm">{service}</span>
+                  </div>
+                ))}
+              </TabsContent>
+            </Tabs>
+          </CardContent>
+        </Card>
+      )}
+    </motion.div>
+  );
 
-          {data.usage_tracking && (
-            <Card withBorder p="sm">
-              <Text size="sm" fw={500} mb="xs">Monthly Usage</Text>
-              <Group justify="space-between" mb="xs">
-                <Text size="sm">Bids Used</Text>
-                <Text size="sm" fw={500}>{data.usage_tracking.current_usage} / {data.usage_tracking.monthly_limits.bids}</Text>
-              </Group>
-              <Progress 
-                value={data.usage_tracking.percentage_used} 
-                size="sm" 
-                color={data.usage_tracking.percentage_used > 80 ? 'red' : 'blue'} 
-              />
-            </Card>
-          )}
+  const renderMaterialBreakdown = (materialData: MaterialBreakdownData) => (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="space-y-6"
+    >
+      {materialData.cost_breakdown && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <DollarSign className="h-5 w-5 text-brand-primary" />
+              Material Cost Breakdown
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Material</TableHead>
+                  <TableHead>Qty</TableHead>
+                  <TableHead>Price</TableHead>
+                  <TableHead>Store</TableHead>
+                  <TableHead>Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {materialData.cost_breakdown.map((item, index) => (
+                  <TableRow key={index}>
+                    <TableCell className="font-medium">{item.name}</TableCell>
+                    <TableCell>{item.quantity}</TableCell>
+                    <TableCell>{formatCurrency(item.price)}</TableCell>
+                    <TableCell>{item.store}</TableCell>
+                    <TableCell>
+                      <Badge variant={item.availability === 'In Stock' ? 'default' : 'secondary'}>
+                        {item.availability}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      )}
 
-          {data.peer_benchmarks && (
-            <Card withBorder p="sm">
-              <Text size="sm" fw={500} mb="xs">Local Market Benchmarks</Text>
-              <Grid>
-                <Grid.Col span={6}>
-                  <Stack gap="xs">
-                    <Text size="xs" c="dimmed">Average Bid Value</Text>
-                    <Text fw={500}><NumberFormatter prefix="$" value={data.peer_benchmarks.avg_bid_value} thousandSeparator /></Text>
-                  </Stack>
-                </Grid.Col>
-                <Grid.Col span={6}>
-                  <Stack gap="xs">
-                    <Text size="xs" c="dimmed">Conversion Rate</Text>
-                    <Text fw={500}>{data.peer_benchmarks.avg_conversion_rate}%</Text>
-                  </Stack>
-                </Grid.Col>
-              </Grid>
-            </Card>
-          )}
-        </Stack>
-      </Card>
-    );
-  };
+      {materialData.labor_estimate && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Users className="h-5 w-5 text-brand-secondary" />
+              Labor Estimate
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <span className="text-sm font-medium text-muted-foreground">Total Hours</span>
+                <p className="text-2xl font-bold">{materialData.labor_estimate.hours}</p>
+              </div>
+              <div>
+                <span className="text-sm font-medium text-muted-foreground">Hourly Rate</span>
+                <p className="text-2xl font-bold">{formatCurrency(materialData.labor_estimate.rate)}</p>
+              </div>
+            </div>
+            
+            <div>
+              <span className="text-sm font-medium text-muted-foreground">Complexity Level</span>
+              <Badge variant="outline" className="ml-2">
+                {materialData.labor_estimate.complexity}
+              </Badge>
+            </div>
+            
+            <div>
+              <span className="text-sm font-medium text-muted-foreground">Required Skills</span>
+              <div className="flex flex-wrap gap-2 mt-1">
+                {materialData.labor_estimate.skill_requirements.map((skill, index) => (
+                  <Badge key={index} variant="secondary">{skill}</Badge>
+                ))}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
-  const renderMaterialBreakdown = () => {
-    const data = ui_assets.data as MaterialBreakdownData;
-    
-    return (
-      <Card shadow="sm" padding="lg" radius="md" withBorder>
-        <Stack gap="md">
-          <Group justify="space-between">
-            <Text fw={600} size="lg">Material Cost Analysis</Text>
-            <Badge color="green" size="lg">
-              <IconCurrencyDollar size={14} />
-              Live Pricing
-            </Badge>
-          </Group>
-          
-          {data.cost_breakdown && (
-            <Grid>
-              {data.cost_breakdown.map((item, idx: number) => (
-                <Grid.Col span={12} key={idx}>
-                  <Card withBorder p="sm">
-                    <Group justify="space-between" mb="xs">
-                      <Text fw={500}>{item.name}</Text>
-                      <Group gap="xs">
-                        <Badge color={item.availability === 'in_stock' ? 'green' : 'red'} size="sm">
-                          {item.availability}
-                        </Badge>
-                        <Text fw={600}><NumberFormatter prefix="$" value={item.price} /></Text>
-                      </Group>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Qty: {item.quantity} | Store: {item.store}</Text>
-                      {item.alternative_options > 0 && (
-                        <Text size="sm" c="blue">+{item.alternative_options} alternatives</Text>
-                      )}
-                    </Group>
-                  </Card>
-                </Grid.Col>
+      {materialData.timeline && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Calendar className="h-5 w-5 text-brand-primary" />
+              Project Timeline
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="mb-4">
+              <span className="text-sm font-medium text-muted-foreground">Total Duration</span>
+              <p className="text-xl font-bold">{materialData.timeline.total_days} days</p>
+            </div>
+            
+            <div className="space-y-3">
+              {materialData.timeline.phases.map((phase, index) => (
+                <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div>
+                    <h4 className="font-medium">{phase.name}</h4>
+                    <p className="text-sm text-muted-foreground">{phase.duration} days</p>
+                  </div>
+                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                </div>
               ))}
-            </Grid>
-          )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+    </motion.div>
+  );
 
-          {data.location_insights && (
-            <Card withBorder p="sm" bg="blue.0">
-              <Group>
-                <ThemeIcon color="blue" size="lg">
-                  <IconMapPin size={18} />
-                </ThemeIcon>
-                <Stack gap={0}>
-                  <Text fw={500} size="sm">Location Insights</Text>
-                  <Text size="xs" c="dimmed">{data.location_insights.message}</Text>
-                </Stack>
-              </Group>
-            </Card>
-          )}
-        </Stack>
+  const renderRexLeadDashboard = (rexData: RexLeadData) => (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="space-y-6"
+    >
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <p className="text-2xl font-bold text-brand-primary">{rexData.total_leads}</p>
+              <p className="text-sm text-muted-foreground">Total Leads</p>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <p className="text-2xl font-bold text-green-600">{rexData.qualified_leads}</p>
+              <p className="text-sm text-muted-foreground">Qualified</p>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <p className="text-2xl font-bold text-blue-600">{formatPercentage(rexData.conversion_rate)}</p>
+              <p className="text-sm text-muted-foreground">Conversion</p>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <p className="text-2xl font-bold text-purple-600">{formatCurrency(rexData.avg_lead_value)}</p>
+              <p className="text-sm text-muted-foreground">Avg Value</p>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <p className="text-2xl font-bold text-orange-600">{formatCurrency(rexData.pipeline_value)}</p>
+              <p className="text-sm text-muted-foreground">Pipeline</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <MapPin className="h-5 w-5 text-brand-primary" />
+            Geographic Breakdown
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Area</TableHead>
+                <TableHead>Leads</TableHead>
+                <TableHead>Avg Value</TableHead>
+                <TableHead>Competition</TableHead>
+                <TableHead>Drive Time</TableHead>
+                <TableHead>Score</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {rexData.geographic_breakdown.map((area, index) => (
+                <TableRow key={index}>
+                  <TableCell className="font-medium">{area.area}</TableCell>
+                  <TableCell>{area.count}</TableCell>
+                  <TableCell>{formatCurrency(area.avg_value)}</TableCell>
+                  <TableCell>
+                    <Badge variant={area.competition === 'low' ? 'default' : area.competition === 'medium' ? 'secondary' : 'destructive'}>
+                      {area.competition}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>{area.drive_time}</TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-1">
+                      <Star className="h-4 w-4 text-yellow-500" />
+                      <span>{area.opportunity_score}/10</span>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
       </Card>
-    );
-  };
+    </motion.div>
+  );
 
-  const renderLeadOpportunity = () => {
-    const data = ui_assets.data as LeadOpportunityData;
-    
-    return (
-      <Card shadow="sm" padding="lg" radius="md" withBorder>
-        <Stack gap="md">
-          <Group justify="space-between">
-            <Text fw={600} size="lg">Lead Opportunity</Text>
-            <Group gap="xs">
-              <Badge color="green" size="lg">
-                Score: {data.quality_score}%
-              </Badge>
-              <Badge color={data.urgency === 'high' ? 'red' : data.urgency === 'medium' ? 'yellow' : 'blue'}>
-                {data.urgency} urgency
-              </Badge>
-            </Group>
-          </Group>
-          
-          {data.project_details && (
-            <Card withBorder p="md">
-              <Stack gap="sm">
-                <Group>
-                  <ThemeIcon color="blue" size="lg">
-                    <IconBuilding size={18} />
-                  </ThemeIcon>
-                  <Stack gap={0}>
-                    <Text fw={500}>{data.project_details.title}</Text>
-                    <Text size="sm" c="dimmed">{data.project_details.location}</Text>
-                  </Stack>
-                </Group>
-                
-                <Text size="sm">{data.project_details.description}</Text>
-                
-                <Group justify="space-between">
-                  <Text size="sm" fw={500}>
-                    Budget: <NumberFormatter prefix="$" value={data.project_details.budget} thousandSeparator />
-                  </Text>
-                  <Text size="sm" c="dimmed">
-                    Posted: {data.project_details.posted_date}
-                  </Text>
-                </Group>
-              </Stack>
-            </Card>
-          )}
-
-          {data.match_reasoning && (
-            <Card withBorder p="sm">
-              <Text size="sm" fw={500} mb="xs">Why this matches you:</Text>
-              <List size="sm" spacing="xs">
-                {data.match_reasoning.map((reason: string, idx: number) => (
-                  <List.Item key={idx} icon={<ThemeIcon color="green" size={16} radius="xl"><IconTarget size={12} /></ThemeIcon>}>
-                    {reason}
-                  </List.Item>
-                ))}
-              </List>
-            </Card>
-          )}
-
-          {data.competition_analysis && (
-            <Card withBorder p="sm">
-              <Group justify="space-between" mb="xs">
-                <Text size="sm" fw={500}>Competition Level</Text>
-                <Badge color={data.competition_analysis.level === 'low' ? 'green' : data.competition_analysis.level === 'medium' ? 'yellow' : 'red'}>
-                  {data.competition_analysis.level}
+  const renderLeadCards = (leads: LeadData[]) => (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+    >
+      {leads.map((lead, index) => (
+        <motion.div
+          key={lead.id}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: index * 0.1 }}
+        >
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader className="pb-3">
+              <div className="flex justify-between items-start">
+                <CardTitle className="text-lg leading-tight">{lead.title}</CardTitle>
+                <Badge variant={lead.urgency === 'high' ? 'destructive' : lead.urgency === 'medium' ? 'secondary' : 'default'}>
+                  {lead.urgency}
                 </Badge>
-              </Group>
-              <Text size="xs" c="dimmed">{data.competition_analysis.insight}</Text>
-            </Card>
-          )}
-        </Stack>
-      </Card>
-    );
-  };
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <DollarSign className="h-4 w-4" />
+                <span>{lead.budget_range}</span>
+              </div>
+              
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <MapPin className="h-4 w-4" />
+                <span>{lead.location}</span>
+                <span>•</span>
+                <span>{lead.distance}</span>
+              </div>
+              
+              <div className="flex justify-between items-center">
+                <Badge variant="outline">{lead.felix_category}</Badge>
+                <div className="flex items-center gap-1">
+                  <Star className="h-4 w-4 text-yellow-500" />
+                  <span className="text-sm font-medium">{lead.quality_score}/10</span>
+                </div>
+              </div>
+              
+              <div className="pt-2 border-t">
+                <Button className="w-full bg-brand-primary hover:bg-brand-primary/90">
+                  View Details
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      ))}
+    </motion.div>
+  );
 
-  const renderSystemMessage = () => {
-    const data = ui_assets.data as SystemMessageData;
-    
+  const renderActions = () => {
+    if (!actions || actions.length === 0) return null;
+
     return (
-      <Card shadow="sm" padding="lg" radius="md" withBorder>
-        <Group>
-          <ThemeIcon color={data.type === 'warning' ? 'yellow' : data.type === 'error' ? 'red' : 'blue'} size="lg">
-            <IconInfoCircle size={18} />
-          </ThemeIcon>
-          <Stack gap={0} style={{ flex: 1 }}>
-            <Text fw={500}>{data.title}</Text>
-            <Text size="sm" c="dimmed">{data.message}</Text>
-            {data.upgrade_hint && (
-              <Text size="sm" c="blue" mt="xs">{data.upgrade_hint}</Text>
-            )}
-          </Stack>
-        </Group>
-      </Card>
+      <div className="flex flex-wrap gap-2 pt-4 border-t">
+        {actions.map((action, index) => (
+          <Button
+            key={index}
+            variant={action.style === 'primary' ? 'default' : action.style === 'secondary' ? 'secondary' : 'outline'}
+            disabled={action.disabled}
+            className={action.style === 'primary' ? 'bg-brand-primary hover:bg-brand-primary/90' : ''}
+          >
+            {action.label}
+          </Button>
+        ))}
+      </div>
     );
   };
 
-  const renderAsset = () => {
-    switch (ui_assets.type) {
-      case 'onboarding_progress':
-        return renderOnboardingProgress();
-      case 'tier_comparison':
-        return renderTierComparison();
-      case 'material_breakdown':
-        return renderMaterialBreakdown();
-      case 'lead_opportunity':
-        return renderLeadOpportunity();
-      case 'system_message':
-        return renderSystemMessage();
+  const renderContent = () => {
+    switch (type) {
+      case 'lexi_onboarding_wizard':
+        return renderOnboardingWizard(data as OnboardingData);
+      case 'alex_material_breakdown':
+        return renderMaterialBreakdown(data as MaterialBreakdownData);
+      case 'rex_lead_dashboard':
+        return renderRexLeadDashboard(data as RexLeadData);
+      case 'lead_cards':
+        return renderLeadCards(data as LeadData[]);
       default:
-        return null;
+        return (
+          <Card>
+            <CardContent className="pt-6">
+              <div className="text-center py-8">
+                <Info className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <p className="text-muted-foreground">
+                  Unsupported asset type: {type}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        );
     }
   };
 
   return (
-    <Stack gap="md">
-      {renderAsset()}
-      
-      {/* Actions */}
-      {actions.length > 0 && (
-        <Group>
-          {actions.map((action, idx) => (
-            <Button
-              key={idx}
-              variant={action.style === 'primary' ? 'filled' : action.style === 'secondary' ? 'light' : 'outline'}
-              onClick={() => onAction?.(action)}
-            >
-              {action.label}
-            </Button>
-          ))}
-        </Group>
-      )}
-      
-      {/* Follow-up Prompts */}
-      {follow_up_prompts.length > 0 && (
-        <Card withBorder p="sm">
-          <Text size="sm" fw={500} mb="xs">Quick Actions:</Text>
-          <Stack gap="xs">
-            {follow_up_prompts.map((prompt, idx) => (
-              <Button
-                key={idx}
-                variant="subtle"
-                size="sm"
-                justify="space-between"
-                rightSection={<IconChevronRight size={14} />}
-                onClick={() => onPrompt?.(prompt)}
-              >
-                {prompt}
-              </Button>
-            ))}
-          </Stack>
-        </Card>
-      )}
-    </Stack>
+    <div className="space-y-4">
+      {renderContent()}
+      {renderActions()}
+    </div>
   );
-}
+};
 
 export default GenerativeAgentAssets;

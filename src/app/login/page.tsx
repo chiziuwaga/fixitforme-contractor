@@ -1,26 +1,18 @@
 'use client';
 
 import { useState } from 'react';
-import {
-  Container, 
-  Title, 
-  Text, 
-  TextInput, 
-  Button, 
-  Stack, 
-  Group,
-  PinInput,
-  Alert,
-  Loader,
-  Divider,
-  Card
-} from '@mantine/core';
-import { notifications } from '@mantine/notifications';
-import { IconPhone, IconShieldCheck, IconAlertCircle } from '@tabler/icons-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Separator } from '@/components/ui/separator';
+import { Phone, Shield, AlertCircle, Loader2 } from 'lucide-react';
 import { BRAND } from '@/lib/brand';
 import { motion, AnimatePresence } from 'framer-motion';
 import { containerVariants, itemVariants } from '@/lib/animations';
 import Image from 'next/image';
+import { toast } from 'sonner';
 
 interface AuthStep {
   step: 'phone' | 'verification' | 'loading';
@@ -54,10 +46,8 @@ export default function ContractorLogin() {
 
       if (response.ok) {
         setAuthState(prev => ({ ...prev, step: 'verification' }));
-        notifications.show({
-          title: 'Verification Sent',
-          message: `A 6-digit code has been sent to ${authState.phone}`,
-          color: 'green'
+        toast.success('Verification Sent', {
+          description: `A 6-digit code has been sent to ${authState.phone}`,
         });
       } else {
         throw new Error('Failed to send verification code');
@@ -87,10 +77,8 @@ export default function ContractorLogin() {
       });
 
       if (response.ok) {
-        notifications.show({
-          title: 'Welcome!',
-          message: 'Successfully logged in. Redirecting to dashboard...',
-          color: 'green'
+        toast.success('Welcome!', {
+          description: 'Successfully logged in. Redirecting to dashboard...',
         });
         // Redirect to dashboard
         window.location.href = '/contractor/dashboard';
@@ -113,10 +101,8 @@ export default function ContractorLogin() {
       });
 
       if (response.ok) {
-        notifications.show({
-          title: 'Test Mode Activated',
-          message: 'Successfully logged in as a test user.',
-          color: 'blue'
+        toast.success('Test Mode Activated', {
+          description: 'Successfully logged in as a test user.',
         });
         window.location.href = '/contractor/dashboard';
       } else {
@@ -141,117 +127,170 @@ export default function ContractorLogin() {
   };
 
   return (
-    <Container size="xs" style={{ height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-      <motion.div initial="hidden" animate="visible" variants={containerVariants}>
-        <Card shadow="xl" p="xl" radius="lg" withBorder>
-          <Stack align="center" gap="md">
-            <motion.div variants={itemVariants}>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-neutral-50 to-neutral-100 p-4">
+      <motion.div 
+        initial="hidden" 
+        animate="visible" 
+        variants={containerVariants}
+        className="w-full max-w-md"
+      >
+        <Card className="brand-shadow-lg border-0 bg-white/95 backdrop-blur-sm">
+          <CardHeader className="text-center space-y-4">
+            <motion.div variants={itemVariants} className="flex justify-center">
               <Image 
                 src="/logo.png" 
                 alt={`${BRAND.name} Logo`} 
                 width={80} 
                 height={80} 
+                className="drop-shadow-sm"
               />
             </motion.div>
-            <motion.div variants={itemVariants}>
-              <Title order={2} ta="center" c="brand-secondary">{BRAND.name} Contractor</Title>
-              <Text size="sm" c="dimmed" ta="center">Welcome back. Please sign in to continue.</Text>
+            <motion.div variants={itemVariants} className="space-y-2">
+              <CardTitle className="text-2xl font-heading text-[rgb(var(--primary-orange))]">
+                {BRAND.name} Contractor
+              </CardTitle>
+              <CardDescription className="text-neutral-600">
+                Welcome back. Please sign in to continue.
+              </CardDescription>
             </motion.div>
-          </Stack>
+          </CardHeader>
 
-          <AnimatePresence mode="wait">
-            {authState.step === 'phone' && (
-              <motion.div key="phone" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }}>
-                <Stack gap="lg" mt="xl">
-                  <TextInput
-                    label="Phone Number"
-                    placeholder="(555) 555-5555"
-                    type="tel"
-                    leftSection={<IconPhone size={16} />}
-                    value={authState.phone}
-                    onChange={(e) => setAuthState(prev => ({ ...prev, phone: e.currentTarget.value, error: null }))}
-                    error={authState.error && authState.step === 'phone'}
-                    size="md"
-                  />
+          <CardContent className="space-y-6">
+            <AnimatePresence mode="wait">
+              {authState.step === 'phone' && (
+                <motion.div 
+                  key="phone" 
+                  initial={{ opacity: 0, x: -20 }} 
+                  animate={{ opacity: 1, x: 0 }} 
+                  exit={{ opacity: 0, x: 20 }}
+                  className="space-y-4"
+                >
+                  <div className="space-y-2">
+                    <Label htmlFor="phone" className="text-sm font-medium">
+                      Phone Number
+                    </Label>
+                    <div className="relative">
+                      <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 h-4 w-4" />
+                      <Input
+                        id="phone"
+                        type="tel"
+                        placeholder="(555) 555-5555"
+                        value={authState.phone}
+                        onChange={(e) => setAuthState(prev => ({ ...prev, phone: e.target.value, error: null }))}
+                        className="pl-10 brand-focus"
+                      />
+                    </div>
+                    {authState.error && authState.step === 'phone' && (
+                      <p className="text-sm text-error-600 mt-1">{authState.error}</p>
+                    )}
+                  </div>
                   <Button 
-                    fullWidth 
                     onClick={handlePhoneSubmit}
-                    leftSection={<IconShieldCheck size={18} />}
-                    size="md"
+                    className="w-full brand-transition bg-[rgb(var(--primary-orange))] hover:bg-[rgb(var(--primary-orange))]/90"
+                    size="lg"
                   >
+                    <Shield className="w-4 h-4 mr-2" />
                     Send Verification Code
                   </Button>
-                </Stack>
-              </motion.div>
-            )}
+                </motion.div>
+              )}
 
-            {authState.step === 'verification' && (
-              <motion.div key="verification" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }}>
-                <Stack gap="lg" mt="xl">
-                  <Text size="sm" ta="center">Enter the 6-digit code sent to {authState.phone}</Text>
-                  <Group justify="center">
-                    <PinInput 
-                      length={6} 
-                      size="lg"
+              {authState.step === 'verification' && (
+                <motion.div 
+                  key="verification" 
+                  initial={{ opacity: 0, x: -20 }} 
+                  animate={{ opacity: 1, x: 0 }} 
+                  exit={{ opacity: 0, x: 20 }}
+                  className="space-y-4"
+                >
+                  <div className="text-center">
+                    <p className="text-sm text-neutral-600">
+                      Enter the 6-digit code sent to {authState.phone}
+                    </p>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="verification" className="text-sm font-medium">
+                      Verification Code
+                    </Label>
+                    <Input
+                      id="verification"
+                      type="text"
+                      placeholder="123456"
                       value={authState.verificationCode}
-                      onChange={(value) => setAuthState(prev => ({ ...prev, verificationCode: value, error: null }))}
-                      error={!!authState.error}
-                      oneTimeCode
+                      onChange={(e) => setAuthState(prev => ({ ...prev, verificationCode: e.target.value.replace(/\D/g, '').slice(0, 6), error: null }))}
+                      className="text-center text-lg tracking-widest brand-focus"
+                      maxLength={6}
+                      autoComplete="one-time-code"
                       autoFocus
                     />
-                  </Group>
-                  <Button 
-                    fullWidth 
-                    onClick={handleVerificationSubmit}
-                    leftSection={<IconShieldCheck size={18} />}
-                    size="md"
-                  >
-                    Verify & Sign In
-                  </Button>
-                  <Button variant="subtle" size="sm" onClick={() => setAuthState(prev => ({ ...prev, step: 'phone', error: null }))}>
-                    Back to phone number
-                  </Button>
-                </Stack>
+                    {authState.error && (
+                      <p className="text-sm text-error-600 mt-1">{authState.error}</p>
+                    )}
+                  </div>
+                  <div className="space-y-3">
+                    <Button 
+                      onClick={handleVerificationSubmit}
+                      className="w-full brand-transition bg-[rgb(var(--primary-orange))] hover:bg-[rgb(var(--primary-orange))]/90"
+                      size="lg"
+                    >
+                      <Shield className="w-4 h-4 mr-2" />
+                      Verify & Sign In
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      onClick={() => setAuthState(prev => ({ ...prev, step: 'phone', error: null }))}
+                      className="w-full text-neutral-600 hover:text-neutral-800"
+                      size="sm"
+                    >
+                      Back to phone number
+                    </Button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {authState.step === 'loading' && (
+              <div className="flex items-center justify-center space-x-3 py-8">
+                <Loader2 className="h-5 w-5 animate-spin text-[rgb(var(--primary-orange))]" />
+                <span className="text-sm text-neutral-600">Please wait...</span>
+              </div>
+            )}
+
+            {authState.error && (
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }} 
+                animate={{ opacity: 1, y: 0 }}
+              >
+                <Alert className="border-error-200 bg-error-50">
+                  <AlertCircle className="h-4 w-4 text-error-600" />
+                  <AlertDescription className="text-error-800">
+                    {authState.error}
+                  </AlertDescription>
+                </Alert>
               </motion.div>
             )}
-          </AnimatePresence>
 
-          {authState.step === 'loading' && (
-            <Group justify="center" mt="xl">
-              <Loader />
-              <Text>Please wait...</Text>
-            </Group>
-          )}
+            <div className="relative">
+              <Separator />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="bg-white px-2 text-xs text-neutral-500">Or</span>
+              </div>
+            </div>
 
-          {authState.error && (
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-              <Alert 
-                title="Authentication Error"
-                color="red" 
-                icon={<IconAlertCircle />} 
-                mt="md" 
-                withCloseButton 
-                onClose={() => setAuthState(prev => ({ ...prev, error: null }))}
+            <motion.div variants={itemVariants}>
+              <Button 
+                variant="outline"
+                onClick={handleTestModeSubmit}
+                disabled={authState.step === 'loading'}
+                className="w-full border-neutral-200 text-neutral-700 hover:bg-neutral-50 brand-transition"
+                size="lg"
               >
-                {authState.error}
-              </Alert>
+                Continue in Test Mode (for internal use)
+              </Button>
             </motion.div>
-          )}
-
-          <Divider my="lg" label="Or" labelPosition="center" />
-
-          <motion.div variants={itemVariants}>
-            <Button 
-              fullWidth 
-              variant="light"
-              onClick={handleTestModeSubmit}
-              disabled={authState.step === 'loading'}
-            >
-              Continue in Test Mode (for internal use)
-            </Button>
-          </motion.div>
+          </CardContent>
         </Card>
       </motion.div>
-    </Container>
+    </div>
   );
 }

@@ -1,8 +1,14 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Paper, Text, ScrollArea, TextInput, Avatar, Group, Stack, ActionIcon, Tooltip, Button } from '@mantine/core';
-import { IconSend, IconMinus, IconX } from '@tabler/icons-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Badge } from '@/components/ui/badge';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Send, Minus, X, Loader2 } from 'lucide-react';
 import { AlexCostBreakdown, RexLeadDashboard, LexiOnboarding, UpgradePrompt, SystemMessage } from '@/components/ui/AgentComponents';
 import { 
   CostBreakdownChart, 
@@ -10,6 +16,8 @@ import {
   TimelineChart
 } from '@/components/ui/Charts';
 import { BRAND } from '@/lib/brand';
+import { motion, AnimatePresence } from 'framer-motion';
+import { cn } from '@/lib/utils';
 
 export type AgentType = 'lexi' | 'alex' | 'rex';
 
@@ -48,28 +56,32 @@ export interface ChatWindowProps {
 const AGENT_CONFIG = {
   lexi: {
     name: 'Lexi the Liaison',
-    color: BRAND.colors.primary,
+    color: 'from-[rgb(var(--primary-orange))] to-[rgb(var(--primary-blue))]',
+    bgColor: 'bg-gradient-to-r from-[rgb(var(--primary-orange))] to-[rgb(var(--primary-blue))]',
     avatar: '👩‍💼',
     description: 'Onboarding Guide',
   },
   alex: {
     name: 'Alex the Assessor',
-    color: BRAND.colors.secondary,
+    color: 'from-[rgb(var(--primary-purple))] to-[rgb(var(--primary-indigo))]',
+    bgColor: 'bg-gradient-to-r from-[rgb(var(--primary-purple))] to-[rgb(var(--primary-indigo))]',
     avatar: '📊',
     description: 'Bidding Assistant',
   },
   rex: {
     name: 'Rex the Retriever',
-    color: BRAND.colors.text.accent,
+    color: 'from-[rgb(var(--primary-teal))] to-[rgb(var(--primary-cyan))]',
+    bgColor: 'bg-gradient-to-r from-[rgb(var(--primary-teal))] to-[rgb(var(--primary-cyan))]',
     avatar: '🔍',
     description: 'Lead Generator',
   },
   system: {
     name: 'System',
-    color: BRAND.colors.warmGray,
+    color: 'from-neutral-400 to-neutral-500',
+    bgColor: 'bg-gradient-to-r from-neutral-400 to-neutral-500',
     avatar: '⚙️',
     description: 'System Notification',
- },
+  },
 };
 
 function GenerativeUIRenderer({ message }: { message: Message }) {
@@ -101,18 +113,24 @@ function GenerativeUIRenderer({ message }: { message: Message }) {
             data={ui_assets.data as Parameters<typeof LexiOnboarding>[0]['data']} 
             actions={actions || []}
           />
-        );      case 'upgrade_prompt':
+        );
+      
+      case 'upgrade_prompt':
         return (
           <UpgradePrompt 
             data={ui_assets.data as Parameters<typeof UpgradePrompt>[0]['data']}
           />
-        );      case 'system_message':
+        );
+      
+      case 'system_message':
         return (
           <SystemMessage 
             message={ui_assets.data.message as string}
             icon={ui_assets.data.icon as React.ElementType}
           />
-        );      case 'cost_breakdown_chart':
+        );
+      
+      case 'cost_breakdown_chart':
         return (
           <CostBreakdownChart 
             {...(ui_assets.data as unknown as React.ComponentProps<typeof CostBreakdownChart>)}
@@ -139,14 +157,22 @@ function GenerativeUIRenderer({ message }: { message: Message }) {
   };
 
   return (
-    <Stack my="md">
-        {renderComponent()}
-        {actions && actions.length > 0 && (
-            <Group mt="sm">
-                {actions.map((action, i) => <Button key={i} variant={action.style || 'filled'}>{action.label}</Button>)}
-            </Group>
-        )}
-    </Stack>
+    <div className="my-4 space-y-3">
+      {renderComponent()}
+      {actions && actions.length > 0 && (
+        <div className="flex flex-wrap gap-2 mt-3">
+          {actions.map((action, i) => (
+            <Button 
+              key={i} 
+              variant={action.style === 'primary' ? 'default' : action.style === 'secondary' ? 'secondary' : 'outline'}
+              size="sm"
+            >
+              {action.label}
+            </Button>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -178,100 +204,171 @@ export function ChatWindow({
   }, [messages]);
 
   return (
-    <Paper 
-        shadow="xl" 
-        radius="lg" 
-        withBorder 
-        style={{
-            height: isMinimized ? 'auto' : '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            overflow: 'hidden'
-        }}
-    >
-      <Group justify="space-between" p="sm" style={{ borderBottom: '1px solid var(--mantine-color-gray-3)', background: 'var(--mantine-color-gray-0)' }}>
-        <Group>
-          <Avatar size="md" color={config.color} style={{ color: 'white' }}>{config.avatar}</Avatar>
-          <div>
-            <Text fw={700}>{config.name}</Text>
-            <Text size="xs" c="dimmed">{config.description}</Text>
-          </div>
-        </Group>
-        <Group>
-            <Tooltip label={isMinimized ? 'Expand' : 'Minimize'}>
-                <ActionIcon variant="subtle" onClick={onMinimize}><IconMinus /></ActionIcon>
-            </Tooltip>
-            <Tooltip label="Close Chat">
-                <ActionIcon variant="subtle" color="red" onClick={onClose}><IconX /></ActionIcon>
-            </Tooltip>
-        </Group>
-      </Group>
-
-      {!isMinimized && (
-        <>
-          <ScrollArea style={{ flex: 1 }} p="md" viewportRef={viewport}>
-            <Stack gap="lg">
-              {messages.map((message) => {
-                const msgConfig = message.agentType ? AGENT_CONFIG[message.agentType] : AGENT_CONFIG.lexi; // Default to lexi for user/system
-                const isUser = message.role === 'user';
-                const isSystem = message.role === 'system';
-
-                if (isSystem) {
-                    return <SystemMessage key={message.id} message={message.content} />
-                }
-
-                return (
-                  <Group key={message.id} gap="md" align="flex-start" wrap="nowrap">
-                    {!isUser && (
-                      <Avatar size="sm" color={msgConfig.color} style={{ color: 'white' }}>
-                        {msgConfig.avatar}
-                      </Avatar>
-                    )}
-                    <Paper 
-                        p="md" 
-                        radius="lg" 
-                        withBorder
-                        style={{
-                            backgroundColor: isUser ? 'var(--mantine-color-blue-light)' : 'var(--mantine-color-gray-1)',
-                            maxWidth: '85%',
-                        }}
-                    >
-                      <Text size="sm">{message.content}</Text>
-                      <GenerativeUIRenderer message={message} />
-                    </Paper>
-                    {isUser && (
-                      <Avatar size="sm" color="gray">
-                        U
-                      </Avatar>
-                    )}
-                  </Group>
-                );
-              })}
-              {isTyping && (
-                <Group gap="md" align="flex-start" wrap="nowrap">
-                    <Avatar size="sm" color={config.color} style={{ color: 'white' }}>{config.avatar}</Avatar>
-                    <Text size="sm" c="dimmed">{config.name} is typing...</Text>
-                </Group>
-              )}
-            </Stack>
-          </ScrollArea>
-
-          <Paper p="sm" withBorder style={{ borderTop: '1px solid var(--mantine-color-gray-3)' }}>
-            <form onSubmit={handleLocalSubmit}>
-                <TextInput
-                    value={inputValue}
-                    onChange={(event) => setInputValue(event.currentTarget.value)}
-                    placeholder={`Message @${agentType}...`}
-                    rightSection={
-                        <ActionIcon type="submit" variant="filled" color={BRAND.colors.primary} radius="xl">
-                            <IconSend size={16} />
-                        </ActionIcon>
-                    }
-                />
-            </form>
-          </Paper>
-        </>
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      className={cn(
+        "fixed bottom-6 right-24 w-96 bg-white border border-neutral-200 rounded-xl shadow-2xl brand-shadow-lg overflow-hidden",
+        "z-40",
+        isMinimized ? "h-16" : "h-[500px]"
       )}
-    </Paper>
+    >
+      {/* Header */}
+      <div className="flex items-center justify-between p-4 border-b border-neutral-200 bg-gradient-to-r bg-neutral-50">
+        <div className="flex items-center gap-3">
+          <Avatar className={cn("h-8 w-8", config.bgColor)}>
+            <AvatarFallback className="text-white text-sm">
+              {config.avatar}
+            </AvatarFallback>
+          </Avatar>
+          <div>
+            <h3 className="font-semibold text-neutral-900 text-sm">{config.name}</h3>
+            <p className="text-xs text-neutral-600">{config.description}</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-1">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={onMinimize}
+                  className="h-8 w-8 p-0 hover:bg-neutral-100"
+                >
+                  <Minus className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{isMinimized ? 'Expand' : 'Minimize'}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={onClose}
+                  className="h-8 w-8 p-0 hover:bg-red-50 hover:text-red-600"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Close Chat</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+      </div>
+
+      {/* Messages and Input */}
+      <AnimatePresence>
+        {!isMinimized && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="flex flex-col h-[calc(500px-64px)]"
+          >
+            {/* Messages */}
+            <ScrollArea className="flex-1 p-4" ref={viewport}>
+              <div className="space-y-4">
+                {messages.map((message) => {
+                  const msgConfig = message.agentType ? AGENT_CONFIG[message.agentType] : AGENT_CONFIG.lexi;
+                  const isUser = message.role === 'user';
+                  const isSystem = message.role === 'system';
+
+                  if (isSystem) {
+                    return <SystemMessage key={message.id} message={message.content} />
+                  }
+
+                  return (
+                    <motion.div 
+                      key={message.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="flex gap-3 items-start"
+                    >
+                      {!isUser && (
+                        <Avatar className={cn("h-6 w-6 flex-shrink-0 mt-1", msgConfig.bgColor)}>
+                          <AvatarFallback className="text-white text-xs">
+                            {msgConfig.avatar}
+                          </AvatarFallback>
+                        </Avatar>
+                      )}
+                      
+                      <div className={cn(
+                        "rounded-lg p-3 max-w-[85%] brand-transition",
+                        isUser 
+                          ? "bg-gradient-to-r from-[rgb(var(--primary-orange))] to-[rgb(var(--primary-blue))] text-white ml-auto" 
+                          : "bg-neutral-100 text-neutral-900"
+                      )}>
+                        <p className="text-sm leading-relaxed">{message.content}</p>
+                        <GenerativeUIRenderer message={message} />
+                      </div>
+                      
+                      {isUser && (
+                        <Avatar className="h-6 w-6 flex-shrink-0 mt-1 bg-neutral-400">
+                          <AvatarFallback className="text-white text-xs">
+                            U
+                          </AvatarFallback>
+                        </Avatar>
+                      )}
+                    </motion.div>
+                  );
+                })}
+                
+                {isTyping && (
+                  <motion.div 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="flex gap-3 items-center"
+                  >
+                    <Avatar className={cn("h-6 w-6", config.bgColor)}>
+                      <AvatarFallback className="text-white text-xs">
+                        {config.avatar}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex items-center gap-2">
+                      <Loader2 className="h-4 w-4 animate-spin text-neutral-500" />
+                      <span className="text-sm text-neutral-600">{config.name} is typing...</span>
+                    </div>
+                  </motion.div>
+                )}
+              </div>
+            </ScrollArea>
+
+            {/* Input */}
+            <div className="border-t border-neutral-200 p-3">
+              <form onSubmit={handleLocalSubmit} className="flex gap-2">
+                <Input
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  placeholder={`Message @${agentType}...`}
+                  className="flex-1 brand-focus"
+                />
+                <Button
+                  type="submit"
+                  size="sm"
+                  disabled={!inputValue.trim()}
+                  className={cn(
+                    "h-10 w-10 p-0 rounded-full brand-transition",
+                    config.bgColor,
+                    "hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                  )}
+                >
+                  <Send className="h-4 w-4 text-white" />
+                </Button>
+              </form>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 }

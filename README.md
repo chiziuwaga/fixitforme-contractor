@@ -17,7 +17,7 @@ This is the contractor-facing module for FixItForMe, a robust, AI-driven platfor
 
 ## 🚀 Tech Stack
 
-- **Frontend:** Next.js 15 with TypeScript, Tailwind CSS, and Mantine UI
+- **Frontend:** Next.js 15 with TypeScript, Tailwind CSS, and Shadcn/ui
 - **Data Visualization:** D3.js and Recharts
 - **Backend:** Vercel Serverless Functions
 - **Database:** Supabase with Row Level Security

@@ -1,329 +1,310 @@
 'use client';
 
-import { useState } from 'react';
-import { 
-  ActionIcon, 
-  Indicator, 
-  Drawer, 
-  Stack, 
-  Text, 
-  Group, 
-  Badge, 
-  Button, 
-  Divider,
-  Paper,
-  ScrollArea,
-  Title,
-  ThemeIcon
-} from '@mantine/core';
-import { 
-  IconBell, 
-  IconX, 
-  IconCheck, 
-  IconAlertTriangle, 
-  IconInfoCircle,
-  IconSettings,
-  IconCreditCard 
-} from '@tabler/icons-react';
-import { AgentWorkingIndicator, AgentExecutionState } from './AgentWorkingIndicator';
-import { useExecutionManager } from './ConcurrentExecutionManager';
+import { useState, useCallback, createContext, useContext, ReactNode } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { X, Bell, Check, AlertTriangle, Info, AlertCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 import { BRAND } from '@/lib/brand';
 
 export interface Notification {
   id: string;
-  type: 'info' | 'success' | 'warning' | 'error' | 'agent' | 'system' | 'payment';
+  type: 'success' | 'error' | 'warning' | 'info';
   title: string;
-  message: string;
+  message?: string;
   timestamp: Date;
   read: boolean;
-  actionUrl?: string;
-  actionLabel?: string;
+  action?: {
+    label: string;
+    onClick: () => void;
+  };
+  autoClose?: boolean;
+  duration?: number;
 }
 
-interface NotificationCenterProps {
+interface NotificationContextType {
   notifications: Notification[];
-  onDismiss: (id: string) => void;
-  onMarkAsRead: (id: string) => void;
-  onClearAll: () => void;
-  onActionClick?: (notification: Notification) => void;
+  unreadCount: number;
+  addNotification: (notification: Omit<Notification, 'id' | 'timestamp' | 'read'>) => string;
+  markAsRead: (id: string) => void;
+  markAllAsRead: () => void;
+  removeNotification: (id: string) => void;
+  clearAll: () => void;
 }
 
-const notificationIcons = {
-  info: { icon: IconInfoCircle, color: 'blue' },
-  success: { icon: IconCheck, color: 'green' },
-  warning: { icon: IconAlertTriangle, color: 'yellow' },
-  error: { icon: IconX, color: 'red' },
-  agent: { icon: IconBell, color: 'blue' },
-  system: { icon: IconSettings, color: 'gray' },
-  payment: { icon: IconCreditCard, color: 'green' }
-};
+const NotificationContext = createContext<NotificationContextType | null>(null);
 
-function NotificationItem({ 
-  notification, 
-  onDismiss, 
-  onMarkAsRead, 
-  onActionClick 
-}: { 
-  notification: Notification;
-  onDismiss: (id: string) => void;
-  onMarkAsRead: (id: string) => void;
-  onActionClick?: (notification: Notification) => void;
-}) {
-  const config = notificationIcons[notification.type];
-  const IconComponent = config.icon;
-
-  const handleActionClick = () => {
-    if (onActionClick) {
-      onActionClick(notification);
-    }
-    if (!notification.read) {
-      onMarkAsRead(notification.id);
-    }
-  };
-
-  return (
-    <Paper
-      p="md"
-      withBorder
-      radius="md"
-      style={{
-        backgroundColor: notification.read ? 'transparent' : 'var(--mantine-color-blue-0)',
-        borderColor: notification.read ? 'var(--mantine-color-gray-3)' : 'var(--mantine-color-blue-3)'
-      }}
-    >
-      <Group align="flex-start" gap="md">
-        <ThemeIcon
-          size="lg"
-          radius="xl"
-          variant="light"
-          color={config.color}
-        >
-          <IconComponent size={16} />
-        </ThemeIcon>
-        
-        <div style={{ flex: 1 }}>
-          <Group justify="space-between" align="flex-start" mb="xs">
-            <Text fw={500} size="sm" lineClamp={1}>
-              {notification.title}
-            </Text>
-            <Group gap="xs">
-              {!notification.read && (
-                <Badge size="xs" color="blue" variant="filled">
-                  New
-                </Badge>
-              )}
-              <ActionIcon
-                size="sm"
-                variant="subtle"
-                color="gray"
-                onClick={() => onDismiss(notification.id)}
-              >
-                <IconX size={12} />
-              </ActionIcon>
-            </Group>
-          </Group>
-          
-          <Text size="sm" c="dimmed" mb="xs">
-            {notification.message}
-          </Text>
-          
-          <Group justify="space-between" align="center">
-            <Text size="xs" c="dimmed">
-              {notification.timestamp.toLocaleTimeString()}
-            </Text>
-            
-            {notification.actionUrl && notification.actionLabel && (
-              <Button
-                size="xs"
-                variant="light"
-                onClick={handleActionClick}
-              >
-                {notification.actionLabel}
-              </Button>
-            )}
-          </Group>
-        </div>
-      </Group>
-    </Paper>
-  );
-}
-
-export function NotificationCenter({ 
-  notifications, 
-  onDismiss, 
-  onMarkAsRead, 
-  onClearAll,
-  onActionClick 
-}: NotificationCenterProps) {
-  const [opened, setOpened] = useState(false);
-  const { activeSessions, cancelExecution } = useExecutionManager();
-  
-  const unreadCount = notifications.filter(n => !n.read).length;
-  const totalNotifications = unreadCount + activeSessions.length;
-
-  const handleClearAll = () => {
-    onClearAll();
-    setOpened(false);
-  };
-
-  return (
-    <>
-      <Indicator 
-        inline 
-        label={totalNotifications} 
-        size={16} 
-        disabled={totalNotifications === 0}
-        color="red"
-      >
-        <ActionIcon
-          variant="subtle"
-          size="lg"
-          onClick={() => setOpened(true)}
-          style={{
-            color: totalNotifications > 0 ? BRAND.colors.primary : undefined
-          }}
-        >
-          <IconBell size={20} />
-        </ActionIcon>
-      </Indicator>
-
-      <Drawer
-        opened={opened}
-        onClose={() => setOpened(false)}
-        title={
-          <Group justify="space-between" w="100%">
-            <Title order={4}>Notifications</Title>
-            {(notifications.length > 0 || activeSessions.length > 0) && (
-              <Button
-                variant="subtle"
-                size="xs"
-                onClick={handleClearAll}
-              >
-                Clear All
-              </Button>
-            )}
-          </Group>
-        }
-        position="right"
-        size="lg"
-        padding="md"
-      >
-        <ScrollArea style={{ height: 'calc(100vh - 120px)' }}>
-          <Stack gap="md">
-            {/* Active Agent Executions */}
-            {activeSessions.length > 0 && (
-              <>
-                <Group justify="space-between">
-                  <Text fw={500} c={BRAND.colors.agents.alex}>
-                    Active AI Operations
-                  </Text>
-                  <Badge color="blue" variant="light">
-                    {activeSessions.length}/2
-                  </Badge>
-                </Group>
-                
-                {activeSessions.map(session => (
-                  <AgentWorkingIndicator
-                    key={session.id}
-                    state={{
-                      id: session.id,
-                      agent: session.agent,
-                      status: 'analyzing', // Default status
-                      progress: session.progress,
-                      current_task: session.current_task
-                    } as AgentExecutionState}
-                    onCancel={() => cancelExecution(session.id)}
-                    compact
-                  />
-                ))}
-                
-                {activeSessions.length > 0 && notifications.length > 0 && (
-                  <Divider />
-                )}
-              </>
-            )}
-
-            {/* Regular Notifications */}
-            {notifications.length > 0 ? (
-              <>
-                <Group justify="space-between">
-                  <Text fw={500}>Recent Notifications</Text>
-                  <Badge color="gray" variant="light">
-                    {unreadCount} unread
-                  </Badge>
-                </Group>
-                
-                {notifications
-                  .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
-                  .map(notification => (
-                    <NotificationItem
-                      key={notification.id}
-                      notification={notification}
-                      onDismiss={onDismiss}
-                      onMarkAsRead={onMarkAsRead}
-                      onActionClick={onActionClick}
-                    />
-                  ))
-                }
-              </>
-            ) : activeSessions.length === 0 ? (
-              <Paper p="xl" radius="md" style={{ textAlign: 'center' }}>
-                <ThemeIcon
-                  size="xl"
-                  radius="xl"
-                  variant="light"
-                  color="gray"
-                  mx="auto"
-                  mb="md"
-                >
-                  <IconBell size={24} />
-                </ThemeIcon>
-                <Text c="dimmed">No notifications</Text>                <Text size="sm" c="dimmed">
-                  You&apos;re all caught up!
-                </Text>
-              </Paper>
-            ) : null}
-          </Stack>
-        </ScrollArea>
-      </Drawer>
-    </>
-  );
-}
-
-// Hook for managing notifications
 export function useNotifications() {
+  const context = useContext(NotificationContext);
+  if (!context) {
+    throw new Error('useNotifications must be used within a NotificationProvider');
+  }
+  return context;
+}
+
+interface NotificationProviderProps {
+  children: ReactNode;
+}
+
+export function NotificationProvider({ children }: NotificationProviderProps) {
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
-  const addNotification = (notification: Omit<Notification, 'id' | 'timestamp' | 'read'>) => {
+  const addNotification = useCallback((notification: Omit<Notification, 'id' | 'timestamp' | 'read'>) => {
+    const id = `notification-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     const newNotification: Notification = {
       ...notification,
-      id: `notif_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id,
       timestamp: new Date(),
       read: false
     };
-    
-    setNotifications(prev => [newNotification, ...prev.slice(0, 49)]); // Keep last 50
-  };
 
-  const dismissNotification = (id: string) => {
-    setNotifications(prev => prev.filter(n => n.id !== id));
-  };
+    setNotifications(prev => [newNotification, ...prev]);
 
-  const markAsRead = (id: string) => {
+    // Auto remove notification if autoClose is enabled
+    if (notification.autoClose !== false) {
+      const duration = notification.duration || 5000;
+      setTimeout(() => {
+        removeNotification(id);
+      }, duration);
+    }
+
+    return id;
+  }, []);
+
+  const markAsRead = useCallback((id: string) => {
     setNotifications(prev => 
-      prev.map(n => n.id === id ? { ...n, read: true } : n)
+      prev.map(notification => 
+        notification.id === id 
+          ? { ...notification, read: true }
+          : notification
+      )
     );
-  };
+  }, []);
 
-  const clearAll = () => {
+  const markAllAsRead = useCallback(() => {
+    setNotifications(prev => 
+      prev.map(notification => ({ ...notification, read: true }))
+    );
+  }, []);
+
+  const removeNotification = useCallback((id: string) => {
+    setNotifications(prev => prev.filter(notification => notification.id !== id));
+  }, []);
+
+  const clearAll = useCallback(() => {
     setNotifications([]);
-  };
+  }, []);
 
-  return {
+  const unreadCount = notifications.filter(n => !n.read).length;
+
+  const value: NotificationContextType = {
     notifications,
+    unreadCount,
     addNotification,
-    dismissNotification,
     markAsRead,
+    markAllAsRead,
+    removeNotification,
     clearAll
   };
+
+  return (
+    <NotificationContext.Provider value={value}>
+      {children}
+    </NotificationContext.Provider>
+  );
 }
+
+interface NotificationCenterProps {
+  className?: string;
+}
+
+export function NotificationCenter({ className }: NotificationCenterProps) {
+  const { notifications, unreadCount, markAsRead, removeNotification, markAllAsRead, clearAll } = useNotifications();
+  const [isOpen, setIsOpen] = useState(false);
+
+  const getIcon = (type: Notification['type']) => {
+    switch (type) {
+      case 'success':
+        return <Check className="w-4 h-4" />;
+      case 'error':
+        return <AlertCircle className="w-4 h-4" />;
+      case 'warning':
+        return <AlertTriangle className="w-4 h-4" />;
+      case 'info':
+        return <Info className="w-4 h-4" />;
+    }
+  };
+
+  const getColors = (type: Notification['type']) => {
+    switch (type) {
+      case 'success':
+        return 'text-green-600 bg-green-50 border-green-200';
+      case 'error':
+        return 'text-red-600 bg-red-50 border-red-200';
+      case 'warning':
+        return 'text-yellow-600 bg-yellow-50 border-yellow-200';
+      case 'info':
+        return 'text-blue-600 bg-blue-50 border-blue-200';
+    }
+  };
+
+  return (
+    <div className={cn("relative", className)}>
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => setIsOpen(!isOpen)}
+        className="relative p-2"
+      >
+        <Bell className="w-5 h-5" />
+        {unreadCount > 0 && (
+          <Badge 
+            className="absolute -top-1 -right-1 min-w-[1.25rem] h-5 p-0 flex items-center justify-center text-xs"
+            style={{ backgroundColor: BRAND.colors.primary }}
+          >
+            {unreadCount > 99 ? '99+' : unreadCount}
+          </Badge>
+        )}
+      </Button>
+
+      <AnimatePresence>
+        {isOpen && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-40"
+              onClick={() => setIsOpen(false)}
+            />
+
+            {/* Notification Panel */}
+            <motion.div
+              initial={{ opacity: 0, y: -10, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -10, scale: 0.95 }}
+              className="absolute right-0 top-full mt-2 w-80 bg-background border border-border rounded-lg shadow-lg z-50 max-h-96 overflow-hidden"
+            >
+              {/* Header */}
+              <div className="p-4 border-b border-border">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-semibold text-foreground">Notifications</h3>
+                  <div className="flex items-center gap-2">
+                    {unreadCount > 0 && (
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={markAllAsRead}
+                        className="text-xs"
+                      >
+                        Mark all read
+                      </Button>
+                    )}
+                    {notifications.length > 0 && (
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={clearAll}
+                        className="text-xs"
+                      >
+                        Clear all
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Notifications List */}
+              <div className="max-h-64 overflow-y-auto">
+                {notifications.length === 0 ? (
+                  <div className="p-6 text-center text-muted-foreground">
+                    <Bell className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                    <p className="text-sm">No notifications</p>
+                  </div>
+                ) : (
+                  <div className="divide-y divide-border">
+                    {notifications.map((notification) => (
+                      <motion.div
+                        key={notification.id}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, x: -10 }}
+                        className={cn(
+                          "p-4 hover:bg-muted/50 transition-colors",
+                          !notification.read && "bg-muted/25"
+                        )}
+                        onClick={() => !notification.read && markAsRead(notification.id)}
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className={cn("p-1 rounded-full", getColors(notification.type))}>
+                            {getIcon(notification.type)}
+                          </div>
+                          
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-start justify-between gap-2">
+                              <h4 className={cn(
+                                "text-sm font-medium",
+                                !notification.read && "font-semibold"
+                              )}>
+                                {notification.title}
+                              </h4>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  removeNotification(notification.id);
+                                }}
+                                className="p-1 h-auto opacity-60 hover:opacity-100"
+                              >
+                                <X className="w-3 h-3" />
+                              </Button>
+                            </div>
+                            
+                            {notification.message && (
+                              <p className="text-xs text-muted-foreground mt-1">
+                                {notification.message}
+                              </p>
+                            )}
+                            
+                            <div className="flex items-center justify-between mt-2">
+                              <span className="text-xs text-muted-foreground">
+                                {notification.timestamp.toLocaleTimeString([], { 
+                                  hour: '2-digit', 
+                                  minute: '2-digit' 
+                                })}
+                              </span>
+                              
+                              {notification.action && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    notification.action?.onClick();
+                                    removeNotification(notification.id);
+                                  }}
+                                  className="text-xs h-auto p-1"
+                                >
+                                  {notification.action.label}
+                                </Button>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+export default NotificationCenter;

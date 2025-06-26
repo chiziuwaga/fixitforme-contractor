@@ -2,21 +2,13 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { 
-  Container, 
-  Paper, 
-  TextInput, 
-  Button, 
-  Title, 
-  Text, 
-  Stack,
-  Alert,
-  LoadingOverlay,
-  Group
-} from '@mantine/core';
-import { useForm } from '@mantine/form';
-import { notifications } from '@mantine/notifications';
-import { IconPhone, IconShield, IconCheck, IconAlertCircle } from '@tabler/icons-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Loader2, Phone, Shield, Check, AlertCircle, ArrowLeft } from 'lucide-react';
+import { toast } from 'sonner';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface AuthFormProps {
   onSuccess?: (data: {
@@ -32,45 +24,42 @@ export default function ContractorAuth({ onSuccess }: AuthFormProps) {
   const [step, setStep] = useState<'phone' | 'verify'>('phone');
   const [loading, setLoading] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [phone, setPhone] = useState('');
+  const [code, setCode] = useState('');
+  const [errors, setErrors] = useState<{ phone?: string; code?: string }>({});
   const router = useRouter();
 
-  const phoneForm = useForm({
-    initialValues: {
-      phone: ''
-    },
-    validate: {
-      phone: (value) => {
-        const phoneRegex = /^\+?[1-9]\d{9,14}$/;
-        if (!phoneRegex.test(value.replace(/\s+/g, ''))) {
-          return 'Please enter a valid phone number';
-        }
-        return null;
-      }
+  const validatePhone = (value: string) => {
+    const phoneRegex = /^\+?[1-9]\d{9,14}$/;
+    if (!phoneRegex.test(value.replace(/\s+/g, ''))) {
+      return 'Please enter a valid phone number';
     }
-  });
+    return null;
+  };
 
-  const verifyForm = useForm({
-    initialValues: {
-      code: ''
-    },
-    validate: {
-      code: (value) => {
-        if (!value || value.length !== 6) {
-          return 'Please enter the 6-digit verification code';
-        }
-        return null;
-      }
+  const validateCode = (value: string) => {
+    if (!value || value.length !== 6) {
+      return 'Please enter the 6-digit verification code';
     }
-  });
+    return null;
+  };
 
-  const handlePhoneSubmit = async (values: { phone: string }) => {
+  const handlePhoneSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const phoneError = validatePhone(phone);
+    if (phoneError) {
+      setErrors({ phone: phoneError });
+      return;
+    }
+    
     setLoading(true);
+    setErrors({});
     
     try {
       const response = await fetch('/api/auth/send-sms', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: values.phone })
+        body: JSON.stringify({ phone })
       });
 
       const data = await response.json();
@@ -79,31 +68,33 @@ export default function ContractorAuth({ onSuccess }: AuthFormProps) {
         throw new Error(data.error || 'Failed to send verification code');
       }
 
-      setPhoneNumber(values.phone);
+      setPhoneNumber(phone);
       setStep('verify');
       
-      notifications.show({
-        title: 'Code Sent',
-        message: 'Please check your phone for the 6-digit verification code',
-        color: 'blue',
-        icon: <IconCheck size={16} />
+      toast.success('Code Sent', {
+        description: 'Please check your phone for the 6-digit verification code',
       });
 
     } catch (error) {
       console.error('Phone submission error:', error);
-      notifications.show({
-        title: 'Error',
-        message: error instanceof Error ? error.message : 'Failed to send verification code',
-        color: 'red',
-        icon: <IconAlertCircle size={16} />
+      toast.error('Error', {
+        description: error instanceof Error ? error.message : 'Failed to send verification code',
       });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleVerifySubmit = async (values: { code: string }) => {
+  const handleVerifySubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const codeError = validateCode(code);
+    if (codeError) {
+      setErrors({ code: codeError });
+      return;
+    }
+    
     setLoading(true);
+    setErrors({});
     
     try {
       const response = await fetch('/api/auth/verify-sms', {
@@ -111,7 +102,7 @@ export default function ContractorAuth({ onSuccess }: AuthFormProps) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           phone: phoneNumber, 
-          token: values.code 
+          token: code 
         })
       });
 
@@ -121,11 +112,8 @@ export default function ContractorAuth({ onSuccess }: AuthFormProps) {
         throw new Error(data.error || 'Invalid verification code');
       }
 
-      notifications.show({
-        title: 'Welcome!',
-        message: 'Phone verification successful',
-        color: 'green',
-        icon: <IconCheck size={16} />
+      toast.success('Welcome!', {
+        description: 'Phone verification successful',
       });
 
       // Handle successful authentication
@@ -138,15 +126,12 @@ export default function ContractorAuth({ onSuccess }: AuthFormProps) {
 
     } catch (error) {
       console.error('Verification error:', error);
-      notifications.show({
-        title: 'Verification Failed',
-        message: error instanceof Error ? error.message : 'Invalid verification code',
-        color: 'red',
-        icon: <IconAlertCircle size={16} />
+      toast.error('Verification Failed', {
+        description: error instanceof Error ? error.message : 'Invalid verification code',
       });
       
       // Reset code input
-      verifyForm.setFieldValue('code', '');
+      setCode('');
     } finally {
       setLoading(false);
     }
@@ -155,91 +140,164 @@ export default function ContractorAuth({ onSuccess }: AuthFormProps) {
   const handleBackToPhone = () => {
     setStep('phone');
     setPhoneNumber('');
-    verifyForm.reset();
+    setCode('');
+    setErrors({});
   };
 
   return (
-    <Container size={420} my={40}>
-      <Paper withBorder shadow="md" p={30} mt={30} radius="md" pos="relative">
-        <LoadingOverlay visible={loading} overlayProps={{ radius: 'md', blur: 2 }} />
-        
-        <Stack gap="lg">
-          <div style={{ textAlign: 'center' }}>
-            <Title order={2} ta="center" fw={900}>
-              FixItForMe Contractor
-            </Title>
-            <Text c="dimmed" size="sm" ta="center" mt={5}>
-              {step === 'phone' 
-                ? 'Enter your phone number to get started' 
-                : 'Enter the verification code sent to your phone'
-              }
-            </Text>
-          </div>
+    <div className="min-h-screen bg-gradient-to-br from-brand-primary/10 via-white to-brand-secondary/10 flex items-center justify-center p-4">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="w-full max-w-md"
+      >
+        <Card className="shadow-2xl border-0 bg-white/90 backdrop-blur-sm">
+          <CardHeader className="text-center space-y-4 pb-8">
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.2 }}
+              className="mx-auto w-16 h-16 bg-gradient-to-r from-brand-primary to-brand-primary/80 rounded-full flex items-center justify-center"
+            >
+              {step === 'phone' ? (
+                <Phone className="h-8 w-8 text-white" />
+              ) : (
+                <Shield className="h-8 w-8 text-white" />
+              )}
+            </motion.div>
+            
+            <div>
+              <CardTitle className="text-2xl font-bold text-gray-900">
+                {step === 'phone' ? 'Welcome Back' : 'Verify Your Phone'}
+              </CardTitle>
+              <p className="text-muted-foreground mt-2">
+                {step === 'phone' 
+                  ? 'Enter your phone number to continue'
+                  : `We sent a code to ${phoneNumber}`
+                }
+              </p>
+            </div>
+          </CardHeader>
 
-          {step === 'phone' ? (
-            <form onSubmit={phoneForm.onSubmit(handlePhoneSubmit)}>
-              <Stack gap="md">
-                <TextInput
-                  label="Phone Number"
-                  placeholder="+1 (555) 123-4567"
-                  leftSection={<IconPhone size={16} />}
-                  size="md"
-                  {...phoneForm.getInputProps('phone')}
-                />
-                  <Alert icon={<IconShield size={16} />} color="blue">
-                  We&apos;ll send you a 6-digit verification code via SMS. 
-                  Your number will be kept secure and only used for authentication.
-                </Alert>
-
-                <Button 
-                  type="submit" 
-                  fullWidth 
-                  size="md"
-                  disabled={loading}
+          <CardContent className="space-y-6">
+            <AnimatePresence mode="wait">
+              {step === 'phone' ? (
+                <motion.form
+                  key="phone"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                  onSubmit={handlePhoneSubmit}
+                  className="space-y-4"
                 >
-                  Send Verification Code
-                </Button>
-              </Stack>
-            </form>
-          ) : (
-            <form onSubmit={verifyForm.onSubmit(handleVerifySubmit)}>
-              <Stack gap="md">
-                <Alert icon={<IconPhone size={16} />} color="blue">
-                  Code sent to {phoneNumber}
-                </Alert>
+                  <div className="space-y-2">
+                    <Input
+                      type="tel"
+                      placeholder="+1 (555) 123-4567"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      className="h-12 text-lg border-2 focus:border-brand-primary"
+                      disabled={loading}
+                    />
+                    {errors.phone && (
+                      <Alert variant="destructive">
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertDescription>{errors.phone}</AlertDescription>
+                      </Alert>
+                    )}
+                  </div>
 
-                <TextInput
-                  label="Verification Code"
-                  placeholder="123456"
-                  size="md"
-                  maxLength={6}
-                  {...verifyForm.getInputProps('code')}
-                />
-
-                <Button 
-                  type="submit" 
-                  fullWidth 
-                  size="md"
-                  disabled={loading}
-                >
-                  Verify & Continue
-                </Button>
-
-                <Group justify="center">
                   <Button 
-                    variant="subtle" 
-                    size="sm"
-                    onClick={handleBackToPhone}
-                    disabled={loading}
+                    type="submit" 
+                    disabled={loading || !phone.trim()}
+                    className="w-full h-12 text-lg bg-gradient-to-r from-brand-primary to-brand-primary/80 hover:from-brand-primary/90 hover:to-brand-primary/70"
                   >
-                    Use Different Number
+                    {loading ? (
+                      <>
+                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                        Sending Code...
+                      </>
+                    ) : (
+                      'Send Verification Code'
+                    )}
                   </Button>
-                </Group>
-              </Stack>
-            </form>
-          )}
-        </Stack>
-      </Paper>
-    </Container>
+                </motion.form>
+              ) : (
+                <motion.form
+                  key="verify"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  onSubmit={handleVerifySubmit}
+                  className="space-y-4"
+                >
+                  <div className="space-y-2">
+                    <Input
+                      type="text"
+                      placeholder="000000"
+                      value={code}
+                      onChange={(e) => setCode(e.target.value)}
+                      className="h-12 text-lg text-center tracking-widest border-2 focus:border-brand-primary"
+                      maxLength={6}
+                      disabled={loading}
+                    />
+                    {errors.code && (
+                      <Alert variant="destructive">
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertDescription>{errors.code}</AlertDescription>
+                      </Alert>
+                    )}
+                  </div>
+
+                  <div className="space-y-3">
+                    <Button 
+                      type="submit" 
+                      disabled={loading || code.length !== 6}
+                      className="w-full h-12 text-lg bg-gradient-to-r from-brand-primary to-brand-primary/80 hover:from-brand-primary/90 hover:to-brand-primary/70"
+                    >
+                      {loading ? (
+                        <>
+                          <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                          Verifying...
+                        </>
+                      ) : (
+                        <>
+                          <Check className="mr-2 h-5 w-5" />
+                          Verify & Continue
+                        </>
+                      )}
+                    </Button>
+
+                    <Button 
+                      type="button"
+                      variant="ghost"
+                      onClick={handleBackToPhone}
+                      disabled={loading}
+                      className="w-full h-10 text-muted-foreground hover:text-brand-primary"
+                    >
+                      <ArrowLeft className="mr-2 h-4 w-4" />
+                      Back to Phone Number
+                    </Button>
+                  </div>
+                </motion.form>
+              )}
+            </AnimatePresence>
+
+            <div className="text-center text-sm text-muted-foreground">
+              <p>
+                By continuing, you agree to our{' '}
+                <a href="/terms" className="text-brand-primary hover:underline">
+                  Terms of Service
+                </a>{' '}
+                and{' '}
+                <a href="/privacy" className="text-brand-primary hover:underline">
+                  Privacy Policy
+                </a>
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
+    </div>
   );
 }

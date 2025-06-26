@@ -1,7 +1,8 @@
 'use client';
 
-import { Tabs, Container, Title } from '@mantine/core';
-import { IconUserCircle, IconCreditCard, IconFileText } from '@tabler/icons-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { User, CreditCard, FileText } from 'lucide-react';
 import SubscriptionManager from '@/components/settings/SubscriptionManager';
 import ProfileEditor from '@/components/settings/ProfileEditor';
 import DocumentUploader from '@/components/settings/DocumentUploader';
@@ -11,93 +12,122 @@ import { containerVariants, itemVariants } from '@/lib/animations';
 
 export default function SettingsPage() {
   return (
-    <motion.div 
-      variants={containerVariants} 
-      initial="hidden" 
-      animate="visible"
-      style={{ 
-        padding: '2rem', 
-        backgroundColor: BRAND.colors.background.secondary, 
-        minHeight: 'calc(100vh - var(--app-shell-header-height, 0px))' 
-      }}
-    >
-      <Container size="lg">
-        <motion.div variants={itemVariants}>
-          <Title 
-            order={1} 
-            mb="xl" 
-            style={{ 
-              fontFamily: BRAND.typography.fontFamily.sans.join(','), 
-              fontWeight: BRAND.typography.fontWeight.bold, 
-              color: BRAND.colors.text.primary 
-            }}
-          >
+    <div className="min-h-screen bg-gradient-to-br from-neutral-50 to-neutral-100">
+      <motion.div 
+        variants={containerVariants} 
+        initial="hidden" 
+        animate="visible"
+        className="container mx-auto px-6 py-8"
+      >
+        <motion.div variants={itemVariants} className="mb-8">
+          <h1 className="text-4xl font-heading font-bold text-[rgb(var(--primary-orange))] mb-2">
             Settings
-          </Title>
+          </h1>
+          <p className="text-neutral-600 text-lg">
+            Manage your account, subscription, and profile settings
+          </p>
         </motion.div>
         
         <motion.div variants={itemVariants}>
-          <Tabs 
-            defaultValue="profile" 
-            variant="pills" 
-            orientation="vertical"
-            styles={{
-              tab: {
-                color: BRAND.colors.text.primary,
-                fontSize: BRAND.typography.fontSize.sm,
-                padding: `1rem 1.5rem`,
-                borderRadius: BRAND.borderRadius.lg,
-                '&[data-active]': {
-                  backgroundColor: BRAND.colors.primary,
-                  color: BRAND.colors.text.inverse,
-                },
-                '&[data-active] .mantine-Tabs-tabSection': {
-                  color: BRAND.colors.text.inverse,
-                },
-              },
-              panel: {
-                backgroundColor: BRAND.colors.background.primary,
-                padding: '2rem',
-                borderRadius: BRAND.borderRadius.lg,
-                boxShadow: BRAND.shadows.md,
-              }
-            }}
-          >
-            <Tabs.List>
-              <Tabs.Tab 
-                value="profile" 
-                leftSection={<IconUserCircle size={20} />}
-              >
-                Profile
-              </Tabs.Tab>
-              <Tabs.Tab 
-                value="subscription" 
-                leftSection={<IconCreditCard size={20} />}
-              >
-                Subscription & Billing
-              </Tabs.Tab>
-              <Tabs.Tab 
-                value="documents" 
-                leftSection={<IconFileText size={20} />}
-              >
-                Documents & Verification
-              </Tabs.Tab>
-            </Tabs.List>
+          <Tabs defaultValue="profile" className="grid grid-cols-12 gap-6">
+            {/* Sidebar Navigation */}
+            <div className="col-span-12 lg:col-span-3">
+              <Card className="brand-shadow border-0 bg-white/95 backdrop-blur-sm">
+                <CardContent className="p-0">
+                  <TabsList className="flex flex-col h-auto w-full bg-transparent">
+                    <TabsTrigger 
+                      value="profile" 
+                      className="w-full justify-start gap-3 p-4 text-left data-[state=active]:bg-gradient-to-r data-[state=active]:from-[rgb(var(--primary-orange))] data-[state=active]:to-[rgb(var(--primary-blue))] data-[state=active]:text-white hover:bg-neutral-50 brand-transition"
+                    >
+                      <User className="h-5 w-5" />
+                      <div className="text-left">
+                        <div className="font-medium">Profile</div>
+                        <div className="text-xs opacity-70">Personal information</div>
+                      </div>
+                    </TabsTrigger>
+                    
+                    <TabsTrigger 
+                      value="subscription" 
+                      className="w-full justify-start gap-3 p-4 text-left data-[state=active]:bg-gradient-to-r data-[state=active]:from-[rgb(var(--primary-purple))] data-[state=active]:to-[rgb(var(--primary-indigo))] data-[state=active]:text-white hover:bg-neutral-50 brand-transition"
+                    >
+                      <CreditCard className="h-5 w-5" />
+                      <div className="text-left">
+                        <div className="font-medium">Subscription</div>
+                        <div className="text-xs opacity-70">Billing & plans</div>
+                      </div>
+                    </TabsTrigger>
+                    
+                    <TabsTrigger 
+                      value="documents" 
+                      className="w-full justify-start gap-3 p-4 text-left data-[state=active]:bg-gradient-to-r data-[state=active]:from-[rgb(var(--primary-teal))] data-[state=active]:to-[rgb(var(--primary-cyan))] data-[state=active]:text-white hover:bg-neutral-50 brand-transition"
+                    >
+                      <FileText className="h-5 w-5" />
+                      <div className="text-left">
+                        <div className="font-medium">Documents</div>
+                        <div className="text-xs opacity-70">Verification & files</div>
+                      </div>
+                    </TabsTrigger>
+                  </TabsList>
+                </CardContent>
+              </Card>
+            </div>
 
-            <Tabs.Panel value="profile" pl="md">
-              <ProfileEditor />
-            </Tabs.Panel>
+            {/* Main Content Area */}
+            <div className="col-span-12 lg:col-span-9">
+              <TabsContent value="profile" className="mt-0">
+                <Card className="brand-shadow-lg border-0 bg-white/95 backdrop-blur-sm">
+                  <CardHeader className="bg-gradient-to-r from-[rgb(var(--primary-orange))]/10 to-[rgb(var(--primary-blue))]/10 border-b border-neutral-200">
+                    <CardTitle className="text-2xl text-[rgb(var(--primary-orange))] flex items-center gap-3">
+                      <User className="h-6 w-6" />
+                      Profile Settings
+                    </CardTitle>
+                    <CardDescription>
+                      Update your personal information, business details, and service areas
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="p-6">
+                    <ProfileEditor />
+                  </CardContent>
+                </Card>
+              </TabsContent>
 
-            <Tabs.Panel value="subscription" pl="md">
-              <SubscriptionManager />
-            </Tabs.Panel>
+              <TabsContent value="subscription" className="mt-0">
+                <Card className="brand-shadow-lg border-0 bg-white/95 backdrop-blur-sm">
+                  <CardHeader className="bg-gradient-to-r from-[rgb(var(--primary-purple))]/10 to-[rgb(var(--primary-indigo))]/10 border-b border-neutral-200">
+                    <CardTitle className="text-2xl text-[rgb(var(--primary-purple))] flex items-center gap-3">
+                      <CreditCard className="h-6 w-6" />
+                      Subscription & Billing
+                    </CardTitle>
+                    <CardDescription>
+                      Manage your subscription plan, billing information, and payment methods
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="p-6">
+                    <SubscriptionManager />
+                  </CardContent>
+                </Card>
+              </TabsContent>
 
-            <Tabs.Panel value="documents" pl="md">
-              <DocumentUploader />
-            </Tabs.Panel>
+              <TabsContent value="documents" className="mt-0">
+                <Card className="brand-shadow-lg border-0 bg-white/95 backdrop-blur-sm">
+                  <CardHeader className="bg-gradient-to-r from-[rgb(var(--primary-teal))]/10 to-[rgb(var(--primary-cyan))]/10 border-b border-neutral-200">
+                    <CardTitle className="text-2xl text-[rgb(var(--primary-teal))] flex items-center gap-3">
+                      <FileText className="h-6 w-6" />
+                      Documents & Verification
+                    </CardTitle>
+                    <CardDescription>
+                      Upload and manage your licenses, insurance, and certification documents
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="p-6">
+                    <DocumentUploader />
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            </div>
           </Tabs>
         </motion.div>
-      </Container>
-    </motion.div>
+      </motion.div>
+    </div>
   );
 }

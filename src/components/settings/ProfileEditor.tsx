@@ -1,120 +1,213 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useForm } from '@mantine/form';
-import { TextInput, Button, MultiSelect, Paper, Title, LoadingOverlay, Text } from '@mantine/core';
-import { notifications } from '@mantine/notifications';
-import { useUser } from '@/providers/UserProvider';
-import { supabase } from '@/lib/supabase';
-import { felixProblemReference } from '@/lib/felix';
+import { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { MultiSelect } from '@/components/ui/multi-select';
+import { toast } from 'sonner';
 
-const serviceCategories = [...new Set(Object.values(felixProblemReference).flat())].map(problem => ({ value: problem, label: problem }));
+interface ProfileData {
+  name: string;
+  email: string;
+  phone: string;
+  company: string;
+  license_number: string;
+  services: string[];
+  service_areas: string[];
+  experience_years: number;
+  bio: string;
+}
 
-export default function ProfileEditor() {
-  const { user, loading: userLoading, profile } = useUser();
-  const [submitting, setSubmitting] = useState(false);
+interface ProfileEditorProps {
+  initialData?: Partial<ProfileData>;
+  onSave?: (data: ProfileData) => void;
+}
 
-  const form = useForm({
-    initialValues: {
-      company_name: '',
-      contact_phone: '',
-      service_areas: [] as string[], // Type service areas as string array
-      services_offered: [] as string[], // Type services offered as string array
-    },
-
-    validate: {
-      company_name: (value) => (value.length < 2 ? 'Company name must have at least 2 letters' : null),
-      contact_phone: (value) => (/^\+?[1-9]\d{1,14}$/.test(value) ? null : 'Invalid phone number format'),
-      service_areas: (value) => (value.length === 0 ? 'At least one service area is required' : null),
-      services_offered: (value) => (value.length === 0 ? 'At least one service offered is required' : null),
-    },
+export default function ProfileEditor({ initialData, onSave }: ProfileEditorProps) {
+  const [formData, setFormData] = useState<ProfileData>({
+    name: initialData?.name || '',
+    email: initialData?.email || '',
+    phone: initialData?.phone || '',
+    company: initialData?.company || '',
+    license_number: initialData?.license_number || '',
+    services: initialData?.services || [],
+    service_areas: initialData?.service_areas || [],
+    experience_years: initialData?.experience_years || 0,
+    bio: initialData?.bio || '',
   });
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (profile) {
-      form.setValues({
-        company_name: profile.company_name || '',
-        contact_phone: profile.contact_phone || '',
-        service_areas: profile.service_areas || [],
-        services_offered: profile.services_offered || [],
-      });
+  const serviceOptions = [
+    { label: 'Plumbing', value: 'plumbing' },
+    { label: 'Electrical', value: 'electrical' },
+    { label: 'HVAC', value: 'hvac' },
+    { label: 'Carpentry', value: 'carpentry' },
+    { label: 'Painting', value: 'painting' },
+    { label: 'Flooring', value: 'flooring' },
+    { label: 'Roofing', value: 'roofing' },
+    { label: 'Kitchen Remodel', value: 'kitchen' },
+    { label: 'Bathroom Remodel', value: 'bathroom' },
+    { label: 'General Repair', value: 'general' }
+  ];
+
+  const areaOptions = [
+    { label: 'Oakland', value: 'oakland' },
+    { label: 'Berkeley', value: 'berkeley' },
+    { label: 'San Francisco', value: 'san_francisco' },
+    { label: 'San Leandro', value: 'san_leandro' },
+    { label: 'Alameda', value: 'alameda' },
+    { label: 'Fremont', value: 'fremont' },
+    { label: 'Hayward', value: 'hayward' }
+  ];
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      if (onSave) {
+        onSave(formData);
+      }
+      
+      toast.success('Profile updated successfully!');
+    } catch (error) {
+      toast.error('Failed to update profile');
+    } finally {
+      setLoading(false);
     }
-  }, [profile, form]);
+  };
 
-  const handleSubmit = async (values: typeof form.values) => {
-    if (!user) return;
-
-    setSubmitting(true);
-    
-    const { error } = await supabase
-      .from('contractor_profiles')
-      .upsert({
-        user_id: user.id,
-        company_name: values.company_name,
-        contact_phone: values.contact_phone,
-        service_areas: values.service_areas,
-        services_offered: values.services_offered,
-        updated_at: new Date().toISOString(),
-      });
-
-    if (error) {
-      console.error('Error updating profile:', error);
-      notifications.show({
-        title: 'Error',
-        message: 'Failed to update your profile. Please try again.',
-        color: 'red',
-      });
-    } else {
-      notifications.show({
-        title: 'Success',
-        message: 'Your profile has been updated successfully!',
-        color: 'green',
-      });
-    }
-    
-    setSubmitting(false);
+  const handleChange = (field: keyof ProfileData, value: string | string[] | number) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   return (
-    <Paper shadow="md" p="lg" withBorder>
-        <LoadingOverlay visible={userLoading || submitting} />
-        <Title order={3} mb="lg">Edit Your Profile</Title>
-        <Text c="dimmed" mb="xl">Keep your information up to date to attract more leads.</Text>
-        <form onSubmit={form.onSubmit(handleSubmit)}>
-            <TextInput
+    <Card>
+      <CardHeader>
+        <CardTitle>Edit Profile</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">Full Name</Label>
+              <Input
+                id="name"
+                value={formData.name}
+                onChange={(e) => handleChange('name', e.target.value)}
+                placeholder="John Smith"
                 required
-                label="Company Name"
-                placeholder="Your Company LLC"
-                {...form.getInputProps('company_name')}
-            />
-            <TextInput
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="company">Company Name</Label>
+              <Input
+                id="company"
+                value={formData.company}
+                onChange={(e) => handleChange('company', e.target.value)}
+                placeholder="Smith Construction LLC"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                value={formData.email}
+                onChange={(e) => handleChange('email', e.target.value)}
+                placeholder="john@example.com"
                 required
-                mt="md"
-                label="Contact Phone"
-                placeholder="+1234567890"
-                {...form.getInputProps('contact_phone')}
-            />            <MultiSelect
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="phone">Phone</Label>
+              <Input
+                id="phone"
+                type="tel"
+                value={formData.phone}
+                onChange={(e) => handleChange('phone', e.target.value)}
+                placeholder="+1 (555) 123-4567"
                 required
-                mt="md"
-                label="Service Areas (e.g., Zip Codes, Cities)"
-                placeholder="Type and press Enter to add areas"
-                data={form.values.service_areas} // Show existing values as selectable
-                searchable
-                {...form.getInputProps('service_areas')}
-            />
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="license">License Number</Label>
+              <Input
+                id="license"
+                value={formData.license_number}
+                onChange={(e) => handleChange('license_number', e.target.value)}
+                placeholder="CA-12345678"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="experience">Years of Experience</Label>
+              <Input
+                id="experience"
+                type="number"
+                value={formData.experience_years}
+                onChange={(e) => handleChange('experience_years', parseInt(e.target.value) || 0)}
+                placeholder="10"
+                min="0"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Services Offered</Label>
             <MultiSelect
-                required
-                mt="md"
-                label="Services Offered"
-                placeholder="Select the services you provide"
-                data={serviceCategories}
-                searchable
-                nothingFoundMessage="No services found"
-                {...form.getInputProps('services_offered')}
-            />            <Button type="submit" mt="xl" loading={submitting}>
-                Save Changes
+              options={serviceOptions}
+              value={formData.services}
+              onValueChange={(value) => handleChange('services', value)}
+              placeholder="Select services you offer..."
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Service Areas</Label>
+            <MultiSelect
+              options={areaOptions}
+              value={formData.service_areas}
+              onValueChange={(value) => handleChange('service_areas', value)}
+              placeholder="Select areas you serve..."
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="bio">Bio</Label>
+            <textarea
+              id="bio"
+              value={formData.bio}
+              onChange={(e) => handleChange('bio', e.target.value)}
+              placeholder="Tell potential clients about your experience and expertise..."
+              className="min-h-24 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              rows={4}
+            />
+          </div>
+
+          <div className="flex justify-end gap-2">
+            <Button type="button" variant="outline">
+              Cancel
             </Button>
+            <Button 
+              type="submit" 
+              disabled={loading}
+              className="bg-brand-primary hover:bg-brand-primary/90"
+            >
+              {loading ? 'Saving...' : 'Save Changes'}
+            </Button>
+          </div>
         </form>
-    </Paper>
+      </CardContent>
+    </Card>
   );
 }

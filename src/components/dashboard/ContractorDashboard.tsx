@@ -1,307 +1,353 @@
 'use client';
 
 import { useState } from 'react';
-import {
-  AppShell,
-  Burger,
-  Group,
-  Text,
-  NavLink,
-  Badge,
-  Avatar,
-  Menu,
-  ActionIcon,
-  Stack,
-  Card,
-  Grid,
-  Title,
-  Button,
-  Container
-} from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Separator } from '@/components/ui/separator';
 import { 
-  IconDashboard,
-  IconUser,
-  IconFileText,
-  IconBell,
-  IconSettings,
-  IconLogout,
-  IconChevronDown,
-  IconPlus,
-  IconMessage
-} from '@tabler/icons-react';
+  LayoutDashboard,
+  User,
+  FileText,
+  Bell,
+  Settings,
+  LogOut,
+  ChevronDown,
+  Plus,
+  MessageSquare,
+  Menu,
+  X
+} from 'lucide-react';
 import { EnhancedChatManager } from '@/components/EnhancedChatManager';
 import LeadFeed from '@/components/dashboard/LeadFeed';
 import QuickStats from '@/components/dashboard/QuickStats';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface DashboardLayoutProps {
   children?: React.ReactNode;
 }
 
 export default function ContractorDashboard({ children }: DashboardLayoutProps) {
-  const [opened, { toggle }] = useDisclosure();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('dashboard');
   const [chatManagerOpen, setChatManagerOpen] = useState(true);
+  
   // Mock contractor data - replace with actual data fetching
   const contractor = {
     id: 'mock-contractor-id',
     name: 'John Smith',
     tier: 'Growth',
     avatar: null,
-    unreadNotifications: 3
+    email: 'john@example.com',
+    phone: '+1 (555) 123-4567',
+    location: 'Oakland, CA',
+    joinDate: '2024-01-15'
   };
 
-  const navigationItems = [
-    { 
-      icon: IconDashboard, 
-      label: 'Dashboard', 
-      value: 'dashboard',
-      description: 'Overview and metrics'
-    },
-    { 
-      icon: IconFileText, 
-      label: 'My Bids', 
-      value: 'bids',
-      description: 'Active and past proposals',
-      badge: '5'
-    },
-    { 
-      icon: IconUser, 
-      label: 'Profile', 
-      value: 'profile',
-      description: 'Business information'
-    },
-    { 
-      icon: IconSettings, 
-      label: 'Settings', 
-      value: 'settings',
-      description: 'Account preferences'
-    }
+  const navigation = [
+    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, active: true },
+    { id: 'profile', label: 'Profile', icon: User, active: false },
+    { id: 'documents', label: 'Documents', icon: FileText, active: false, badge: '2' },
+    { id: 'notifications', label: 'Notifications', icon: Bell, active: false, badge: '5' },
+    { id: 'settings', label: 'Settings', icon: Settings, active: false },
   ];
 
-  const renderMainContent = () => {
+  const NavItem = ({ item }: { item: typeof navigation[0] }) => (
+    <button
+      onClick={() => {
+        setActiveSection(item.id);
+        setSidebarOpen(false);
+      }}
+      className={`
+        w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-all duration-200
+        ${activeSection === item.id 
+          ? 'bg-brand-primary text-white shadow-lg' 
+          : 'text-gray-700 hover:bg-gray-100 hover:text-brand-primary'
+        }
+      `}
+    >
+      <item.icon className="h-5 w-5" />
+      <span className="font-medium">{item.label}</span>
+      {item.badge && (
+        <Badge 
+          variant="secondary" 
+          className={`ml-auto ${activeSection === item.id ? 'bg-white/20 text-white' : 'bg-brand-primary/10 text-brand-primary'}`}
+        >
+          {item.badge}
+        </Badge>
+      )}
+    </button>
+  );
+
+  const renderContent = () => {
     switch (activeSection) {
       case 'dashboard':
         return (
-          <Stack gap="lg">
-            <Group justify="space-between">
+          <div className="space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
-                <Title order={1}>Dashboard</Title>
-                <Text c="dimmed">Welcome back, {contractor.name}!</Text>
+                <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+                <p className="text-muted-foreground">Welcome back, {contractor.name}</p>
               </div>
-              <Button 
-                leftSection={<IconPlus size={16} />}
-                onClick={() => setChatManagerOpen(true)}
-              >
-                New Chat
-              </Button>
-            </Group>
-              <QuickStats contractorId={contractor.id} />
+              <div className="flex gap-2">
+                <Button className="bg-brand-primary hover:bg-brand-primary/90">
+                  <Plus className="h-4 w-4 mr-2" />
+                  New Project
+                </Button>
+                <Button 
+                  variant="outline"
+                  onClick={() => setChatManagerOpen(!chatManagerOpen)}
+                  className="border-brand-primary/20 text-brand-primary hover:bg-brand-primary/5"
+                >
+                  <MessageSquare className="h-4 w-4 mr-2" />
+                  AI Agents
+                </Button>
+              </div>
+            </div>
             
-            <Grid>
-              <Grid.Col span={8}>
+            <QuickStats />
+            
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2">
                 <LeadFeed contractorId={contractor.id} />
-              </Grid.Col>
-              <Grid.Col span={4}>
-                <Card withBorder>
-                  <Card.Section p="md" withBorder>
-                    <Group justify="space-between">
-                      <Text fw={600}>Recent Activity</Text>
-                      <Badge variant="light" color="blue">Live</Badge>
-                    </Group>
-                  </Card.Section>
-                  <Card.Section p="md">
-                    <Stack gap="sm">
-                      <Text size="sm">
-                        📊 Alex analyzed 3 bids today
-                      </Text>
-                      <Text size="sm">
-                        🔍 Rex found 12 new leads
-                      </Text>
-                      <Text size="sm">
-                        🎯 Profile 85% complete
-                      </Text>
-                    </Stack>
-                  </Card.Section>
+              </div>
+              <div className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Quick Actions</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <Button variant="outline" className="w-full justify-start">
+                      <FileText className="h-4 w-4 mr-2" />
+                      Upload Documents
+                    </Button>
+                    <Button variant="outline" className="w-full justify-start">
+                      <User className="h-4 w-4 mr-2" />
+                      Update Profile
+                    </Button>
+                    <Button variant="outline" className="w-full justify-start">
+                      <Settings className="h-4 w-4 mr-2" />
+                      Account Settings
+                    </Button>
+                  </CardContent>
                 </Card>
-              </Grid.Col>
-            </Grid>
-          </Stack>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Recent Activity</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3 text-sm">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <span className="text-muted-foreground">Bid submitted for Kitchen Remodel</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                        <span className="text-muted-foreground">New lead from Rex</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                        <span className="text-muted-foreground">Profile updated</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </div>
         );
-      case 'bids':
-        return (
-          <Stack gap="lg">
-            <Title order={1}>My Bids</Title>
-            <Text c="dimmed" ta="center" py="xl">
-              Bid management interface will be implemented here
-            </Text>
-          </Stack>
-        );
+      
       case 'profile':
         return (
-          <Stack gap="lg">
-            <Title order={1}>Profile</Title>
-            <Text c="dimmed" ta="center" py="xl">
-              Profile management interface will be implemented here
-            </Text>
-          </Stack>
+          <div className="space-y-6">
+            <h1 className="text-3xl font-bold text-gray-900">Profile</h1>
+            <Card>
+              <CardHeader>
+                <CardTitle>Contractor Information</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-4">
+                    <Avatar className="h-16 w-16">
+                      <AvatarImage src={contractor.avatar || undefined} />
+                      <AvatarFallback className="bg-brand-primary text-white text-lg">
+                        {contractor.name.split(' ').map(n => n[0]).join('')}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <h3 className="text-xl font-semibold">{contractor.name}</h3>
+                      <Badge variant="outline" className="mt-1">
+                        {contractor.tier} Tier
+                      </Badge>
+                    </div>
+                  </div>
+                  <Separator />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <span className="font-medium text-muted-foreground">Email:</span>
+                      <p>{contractor.email}</p>
+                    </div>
+                    <div>
+                      <span className="font-medium text-muted-foreground">Phone:</span>
+                      <p>{contractor.phone}</p>
+                    </div>
+                    <div>
+                      <span className="font-medium text-muted-foreground">Location:</span>
+                      <p>{contractor.location}</p>
+                    </div>
+                    <div>
+                      <span className="font-medium text-muted-foreground">Member Since:</span>
+                      <p>{new Date(contractor.joinDate).toLocaleDateString()}</p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         );
-      case 'settings':
-        return (
-          <Stack gap="lg">
-            <Title order={1}>Settings</Title>
-            <Text c="dimmed" ta="center" py="xl">
-              Settings interface will be implemented here
-            </Text>
-          </Stack>
-        );
+      
       default:
-        return children;
+        return children || (
+          <div className="space-y-6">
+            <h1 className="text-3xl font-bold text-gray-900 capitalize">{activeSection}</h1>
+            <Card>
+              <CardContent className="pt-6">
+                <p className="text-muted-foreground text-center py-8">
+                  {activeSection.charAt(0).toUpperCase() + activeSection.slice(1)} content coming soon...
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        );
     }
   };
 
   return (
-    <AppShell
-      header={{ height: 60 }}
-      navbar={{
-        width: 250,
-        breakpoint: 'sm',
-        collapsed: { mobile: !opened }
-      }}
-      padding="md"
-    >
-      <AppShell.Header>
-        <Group h="100%" px="md" justify="space-between">
-          <Group>
-            <Burger
-              opened={opened}
-              onClick={toggle}
-              hiddenFrom="sm"
-              size="sm"
-            />
-            <Text size="lg" fw={700} c="blue">
-              FixItForMe
-            </Text>
-            <Badge variant="outline" color="blue" size="sm">
-              Contractor
-            </Badge>
-          </Group>
+    <div className="min-h-screen bg-gray-50">
+      {/* Mobile Sidebar Overlay */}
+      <AnimatePresence>
+        {sidebarOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+      </AnimatePresence>
 
-          <Group>
-            <ActionIcon variant="light" color="blue" size="lg">
-              <IconBell size={18} />
-              {contractor.unreadNotifications > 0 && (
-                <Badge
-                  size="xs"
-                  variant="filled"
-                  color="red"
-                  style={{
-                    position: 'absolute',
-                    top: -2,
-                    right: -2,
-                    minWidth: 16,
-                    height: 16,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}
-                >
-                  {contractor.unreadNotifications}
+      {/* Sidebar */}
+      <motion.div
+        initial={false}
+        animate={{ x: sidebarOpen ? 0 : -320 }}
+        className="fixed left-0 top-0 h-full w-80 bg-white shadow-xl z-50 lg:translate-x-0 lg:static lg:z-0"
+      >
+        <div className="flex flex-col h-full">
+          {/* Header */}
+          <div className="p-6 border-b">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-gradient-to-r from-brand-primary to-brand-primary/80 rounded-lg flex items-center justify-center">
+                  <span className="text-white font-bold text-sm">F</span>
+                </div>
+                <span className="text-xl font-bold text-gray-900">FixItForMe</span>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSidebarOpen(false)}
+                className="lg:hidden"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+
+          {/* Profile Section */}
+          <div className="p-6 border-b">
+            <div className="flex items-center gap-3 mb-4">
+              <Avatar>
+                <AvatarImage src={contractor.avatar || undefined} />
+                <AvatarFallback className="bg-brand-primary text-white">
+                  {contractor.name.split(' ').map(n => n[0]).join('')}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex-1">
+                <h3 className="font-semibold text-gray-900">{contractor.name}</h3>
+                <Badge variant="outline" className="text-xs">
+                  {contractor.tier} Tier
                 </Badge>
-              )}
-            </ActionIcon>
+              </div>
+            </div>
+          </div>
 
-            <Menu shadow="md" width={200}>
-              <Menu.Target>
-                <Group style={{ cursor: 'pointer' }}>
-                  <Avatar size="sm" />
-                  <div>
-                    <Text size="sm" fw={500}>{contractor.name}</Text>
-                    <Text size="xs" c="dimmed">{contractor.tier} Tier</Text>
-                  </div>
-                  <IconChevronDown size={14} />
-                </Group>
-              </Menu.Target>
+          {/* Navigation */}
+          <div className="flex-1 p-6">
+            <nav className="space-y-2">
+              {navigation.map((item) => (
+                <NavItem key={item.id} item={item} />
+              ))}
+            </nav>
+          </div>
 
-              <Menu.Dropdown>
-                <Menu.Label>Account</Menu.Label>
-                <Menu.Item leftSection={<IconUser size={14} />}>
-                  Profile
-                </Menu.Item>
-                <Menu.Item leftSection={<IconSettings size={14} />}>
-                  Settings
-                </Menu.Item>
-                <Menu.Divider />
-                <Menu.Item leftSection={<IconLogout size={14} />} color="red">
-                  Logout
-                </Menu.Item>
-              </Menu.Dropdown>
-            </Menu>
-          </Group>
-        </Group>
-      </AppShell.Header>
+          {/* Footer */}
+          <div className="p-6 border-t">
+            <Button 
+              variant="ghost" 
+              className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
+            >
+              <LogOut className="h-4 w-4 mr-2" />
+              Sign Out
+            </Button>
+          </div>
+        </div>
+      </motion.div>
 
-      <AppShell.Navbar p="md">
-        <Stack gap="xs">
-          <Text size="xs" tt="uppercase" fw={700} c="dimmed" mb="sm">
-            Navigation
-          </Text>
-          {navigationItems.map((item) => (
-            <NavLink
-              key={item.value}
-              active={activeSection === item.value}
-              label={item.label}
-              description={item.description}
-              leftSection={<item.icon size="1rem" />}
-              rightSection={
-                item.badge ? (
-                  <Badge size="xs" variant="filled" color="red">
-                    {item.badge}
-                  </Badge>
-                ) : null
-              }
-              onClick={() => setActiveSection(item.value)}
-            />
-          ))}
-        </Stack>
-      </AppShell.Navbar>
+      {/* Main Content */}
+      <div className="lg:ml-80">
+        {/* Top Bar */}
+        <div className="bg-white border-b px-6 py-4 flex items-center justify-between">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setSidebarOpen(true)}
+            className="lg:hidden"
+          >
+            <Menu className="h-5 w-5" />
+          </Button>
+          
+          <div className="flex items-center gap-4 ml-auto">
+            <Button variant="ghost" size="sm" className="relative">
+              <Bell className="h-5 w-5" />
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+                5
+              </span>
+            </Button>
+          </div>
+        </div>
 
-      <AppShell.Main>
-        <Container size="xl">
-          {/* Chat-centric layout: 70% chat, 30% content */}
-          <Grid gutter="lg">
-            <Grid.Col span={chatManagerOpen ? 8 : 12}>
-              {renderMainContent()}
-            </Grid.Col>
-            
-            {chatManagerOpen && (
-              <Grid.Col span={4}>
-                <Card withBorder h="calc(100vh - 120px)" style={{ position: 'sticky', top: 20 }}>
-                  <Card.Section p="sm" withBorder>
-                    <Group justify="space-between">
-                      <Group>
-                        <IconMessage size={16} />
-                        <Text fw={600} size="sm">AI Assistants</Text>
-                      </Group>
-                      <ActionIcon 
-                        variant="subtle" 
-                        size="sm"
-                        onClick={() => setChatManagerOpen(false)}
-                      >
-                        ×
-                      </ActionIcon>
-                    </Group>
-                  </Card.Section>
-                  
-                  <Card.Section style={{ flex: 1, overflow: 'hidden' }}>
-                    <EnhancedChatManager />
-                  </Card.Section>
-                </Card>
-              </Grid.Col>
-            )}
-          </Grid>
-        </Container>
-      </AppShell.Main>
-    </AppShell>
+        {/* Page Content */}
+        <div className="p-6">
+          {renderContent()}
+        </div>
+      </div>
+
+      {/* Chat Manager */}
+      <AnimatePresence>
+        {chatManagerOpen && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="fixed bottom-4 right-4 z-30"
+          >
+            <EnhancedChatManager />
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }

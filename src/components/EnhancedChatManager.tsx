@@ -3,13 +3,17 @@
 import { useState, useCallback } from 'react';
 import { useChat } from 'ai/react';
 import { ChatWindow, type AgentType, type Message } from './EnhancedChatWindow';
-import { Button, Affix, Group, Tooltip } from '@mantine/core';
-import { notifications } from '@mantine/notifications';
-import { useUser } from '@/providers/UserProvider';
-import { IconLock, IconInfoCircle } from '@tabler/icons-react';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Lock, Info, MessageCircle, Bot, Search, Calculator } from 'lucide-react';
+import { useUser } from '@/hooks/useUser';
 import { BRAND } from '@/lib/brand';
 import { AgentWorkingIndicator } from '@/components/ui/AgentWorkingIndicator';
 import { useConcurrentExecutionManager } from '@/components/ui/ConcurrentExecutionManager';
+import { toast } from 'sonner';
+import { motion, AnimatePresence } from 'framer-motion';
+import { cn } from '@/lib/utils';
 
 interface ChatState {
   isOpen: boolean;
@@ -56,11 +60,8 @@ export function EnhancedChatManager() {
   const openChat = useCallback((agentType: AgentType) => {
     const isPremiumAgent = agentType === 'alex' || agentType === 'rex';
     if (isPremiumAgent && !isScaleTier) {
-      notifications.show({
-        title: 'Upgrade to Scale',
-        message: `The @${agentType} agent is a premium feature. Upgrade your plan for advanced features.`,
-        color: 'yellow',
-        autoClose: 6000,
+      toast.warning('Upgrade to Scale', {
+        description: `The @${agentType} agent is a premium feature. Upgrade your plan for advanced features.`,
       });
       return;
     }
@@ -99,11 +100,8 @@ export function EnhancedChatManager() {
     
     // Check if this specific chat has reached its message limit
     if (userMessages.length >= messagesPerChatLimit) {
-        notifications.show({
-            title: 'Chat Message Limit Reached',
-            message: `This chat has reached its limit of ${messagesPerChatLimit} messages. Please start a new chat for a different topic.`,
-            color: 'orange',
-            icon: <IconInfoCircle />,
+        toast.warning('Chat Message Limit Reached', {
+            description: `This chat has reached its limit of ${messagesPerChatLimit} messages. Please start a new chat for a different topic.`,
         });
 
         // Add system message to Lexi's chat
@@ -128,11 +126,8 @@ export function EnhancedChatManager() {
     // Check if user is trying to open too many chat threads
     const openChats = Object.values(chatStates).filter(state => state.isOpen).length;
     if (!chatStates[targetAgent].isOpen && openChats >= chatThreadLimit) {
-        notifications.show({
-            title: 'Chat Thread Limit Reached',
-            message: `You can have a maximum of ${chatThreadLimit} chat threads open. Please close one before opening a new one.`,
-            color: 'orange',
-            icon: <IconInfoCircle />,
+        toast.warning('Chat Thread Limit Reached', {
+            description: `You can have a maximum of ${chatThreadLimit} chat threads open. Please close one before opening a new one.`,
         });
 
         // Add system message to Lexi's chat
@@ -156,22 +151,16 @@ export function EnhancedChatManager() {
 
     const isPremiumAgent = targetAgent === 'alex' || targetAgent === 'rex';
     if (isPremiumAgent && !isScaleTier) {
-      notifications.show({
-        title: 'Upgrade to Scale',
-        message: `The @${targetAgent} agent is a premium feature. Upgrade your plan for advanced features.`,
-        color: 'yellow',
-        autoClose: 6000,
+      toast.warning('Upgrade to Scale', {
+        description: `The @${targetAgent} agent is a premium feature. Upgrade your plan for advanced features.`,
       });
       return;
     }
 
     // For premium agents (Alex & Rex), check concurrent execution limits
     if (isPremiumAgent && !canStartNew) {
-      notifications.show({
-        title: 'Agent Execution Limit Reached',
-        message: `You can only run ${2} agents simultaneously. Please wait for current operations to complete.`,
-        color: 'orange',
-        icon: <IconInfoCircle />,
+      toast.warning('Agent Execution Limit Reached', {
+        description: `You can only run ${2} agents simultaneously. Please wait for current operations to complete.`,
       });
 
       // Add system message to Lexi's chat
@@ -201,10 +190,8 @@ export function EnhancedChatManager() {
     if (isPremiumAgent) {
       executionId = await startExecution(targetAgent, 300000); // 5 minute estimate
       if (!executionId) {
-        notifications.show({
-          title: 'Unable to Start Agent',
-          message: `Could not start ${targetAgent} execution. Please try again.`,
-          color: 'red',
+        toast.error('Unable to Start Agent', {
+          description: `Could not start ${targetAgent} execution. Please try again.`,
         });
         return;
       }
@@ -242,10 +229,8 @@ export function EnhancedChatManager() {
         }
       } catch (error) {
         console.error('Rex execution error:', error);
-        notifications.show({
-          title: 'Rex Execution Failed',
-          message: 'There was an error during lead generation. Please try again.',
-          color: 'red',
+        toast.error('Rex Execution Failed', {
+          description: 'There was an error during lead generation. Please try again.',
         });
       }
     } else {
@@ -310,17 +295,10 @@ export function EnhancedChatManager() {
         .map(session => (
           <AgentWorkingIndicator
             key={session.id}
-            state={{
-              id: session.id,
-              agent: session.agent,
-              status: 'analyzing', // Default status for UI
-              progress: session.progress,
-              current_task: session.current_task,
-            }}
-            onCancel={() => {
-              // Cancel execution logic would go here
-              // TODO: Implement proper cancellation logic
-            }}
+            agent={session.agent}
+            isWorking={session.status === 'running'}
+            currentTask={session.current_task}
+            className="mb-4"
           />
         ))}
 
@@ -346,39 +324,96 @@ export function EnhancedChatManager() {
       })}
 
       {/* Render the floating action buttons to open chats */}
-      <Affix position={{ bottom: 20, right: 20 }}>
-        <Group>
-          <Tooltip label="Chat with Lexi, your onboarding assistant">
-            <Button onClick={() => openChat('lexi')} variant="gradient" gradient={{ from: BRAND.colors.primary, to: BRAND.colors.text.accent }}>
-              @lexi
-            </Button>
-          </Tooltip>
+      <div className="fixed bottom-6 right-6 z-50">
+        <TooltipProvider>
+          <div className="flex flex-col gap-3">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.1 }}
+                >
+                  <Button 
+                    onClick={() => openChat('lexi')} 
+                    className="h-14 w-14 rounded-full bg-gradient-to-r from-[rgb(var(--primary-orange))] to-[rgb(var(--primary-blue))] hover:from-[rgb(var(--primary-orange))]/90 hover:to-[rgb(var(--primary-blue))]/90 text-white shadow-lg hover:shadow-xl transition-all duration-200 brand-transition"
+                    size="sm"
+                  >
+                    <MessageCircle className="h-6 w-6" />
+                  </Button>
+                </motion.div>
+              </TooltipTrigger>
+              <TooltipContent side="left" className="bg-neutral-900 text-white">
+                <p>Chat with Lexi, your onboarding assistant</p>
+              </TooltipContent>
+            </Tooltip>
 
-          <Tooltip label={isScaleTier ? "Chat with Alex for advanced bidding" : "Upgrade to Scale to use Alex"}>
-            <Button
-              onClick={() => openChat('alex')}
-              variant={isScaleTier ? "gradient" : "default"}
-              gradient={isScaleTier ? { from: BRAND.colors.primary, to: BRAND.colors.text.accent } : undefined}
-              disabled={!isScaleTier}
-              rightSection={!isScaleTier ? <IconLock size={14} /> : undefined}
-            >
-              @alex
-            </Button>
-          </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  <Button
+                    onClick={() => openChat('alex')}
+                    className={cn(
+                      "h-14 w-14 rounded-full text-white shadow-lg hover:shadow-xl transition-all duration-200 brand-transition",
+                      isScaleTier 
+                        ? "bg-gradient-to-r from-[rgb(var(--primary-purple))] to-[rgb(var(--primary-indigo))] hover:from-[rgb(var(--primary-purple))]/90 hover:to-[rgb(var(--primary-indigo))]/90" 
+                        : "bg-neutral-400 cursor-not-allowed opacity-60"
+                    )}
+                    disabled={!isScaleTier}
+                    size="sm"
+                  >
+                    {!isScaleTier ? (
+                      <Lock className="h-4 w-4" />
+                    ) : (
+                      <Calculator className="h-6 w-6" />
+                    )}
+                  </Button>
+                </motion.div>
+              </TooltipTrigger>
+              <TooltipContent side="left" className="bg-neutral-900 text-white">
+                <p>{isScaleTier ? "Chat with Alex for advanced bidding" : "Upgrade to Scale to use Alex"}</p>
+              </TooltipContent>
+            </Tooltip>
 
-          <Tooltip label={isScaleTier ? "Chat with Rex for lead generation" : "Upgrade to Scale to use Rex"}>
-            <Button
-              onClick={() => openChat('rex')}
-              variant={isScaleTier ? "gradient" : "default"}
-              gradient={isScaleTier ? { from: BRAND.colors.primary, to: BRAND.colors.text.accent } : undefined}
-              disabled={!isScaleTier}
-              rightSection={!isScaleTier ? <IconLock size={14} /> : undefined}
-            >
-              @rex
-            </Button>
-          </Tooltip>
-        </Group>
-      </Affix>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  <Button
+                    onClick={() => openChat('rex')}
+                    className={cn(
+                      "h-14 w-14 rounded-full text-white shadow-lg hover:shadow-xl transition-all duration-200 brand-transition",
+                      isScaleTier 
+                        ? "bg-gradient-to-r from-[rgb(var(--primary-teal))] to-[rgb(var(--primary-cyan))] hover:from-[rgb(var(--primary-teal))]/90 hover:to-[rgb(var(--primary-cyan))]/90" 
+                        : "bg-neutral-400 cursor-not-allowed opacity-60"
+                    )}
+                    disabled={!isScaleTier}
+                    size="sm"
+                  >
+                    {!isScaleTier ? (
+                      <Lock className="h-4 w-4" />
+                    ) : (
+                      <Search className="h-6 w-6" />
+                    )}
+                  </Button>
+                </motion.div>
+              </TooltipTrigger>
+              <TooltipContent side="left" className="bg-neutral-900 text-white">
+                <p>{isScaleTier ? "Chat with Rex for lead generation" : "Upgrade to Scale to use Rex"}</p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
+        </TooltipProvider>
+      </div>
     </>
   );
 }
+
+export default EnhancedChatManager;

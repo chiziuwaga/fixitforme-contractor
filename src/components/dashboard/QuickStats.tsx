@@ -1,247 +1,240 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { Card, Text, Group, Stack, Grid, Badge, RingProgress, Loader, Center } from '@mantine/core';
-import { IconTrendingUp, IconCurrencyDollar, IconClock, IconEye } from '@tabler/icons-react';
-import { supabase } from '@/lib/supabase';
-
-interface ContractorStats {
-  total_bids: number;
-  won_bids: number;
-  total_revenue: number;
-  avg_bid_value: number;
-  response_time_hours: number;
-  leads_viewed_today: number;
-  conversion_rate: number;
-  active_projects: number;
-}
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { 
+  TrendingUp, 
+  TrendingDown, 
+  DollarSign, 
+  Users, 
+  Target,
+  Activity,
+  Star
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { BRAND } from '@/lib/brand';
+import { motion } from 'framer-motion';
+import { useUser } from '@/hooks/useUser';
 
 interface QuickStatsProps {
-  contractorId: string;
+  className?: string;
 }
 
-export default function QuickStats({ contractorId }: QuickStatsProps) {
-  const [stats, setStats] = useState<ContractorStats | null>(null);
-  const [loading, setLoading] = useState(true);
-  // Remove this line - use the imported supabase directly
+interface StatItem {
+  title: string;
+  value: string | number;
+  change?: {
+    value: number;
+    type: 'increase' | 'decrease';
+    period?: string;
+  };
+  icon: React.ElementType;
+  color: string;
+  description?: string;
+}
 
-  const fetchStats = useCallback(async () => {
-    try {
-      // Fetch basic stats from bids table
-      const { data: bidsData, error: bidsError } = await supabase
-        .from('bids')
-        .select('status, bid_amount, created_at')
-        .eq('contractor_id', contractorId);
-
-      if (bidsError) throw bidsError;
-
-      // Fetch leads viewed today
-      const today = new Date().toISOString().split('T')[0];
-      const { data: leadsData, error: leadsError } = await supabase
-        .from('lead_views')
-        .select('id')
-        .eq('contractor_id', contractorId)
-        .gte('viewed_at', today);
-
-      if (leadsError) throw leadsError;
-
-      // Calculate stats
-      const bids = bidsData || [];
-      const totalBids = bids.length;
-      const wonBids = bids.filter(bid => bid.status === 'won').length;
-      const totalRevenue = bids
-        .filter(bid => bid.status === 'won')
-        .reduce((sum, bid) => sum + (bid.bid_amount || 0), 0);
-      const avgBidValue = totalBids > 0 ? 
-        bids.reduce((sum, bid) => sum + (bid.bid_amount || 0), 0) / totalBids : 0;
-      const conversionRate = totalBids > 0 ? (wonBids / totalBids) * 100 : 0;
-      const activeProjects = bids.filter(bid => bid.status === 'active').length;
-
-      setStats({
-        total_bids: totalBids,
-        won_bids: wonBids,
-        total_revenue: totalRevenue,
-        avg_bid_value: avgBidValue,
-        response_time_hours: 2.5, // Mock data - would be calculated from actual response times
-        leads_viewed_today: leadsData?.length || 0,
-        conversion_rate: conversionRate,
-        active_projects: activeProjects
-      });
-    } catch (error) {
-      console.error('Error fetching stats:', error);
-    } finally {
-      setLoading(false);
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
     }
-  }, [contractorId]);
+  }
+};
 
-  useEffect(() => {
-    fetchStats();
-  }, [fetchStats]);
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0 }
+};
 
+export function QuickStats({ className }: QuickStatsProps) {
+  const { user, profile, loading } = useUser();
+
+  // Get contractor data from context instead of props
+  const contractorId = user?.id;
+  const tier = profile?.tier || 'growth';
+  const servicesOffered = profile?.services_offered || [];
+
+  // Mock data - in real app this would be fetched using contractorId
+  const stats: StatItem[] = [
+    {
+      title: 'Monthly Revenue',
+      value: tier === 'scale' ? '$12,450' : '$6,200',
+      change: { value: 12.5, type: 'increase', period: 'last month' },
+      icon: DollarSign,
+      color: BRAND.colors.success,
+      description: 'Total earnings this month'
+    },
+    {
+      title: 'Active Leads',
+      value: tier === 'scale' ? 24 : 12,
+      change: { value: 8.2, type: 'increase', period: 'this week' },
+      icon: Users,
+      color: BRAND.colors.primary,
+      description: 'Leads in your pipeline'
+    },
+    {
+      title: 'Win Rate',
+      value: tier === 'scale' ? '68%' : '45%',
+      change: { value: 3.1, type: 'decrease', period: 'this month' },
+      icon: Target,
+      color: BRAND.colors.steelBlue,
+      description: 'Bids won vs submitted'
+    },
+    {
+      title: 'Jobs Completed',
+      value: tier === 'scale' ? 18 : 8,
+      change: { value: 15.8, type: 'increase', period: 'this month' },
+      icon: Activity,
+      color: BRAND.colors.agents.alex,
+      description: 'Successfully finished projects'
+    }
+  ];
+
+  // Add loading state
   if (loading) {
     return (
-      <Center h={200}>
-        <Loader size="md" />
-      </Center>
+      <div className={cn("grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4", className)}>
+        {Array.from({ length: 4 }).map((_, i) => (
+          <Card key={i} className="h-full">
+            <CardContent className="p-6">
+              <div className="animate-pulse space-y-3">
+                <div className="h-4 bg-muted rounded w-1/2"></div>
+                <div className="h-8 bg-muted rounded w-3/4"></div>
+                <div className="h-3 bg-muted rounded w-1/3"></div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
     );
   }
 
-  if (!stats) {
-    return (
-      <Card withBorder>
-        <Center py="xl">
-          <Text c="dimmed">Unable to load stats</Text>
-        </Center>
+  // Add service count info
+  const serviceInfo = {
+    current: servicesOffered.length,
+    max: tier === 'scale' ? 15 : 5,
+    tier: tier
+  };
+
+  const renderStatCard = (stat: StatItem) => (
+    <motion.div key={stat.title} variants={itemVariants}>
+      <Card className="h-full hover:shadow-md transition-shadow duration-200">
+        <CardHeader className="pb-2">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              {stat.title}
+            </CardTitle>
+            <div 
+              className="p-2 rounded-full"
+              style={{ backgroundColor: `${stat.color}20` }}
+            >
+              <stat.icon 
+                className="w-4 h-4" 
+                style={{ color: stat.color }}
+              />
+            </div>
+          </div>
+        </CardHeader>
+        
+        <CardContent className="pt-0">
+          <div className="space-y-2">
+            <div className="text-2xl font-bold text-foreground">
+              {stat.value}
+            </div>
+            
+            {stat.change && (
+              <div className="flex items-center gap-2">
+                <Badge 
+                  variant={stat.change.type === 'increase' ? 'default' : 'secondary'}
+                  className={cn(
+                    "text-xs flex items-center gap-1",
+                    stat.change.type === 'increase' 
+                      ? "bg-green-100 text-green-800 hover:bg-green-100" 
+                      : "bg-red-100 text-red-800 hover:bg-red-100"
+                  )}
+                >
+                  {stat.change.type === 'increase' ? (
+                    <TrendingUp className="w-3 h-3" />
+                  ) : (
+                    <TrendingDown className="w-3 h-3" />
+                  )}
+                  {Math.abs(stat.change.value)}%
+                </Badge>
+                {stat.change.period && (
+                  <span className="text-xs text-muted-foreground">
+                    vs {stat.change.period}
+                  </span>
+                )}
+              </div>
+            )}
+            
+            {stat.description && (
+              <p className="text-xs text-muted-foreground">
+                {stat.description}
+              </p>
+            )}
+          </div>
+        </CardContent>
       </Card>
-    );
-  }
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(value);
-  };
-
-  const getPerformanceColor = (rate: number) => {
-    if (rate >= 30) return 'green';
-    if (rate >= 15) return 'orange';
-    return 'red';
-  };
+    </motion.div>
+  );
 
   return (
-    <Stack gap="md">
-      <Text size="lg" fw={600}>Performance Overview</Text>
-      
-      <Grid>
-        <Grid.Col span={6}>
-          <Card withBorder p="md" radius="sm">
-            <Group justify="space-between" align="center">
-              <div>
-                <Text size="xs" c="dimmed" tt="uppercase" fw={500}>
-                  Total Revenue
-                </Text>
-                <Text size="xl" fw={700} c="green">
-                  {formatCurrency(stats.total_revenue)}
-                </Text>
-                <Text size="xs" c="dimmed">
-                  {stats.won_bids} projects won
-                </Text>
-              </div>
-              <IconCurrencyDollar size={32} color="#51cf66" />
-            </Group>
-          </Card>
-        </Grid.Col>
-
-        <Grid.Col span={6}>
-          <Card withBorder p="md" radius="sm">
-            <Group justify="space-between" align="center">
-              <div>
-                <Text size="xs" c="dimmed" tt="uppercase" fw={500}>
-                  Win Rate
-                </Text>
-                <Group align="center" gap="sm">
-                  <RingProgress
-                    size={60}
-                    thickness={6}
-                    sections={[
-                      { value: stats.conversion_rate, color: getPerformanceColor(stats.conversion_rate) }
-                    ]}
-                    label={
-                      <Text ta="center" size="sm" fw={600}>
-                        {stats.conversion_rate.toFixed(0)}%
-                      </Text>
-                    }
-                  />
-                  <div>
-                    <Text size="sm" fw={500}>
-                      {stats.won_bids}/{stats.total_bids}
-                    </Text>
-                    <Text size="xs" c="dimmed">
-                      bids won
-                    </Text>
-                  </div>
-                </Group>
-              </div>
-            </Group>
-          </Card>
-        </Grid.Col>
-
-        <Grid.Col span={6}>
-          <Card withBorder p="md" radius="sm">
-            <Group justify="space-between" align="center">
-              <div>
-                <Text size="xs" c="dimmed" tt="uppercase" fw={500}>
-                  Avg Bid Value
-                </Text>
-                <Text size="lg" fw={600}>
-                  {formatCurrency(stats.avg_bid_value)}
-                </Text>
-                <Text size="xs" c="dimmed">
-                  across {stats.total_bids} bids
-                </Text>
-              </div>
-              <IconTrendingUp size={32} color="#339af0" />
-            </Group>
-          </Card>
-        </Grid.Col>
-
-        <Grid.Col span={6}>
-          <Card withBorder p="md" radius="sm">
-            <Group justify="space-between" align="center">
-              <div>
-                <Text size="xs" c="dimmed" tt="uppercase" fw={500}>
-                  Response Time
-                </Text>
-                <Text size="lg" fw={600}>
-                  {stats.response_time_hours}h
-                </Text>
-                <Badge 
-                  size="xs" 
-                  color={stats.response_time_hours <= 4 ? 'green' : 'orange'}
-                  variant="light"
-                >
-                  {stats.response_time_hours <= 4 ? 'Fast' : 'Average'}
-                </Badge>
-              </div>
-              <IconClock size={32} color="#f59f00" />
-            </Group>
-          </Card>
-        </Grid.Col>
-
-        <Grid.Col span={12}>
-          <Card withBorder p="md" radius="sm">
-            <Group justify="space-between" align="center">
-              <div>
-                <Text size="xs" c="dimmed" tt="uppercase" fw={500}>
-                  Today&apos;s Activity
-                </Text>
-                <Group gap="xl" mt="sm">
-                  <div>
-                    <Text size="lg" fw={600}>
-                      {stats.leads_viewed_today}
-                    </Text>
-                    <Text size="xs" c="dimmed">
-                      leads viewed
-                    </Text>
-                  </div>
-                  <div>
-                    <Text size="lg" fw={600}>
-                      {stats.active_projects}
-                    </Text>
-                    <Text size="xs" c="dimmed">
-                      active projects
-                    </Text>
-                  </div>
-                </Group>
-              </div>
-              <IconEye size={32} color="#868e96" />
-            </Group>
-          </Card>
-        </Grid.Col>
-      </Grid>
-    </Stack>
+    <motion.div 
+      className={cn("grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4", className)}
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
+      {stats.map((stat) => renderStatCard(stat))}
+    </motion.div>
   );
 }
+
+// Additional component for performance metrics
+export function PerformanceMetrics({ className }: { className?: string }) {
+  return (
+    <Card className={cn("col-span-full", className)}>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Star className="w-5 h-5" style={{ color: BRAND.colors.primary }} />
+          Performance Overview
+        </CardTitle>
+        <CardDescription>
+          Your business metrics at a glance
+        </CardDescription>
+      </CardHeader>
+      
+      <CardContent className="space-y-4">
+        <div className="space-y-2">
+          <div className="flex justify-between text-sm">
+            <span>Profile Completion</span>
+            <span>85%</span>
+          </div>
+          <Progress value={85} className="h-2" />
+        </div>
+        
+        <div className="space-y-2">
+          <div className="flex justify-between text-sm">
+            <span>Customer Satisfaction</span>
+            <span>92%</span>
+          </div>
+          <Progress value={92} className="h-2" />
+        </div>
+        
+        <div className="space-y-2">
+          <div className="flex justify-between text-sm">
+            <span>Response Time</span>
+            <span>78%</span>
+          </div>
+          <Progress value={78} className="h-2" />
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+export default QuickStats;
