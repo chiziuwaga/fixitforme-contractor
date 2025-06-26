@@ -18,50 +18,50 @@ const config: Config = {
     },
     extend: {
       colors: {
-        // FixItForMe Official Brand Colors
-        'felix-gold': '#D4A574',
-        'forest-green': '#1A2E1A', 
-        'warm-gray': '#F5F5F5',
-        'charcoal': '#2C2C2C',
-        'steel-blue': '#4A90A4',
-        'success-green': '#28A745',
-        'warning-orange': '#FFC107',
-        'error-red': '#DC3545',
-        'info-blue': '#17A2B8',
-        
-        // Shadcn theme colors mapped to brand
-        border: "#E5E5E5",
-        input: "#E5E5E5", 
-        ring: "#D4A574", // Felix Gold
-        background: "#FFFFFF",
-        foreground: "#2C2C2C", // Charcoal
+        border: "hsl(var(--border))",
+        input: "hsl(var(--input))",
+        ring: "hsl(var(--ring))",
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "#D4A574", // Felix Gold
-          foreground: "#FFFFFF",
+          DEFAULT: "hsl(var(--primary))",
+          foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
-          DEFAULT: "#1A2E1A", // Forest Green
-          foreground: "#FFFFFF",
+          DEFAULT: "hsl(var(--secondary))",
+          foreground: "hsl(var(--secondary-foreground))",
         },
         destructive: {
-          DEFAULT: "#DC3545", // Error Red
-          foreground: "#FFFFFF",
+          DEFAULT: "hsl(var(--destructive))",
+          foreground: "hsl(var(--destructive-foreground))",
+        },
+        success: {
+          DEFAULT: "hsl(var(--success))",
+          foreground: "hsl(var(--success-foreground))",
+        },
+        warning: {
+          DEFAULT: "hsl(var(--warning))",
+          foreground: "hsl(var(--warning-foreground))",
+        },
+        info: {
+          DEFAULT: "hsl(var(--info))",
+          foreground: "hsl(var(--info-foreground))",
         },
         muted: {
-          DEFAULT: "#F5F5F5", // Warm Gray
-          foreground: "#2C2C2C",
+          DEFAULT: "hsl(var(--muted))",
+          foreground: "hsl(var(--muted-foreground))",
         },
         accent: {
-          DEFAULT: "#4A90A4", // Steel Blue
-          foreground: "#FFFFFF",
+          DEFAULT: "hsl(var(--accent))",
+          foreground: "hsl(var(--accent-foreground))",
         },
         popover: {
-          DEFAULT: "#FFFFFF",
-          foreground: "#2C2C2C",
+          DEFAULT: "hsl(var(--popover))",
+          foreground: "hsl(var(--popover-foreground))",
         },
         card: {
-          DEFAULT: "#FFFFFF",
-          foreground: "#2C2C2C",
+          DEFAULT: "hsl(var(--card))",
+          foreground: "hsl(var(--card-foreground))",
         },
       },
       borderRadius: {
