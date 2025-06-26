@@ -197,6 +197,10 @@
     text-wrap: balance;
   }
 
+  .font-heading {
+    font-family: "Roboto Slab", Georgia, serif;
+  }
+
   .animate-fade-in {
     animation: fadeIn 0.3s ease-in-out;
   }
