@@ -7,7 +7,8 @@ This document outlines the key dependencies for the FixItForMe Contractor Module
 - **Framework:** Next.js 15
 - **Language:** TypeScript
 - **Styling:** Tailwind CSS
-- **UI Components:** Shadcn/ui
+- **UI Components:** Shadcn/ui with Radix UI primitives
+- **CSS Framework:** Tailwind CSS v4 with PostCSS
 - **Database:** Supabase (PostgreSQL)
 - **Authentication:** Supabase Auth
 - **AI:** Vercel AI SDK
@@ -15,8 +16,10 @@ This document outlines the key dependencies for the FixItForMe Contractor Module
 
 ## Key npm Packages
 
+- `@tailwindcss/postcss` (required for Vercel builds)
 - `@radix-ui/react-*` (various components)
-- `shadcn/ui`
+- `autoprefixer` (CSS vendor prefixing)
+- `tailwindcss` (CSS framework)
 - `@supabase/supabase-js`
 - `@supabase/auth-helpers-nextjs`
 - `ai`
