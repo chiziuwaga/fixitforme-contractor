@@ -13,18 +13,22 @@ if (!supabaseAnonKey) {
   throw new Error('Missing NEXT_PUBLIC_SUPABASE_ANON_KEY environment variable')
 }
 
-// Contractor session configuration (48 hours)
+// Contractor session configuration optimized for auth-helpers compatibility
 const contractorSessionConfig = {
   auth: {
     // 48-hour contractor login sessions
-    sessionTimeout: 172800, // 48 hours in seconds
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: true,
     flowType: 'pkce' as const,
     debug: process.env.NODE_ENV === 'development',
-    // Add unique storage key to prevent conflicts
-    storageKey: 'fixitforme_contractor_auth'
+    // Unique storage key to prevent conflicts
+    storageKey: 'sb-fixitforme-contractor-auth-token'
+  },
+  global: {
+    headers: {
+      'X-Client-Info': 'fixitforme-contractor'
+    }
   }
 }
 
@@ -37,17 +41,13 @@ export const supabaseAdmin = supabaseServiceKey
       auth: {
         autoRefreshToken: false,
         persistSession: false,
-        storageKey: 'fixitforme_admin_auth' // Separate storage key
+        storageKey: 'sb-fixitforme-admin-auth-token' // Separate storage key
       }
     })
   : null
 
-// DEPRECATED: Use 'supabase' export instead of creating new instances
-// This function exists for backward compatibility but should be avoided
-export function createClient() {
-  console.warn('createClient() is deprecated. Use the supabase export instead to prevent multiple client instances.')
-  return supabase
-}
+// Export for backward compatibility
+export const createClient = () => supabase
 
 // Agent operation timeout (10 minutes)
 export const AGENT_OPERATION_TIMEOUT = 10 * 60 * 1000; // 10 minutes in milliseconds
