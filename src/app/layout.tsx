@@ -18,7 +18,13 @@ export const metadata: Metadata = {
     template: `%s | ${BRAND.name}`,
   },
   description: BRAND.tagline,
-  icons: [{ rel: 'icon', url: '/logo.png' }],
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: '32x32' },
+      { url: '/logo.png', sizes: '192x192', type: 'image/png' }
+    ],
+    apple: { url: '/logo.png', sizes: '180x180', type: 'image/png' }
+  },
 };
 
 export const viewport: Viewport = {
@@ -35,7 +41,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="icon" href="/favicon.ico" />
         <meta name="theme-color" content="#D4A574" />
       </head>
       <body
