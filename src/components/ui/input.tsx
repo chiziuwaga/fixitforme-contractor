@@ -9,21 +9,20 @@ export interface InputProps
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, variant = 'default', ...props }, ref) => {
     const variantClasses = {
-      default: "border-neutral-200 focus:border-[rgb(var(--primary-orange))] focus:ring-[rgb(var(--primary-orange))]/20",
-      error: "border-error-300 focus:border-error-500 focus:ring-error-500/20",
-      success: "border-success-300 focus:border-success-500 focus:ring-success-500/20"
+      default: "border-input focus:border-ring focus:ring-ring/20",
+      error: "border-destructive focus:border-destructive focus:ring-destructive/20",
+      success: "border-success focus:border-success focus:ring-success/20"
     };
 
     return (
       <input
         type={type}
         className={cn(
-          "flex h-12 w-full rounded-lg bg-white px-4 py-3 text-base text-neutral-900 placeholder:text-neutral-500 transition-all duration-200 border",
+          "flex h-12 w-full rounded-lg bg-background px-4 py-3 text-base text-foreground placeholder:text-muted-foreground transition-all duration-200 border",
           "focus:outline-none focus:ring-2",
-          "hover:border-neutral-300",
-          "disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-neutral-50",
-          "file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-neutral-900",
-          "brand-transition",
+          "hover:border-input/80",
+          "disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-muted",
+          "file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground",
           variantClasses[variant],
           className
         )}

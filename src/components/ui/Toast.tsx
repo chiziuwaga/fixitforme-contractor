@@ -60,13 +60,13 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   const getColorClasses = (type: Toast['type']) => {
     switch (type) {
       case 'success':
-        return 'border-green-200 bg-green-50';
+        return 'border-success/20 bg-success/10';
       case 'error':
-        return 'border-red-200 bg-red-50';
+        return 'border-destructive/20 bg-destructive/10';
       case 'warning':
-        return 'border-yellow-200 bg-yellow-50';
+        return 'border-warning/20 bg-warning/10';
       default:
-        return 'border-blue-200 bg-blue-50';
+        return 'border-info/20 bg-info/10';
     }
   };
 
