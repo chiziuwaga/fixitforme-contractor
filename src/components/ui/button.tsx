@@ -4,19 +4,19 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-felix-gold focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
-        default: "bg-felix-gold text-white hover:bg-felix-gold/90 shadow-md hover:shadow-lg transform hover:-translate-y-0.5",
-        destructive: "bg-error-red text-white hover:bg-error-red/90 shadow-md hover:shadow-lg",
-        outline: "border-2 border-forest-green bg-transparent text-forest-green hover:bg-forest-green hover:text-white",
-        secondary: "bg-forest-green text-white hover:bg-forest-green/90 shadow-md hover:shadow-lg",
-        ghost: "hover:bg-warm-gray hover:text-charcoal",
-        link: "text-felix-gold underline-offset-4 hover:underline hover:text-felix-gold/80",
-        steel: "bg-steel-blue text-white hover:bg-steel-blue/90 shadow-md hover:shadow-lg",
-        success: "bg-success-green text-white hover:bg-success-green/90 shadow-md hover:shadow-lg",
-        warning: "bg-warning-orange text-charcoal hover:bg-warning-orange/90 shadow-md hover:shadow-lg",
+        default: "bg-primary text-primary-foreground hover:bg-primary/90 shadow-md hover:shadow-lg transform hover:-translate-y-0.5",
+        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-md hover:shadow-lg",
+        outline: "border-2 border-secondary bg-transparent text-secondary hover:bg-secondary hover:text-secondary-foreground",
+        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/90 shadow-md hover:shadow-lg",
+        ghost: "hover:bg-muted hover:text-muted-foreground",
+        link: "text-primary underline-offset-4 hover:underline hover:text-primary/80",
+        accent: "bg-accent text-accent-foreground hover:bg-accent/90 shadow-md hover:shadow-lg",
+        success: "bg-success text-success-foreground hover:bg-success/90 shadow-md hover:shadow-lg",
+        warning: "bg-warning text-warning-foreground hover:bg-warning/90 shadow-md hover:shadow-lg",
       },
       size: {
         default: "h-10 px-6 py-2",
