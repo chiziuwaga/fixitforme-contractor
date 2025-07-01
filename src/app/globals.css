@@ -13,35 +13,45 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 33 41% 64%; /* Felix Gold #D4A574 */
+    /* Felix Gold #D4A574 */
+    --primary: 33 41% 64%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 120 50% 14%; /* Forest Green #1A2E1A */
+    /* Forest Green #1A2E1A */
+    --secondary: 120 50% 14%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 0 0% 96%; /* Warm Gray #F5F5F5 */
-    --muted-foreground: 0 0% 42%; /* Charcoal #2C2C2C */
+    /* Warm Gray #F5F5F5 */
+    --muted: 0 0% 96%;
+    /* Charcoal #2C2C2C */
+    --muted-foreground: 0 0% 42%;
 
-    --accent: 219 37% 47%; /* Steel Blue #4A6FA5 */
+    /* Steel Blue #4A6FA5 */
+    --accent: 219 37% 47%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 354 70% 54%; /* Error Red #DC3545 */
+    /* Error Red #DC3545 */
+    --destructive: 354 70% 54%;
     --destructive-foreground: 0 0% 100%;
     
-    --success: 134 61% 41%; /* Success Green #28A745 */
+    /* Success Green #28A745 */
+    --success: 134 61% 41%;
     --success-foreground: 0 0% 100%;
 
-    --warning: 45 100% 51%; /* Warning Orange #FFC107 */
+    /* Warning Orange #FFC107 */
+    --warning: 45 100% 51%;
     --warning-foreground: 0 0% 17%;
 
-    --info: 192 82% 41%; /* Info Blue #17A2B8 */
+    /* Info Blue #17A2B8 */
+    --info: 192 82% 41%;
     --info-foreground: 0 0% 100%;
 
     --border: 0 0% 89.8%;
     --input: 0 0% 89.8%;
-    --ring: 33 41% 64%; /* Felix Gold #D4A574 */
+    /* Felix Gold #D4A574 */
+    --ring: 33 41% 64%;
 
-    --radius: 0.5rem;
+    --radius: 12px;
   }
 
   .dark {
@@ -54,33 +64,39 @@
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 33 41% 64%; /* Felix Gold */
+    /* Felix Gold */
+    --primary: 33 41% 64%;
     --primary-foreground: 210 40% 98%;
 
-    --secondary: 120 50% 20%; /* Lighter Forest Green for dark mode */
+    /* Lighter Forest Green for dark mode */
+    --secondary: 120 50% 20%;
     --secondary-foreground: 210 40% 98%;
 
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
 
-    --accent: 219 37% 50%; /* Lighter Steel Blue for dark mode */
+    /* Lighter Steel Blue for dark mode */
+    --accent: 219 37% 50%;
     --accent-foreground: 210 40% 98%;
 
     --destructive: 354 70% 54%;
     --destructive-foreground: 210 40% 98%;
     
-    --success: 134 61% 45%; /* Lighter Success Green */
+    /* Lighter Success Green */
+    --success: 134 61% 45%;
     --success-foreground: 210 40% 98%;
 
     --warning: 45 100% 51%;
     --warning-foreground: 210 40% 98%;
 
-    --info: 192 82% 45%; /* Lighter Info Blue */
+    /* Lighter Info Blue */
+    --info: 192 82% 45%;
     --info-foreground: 210 40% 98%;
 
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 33 41% 64%; /* Felix Gold */
+    /* Felix Gold */
+    --ring: 33 41% 64%;
   }
 }
 
