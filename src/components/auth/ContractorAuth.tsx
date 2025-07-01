@@ -145,19 +145,19 @@ export default function ContractorAuth({ onSuccess }: AuthFormProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-brand-primary/10 via-white to-brand-secondary/10 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-secondary/10 flex items-center justify-center p-4">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         className="w-full max-w-md"
       >
-        <Card className="shadow-2xl border-0 bg-white/90 backdrop-blur-sm">
+        <Card className="shadow-2xl border-0 bg-card/90 backdrop-blur-sm">
           <CardHeader className="text-center space-y-4 pb-8">
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.2 }}
-              className="mx-auto w-16 h-16 bg-gradient-to-r from-brand-primary to-brand-primary/80 rounded-full flex items-center justify-center"
+              className="mx-auto w-16 h-16 bg-gradient-to-r from-primary to-primary/80 rounded-full flex items-center justify-center"
             >
               {step === 'phone' ? (
                 <Phone className="h-8 w-8 text-white" />
@@ -167,7 +167,7 @@ export default function ContractorAuth({ onSuccess }: AuthFormProps) {
             </motion.div>
             
             <div>
-              <CardTitle className="text-2xl font-bold text-gray-900">
+              <CardTitle className="text-2xl font-bold text-foreground">
                 {step === 'phone' ? 'Welcome Back' : 'Verify Your Phone'}
               </CardTitle>
               <p className="text-muted-foreground mt-2">
@@ -196,7 +196,7 @@ export default function ContractorAuth({ onSuccess }: AuthFormProps) {
                       placeholder="+1 (555) 123-4567"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
-                      className="h-12 text-lg border-2 focus:border-brand-primary"
+                      className="h-12 text-lg border-2 brand-focus"
                       disabled={loading}
                     />
                     {errors.phone && (
@@ -210,7 +210,7 @@ export default function ContractorAuth({ onSuccess }: AuthFormProps) {
                   <Button 
                     type="submit" 
                     disabled={loading || !phone.trim()}
-                    className="w-full h-12 text-lg bg-gradient-to-r from-brand-primary to-brand-primary/80 hover:from-brand-primary/90 hover:to-brand-primary/70"
+                    className="w-full h-12 text-lg bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
                   >
                     {loading ? (
                       <>
@@ -237,7 +237,7 @@ export default function ContractorAuth({ onSuccess }: AuthFormProps) {
                       placeholder="000000"
                       value={code}
                       onChange={(e) => setCode(e.target.value)}
-                      className="h-12 text-lg text-center tracking-widest border-2 focus:border-brand-primary"
+                      className="h-12 text-lg text-center tracking-widest border-2 brand-focus"
                       maxLength={6}
                       disabled={loading}
                     />
@@ -253,7 +253,7 @@ export default function ContractorAuth({ onSuccess }: AuthFormProps) {
                     <Button 
                       type="submit" 
                       disabled={loading || code.length !== 6}
-                      className="w-full h-12 text-lg bg-gradient-to-r from-brand-primary to-brand-primary/80 hover:from-brand-primary/90 hover:to-brand-primary/70"
+                      className="w-full h-12 text-lg bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
                     >
                       {loading ? (
                         <>
@@ -273,7 +273,7 @@ export default function ContractorAuth({ onSuccess }: AuthFormProps) {
                       variant="ghost"
                       onClick={handleBackToPhone}
                       disabled={loading}
-                      className="w-full h-10 text-muted-foreground hover:text-brand-primary"
+                      className="w-full h-10 text-muted-foreground hover:text-primary"
                     >
                       <ArrowLeft className="mr-2 h-4 w-4" />
                       Back to Phone Number
@@ -286,11 +286,11 @@ export default function ContractorAuth({ onSuccess }: AuthFormProps) {
             <div className="text-center text-sm text-muted-foreground">
               <p>
                 By continuing, you agree to our{' '}
-                <a href="/terms" className="text-brand-primary hover:underline">
+                <a href="/terms" className="text-primary hover:underline">
                   Terms of Service
                 </a>{' '}
                 and{' '}
-                <a href="/privacy" className="text-brand-primary hover:underline">
+                <a href="/privacy" className="text-primary hover:underline">
                   Privacy Policy
                 </a>
               </p>

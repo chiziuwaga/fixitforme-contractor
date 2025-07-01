@@ -61,7 +61,7 @@ export default function DocumentUploader({ contractorId }: DocumentUploaderProps
       case 'approved': return 'bg-green-100 text-green-800 border-green-200';
       case 'pending': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
       case 'rejected': return 'bg-red-100 text-red-800 border-red-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      default: return 'bg-muted text-muted-foreground border-border';
     }
   };
 
@@ -142,14 +142,14 @@ export default function DocumentUploader({ contractorId }: DocumentUploaderProps
                       <span className="ml-1 capitalize">{uploadedDoc.status}</span>
                     </Badge>
                   ) : (
-                    <Badge variant="outline" className="text-gray-500">
+                    <Badge variant="outline" className="text-muted-foreground">
                       Not uploaded
                     </Badge>
                   )}
                 </div>
 
                 {uploadedDoc ? (
-                  <div className="flex items-center justify-between bg-gray-50 rounded p-3">
+                  <div className="flex items-center justify-between bg-muted rounded p-3">
                     <div className="flex items-center gap-3">
                       <FileText className="h-8 w-8 text-blue-500" />
                       <div>
@@ -174,8 +174,8 @@ export default function DocumentUploader({ contractorId }: DocumentUploaderProps
                     </div>
                   </div>
                 ) : (
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                    <Upload className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+                  <div className="border-2 border-dashed border-border rounded-lg p-6 text-center">
+                    <Upload className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
                     <p className="text-sm text-muted-foreground mb-2">
                       Click to upload or drag and drop
                     </p>
@@ -212,7 +212,7 @@ export default function DocumentUploader({ contractorId }: DocumentUploaderProps
         )}
 
         {/* Help Text */}
-        <div className="bg-gray-50 rounded-lg p-4">
+        <div className="bg-muted rounded-lg p-4">
           <h4 className="font-medium mb-2">Document Requirements</h4>
           <ul className="text-sm text-muted-foreground space-y-1">
             <li>• All documents must be current and valid</li>

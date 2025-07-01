@@ -370,7 +370,7 @@ const GenerativeAgentAssets: React.FC<GenerativeAgentAssetsProps> = ({ type, dat
             
             <div className="space-y-3">
               {materialData.timeline.phases.map((phase, index) => (
-                <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div key={index} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
                   <div>
                     <h4 className="font-medium">{phase.name}</h4>
                     <p className="text-sm text-muted-foreground">{phase.duration} days</p>

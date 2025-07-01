@@ -31,7 +31,7 @@ export default function SettingsPage() {
           <Tabs defaultValue="profile" className="grid grid-cols-12 gap-6">
             {/* Sidebar Navigation */}
             <div className="col-span-12 lg:col-span-3">
-              <Card className="brand-shadow border-0 bg-white/95 backdrop-blur-sm">
+              <Card className="brand-shadow border-0 bg-card/95 backdrop-blur-sm">
                 <CardContent className="p-0">
                   <TabsList className="flex flex-col h-auto w-full bg-transparent">
                     <TabsTrigger 
@@ -74,7 +74,7 @@ export default function SettingsPage() {
             {/* Main Content Area */}
             <div className="col-span-12 lg:col-span-9">
               <TabsContent value="profile" className="mt-0">
-                <Card className="brand-shadow-lg border-0 bg-white/95 backdrop-blur-sm">
+                <Card className="brand-shadow-lg border-0 bg-card/95 backdrop-blur-sm">
                   <CardHeader className="bg-primary/10 border-b">
                     <CardTitle className="text-2xl text-primary flex items-center gap-3">
                       <User className="h-6 w-6" />
@@ -91,7 +91,7 @@ export default function SettingsPage() {
               </TabsContent>
 
               <TabsContent value="subscription" className="mt-0">
-                <Card className="brand-shadow-lg border-0 bg-white/95 backdrop-blur-sm">
+                <Card className="brand-shadow-lg border-0 bg-card/95 backdrop-blur-sm">
                   <CardHeader className="bg-secondary/10 border-b">
                     <CardTitle className="text-2xl text-secondary flex items-center gap-3">
                       <CreditCard className="h-6 w-6" />
@@ -108,7 +108,7 @@ export default function SettingsPage() {
               </TabsContent>
 
               <TabsContent value="documents" className="mt-0">
-                <Card className="brand-shadow-lg border-0 bg-white/95 backdrop-blur-sm">
+                <Card className="brand-shadow-lg border-0 bg-card/95 backdrop-blur-sm">
                   <CardHeader className="bg-accent/10 border-b">
                     <CardTitle className="text-2xl text-accent flex items-center gap-3">
                       <FileText className="h-6 w-6" />

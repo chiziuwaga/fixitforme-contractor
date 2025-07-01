@@ -77,8 +77,8 @@ const AGENT_CONFIG = {
   },
   system: {
     name: 'System',
-    color: 'from-neutral-400 to-neutral-500',
-    bgColor: 'bg-gradient-to-r from-neutral-400 to-neutral-500',
+    color: 'from-muted to-muted-foreground',
+    bgColor: 'bg-gradient-to-r from-muted to-muted-foreground',
     avatar: '⚙️',
     description: 'System Notification',
   },
@@ -209,13 +209,13 @@ export function ChatWindow({
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
       className={cn(
-        "fixed bottom-6 right-24 w-96 bg-white border border-neutral-200 rounded-xl shadow-2xl brand-shadow-lg overflow-hidden",
+        "fixed bottom-6 right-24 w-96 bg-card border border-border rounded-xl shadow-2xl brand-shadow-lg overflow-hidden",
         "z-40",
         isMinimized ? "h-16" : "h-[500px]"
       )}
     >
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-neutral-200 bg-gradient-to-r bg-neutral-50">
+      <div className="flex items-center justify-between p-4 border-b border-border bg-gradient-to-r bg-muted">
         <div className="flex items-center gap-3">
           <Avatar className={cn("h-8 w-8", config.bgColor)}>
             <AvatarFallback className="text-white text-sm">
@@ -223,8 +223,8 @@ export function ChatWindow({
             </AvatarFallback>
           </Avatar>
           <div>
-            <h3 className="font-semibold text-neutral-900 text-sm">{config.name}</h3>
-            <p className="text-xs text-neutral-600">{config.description}</p>
+            <h3 className="font-semibold text-foreground text-sm">{config.name}</h3>
+            <p className="text-xs text-muted-foreground">{config.description}</p>
           </div>
         </div>
         <div className="flex items-center gap-1">
@@ -235,7 +235,7 @@ export function ChatWindow({
                   variant="ghost"
                   size="sm"
                   onClick={onMinimize}
-                  className="h-8 w-8 p-0 hover:bg-neutral-100"
+                  className="h-8 w-8 p-0 hover:bg-muted"
                 >
                   <Minus className="h-4 w-4" />
                 </Button>
@@ -313,7 +313,7 @@ export function ChatWindow({
                       </div>
                       
                       {isUser && (
-                        <Avatar className="h-6 w-6 flex-shrink-0 mt-1 bg-neutral-400">
+                        <Avatar className="h-6 w-6 flex-shrink-0 mt-1 bg-muted">
                           <AvatarFallback className="text-white text-xs">
                             U
                           </AvatarFallback>
@@ -335,8 +335,8 @@ export function ChatWindow({
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex items-center gap-2">
-                      <Loader2 className="h-4 w-4 animate-spin text-neutral-500" />
-                      <span className="text-sm text-neutral-600">{config.name} is typing...</span>
+                      <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                      <span className="text-sm text-muted-foreground">{config.name} is typing...</span>
                     </div>
                   </motion.div>
                 )}
@@ -344,7 +344,7 @@ export function ChatWindow({
             </ScrollArea>
 
             {/* Input */}
-            <div className="border-t border-neutral-200 p-3">
+            <div className="border-t border-border p-3">
               <form onSubmit={handleLocalSubmit} className="flex gap-2">
                 <Input
                   value={inputValue}

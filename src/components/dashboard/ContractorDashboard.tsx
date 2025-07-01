@@ -62,8 +62,8 @@ export default function ContractorDashboard({ children }: DashboardLayoutProps) 
       className={`
         w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-all duration-200
         ${activeSection === item.id 
-          ? 'bg-brand-primary text-white shadow-lg' 
-          : 'text-gray-700 hover:bg-gray-100 hover:text-brand-primary'
+          ? 'bg-primary text-primary-foreground shadow-lg' 
+          : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
         }
       `}
     >
@@ -72,7 +72,7 @@ export default function ContractorDashboard({ children }: DashboardLayoutProps) 
       {item.badge && (
         <Badge 
           variant="secondary" 
-          className={`ml-auto ${activeSection === item.id ? 'bg-white/20 text-white' : 'bg-brand-primary/10 text-brand-primary'}`}
+          className={`ml-auto ${activeSection === item.id ? 'bg-background/20 text-background' : 'bg-primary/10 text-primary'}`}
         >
           {item.badge}
         </Badge>
@@ -87,7 +87,7 @@ export default function ContractorDashboard({ children }: DashboardLayoutProps) 
           <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+                <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
                 <p className="text-muted-foreground">Welcome back, {contractor.name}</p>
               </div>
               <div className="flex gap-2">
@@ -162,7 +162,7 @@ export default function ContractorDashboard({ children }: DashboardLayoutProps) 
       case 'profile':
         return (
           <div className="space-y-6">
-            <h1 className="text-3xl font-bold text-gray-900">Profile</h1>
+            <h1 className="text-3xl font-bold text-foreground">Profile</h1>
             <Card>
               <CardHeader>
                 <CardTitle>Contractor Information</CardTitle>
@@ -211,7 +211,7 @@ export default function ContractorDashboard({ children }: DashboardLayoutProps) 
       default:
         return children || (
           <div className="space-y-6">
-            <h1 className="text-3xl font-bold text-gray-900 capitalize">{activeSection}</h1>
+            <h1 className="text-3xl font-bold text-foreground capitalize">{activeSection}</h1>
             <Card>
               <CardContent className="pt-6">
                 <p className="text-muted-foreground text-center py-8">
@@ -225,7 +225,7 @@ export default function ContractorDashboard({ children }: DashboardLayoutProps) 
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Mobile Sidebar Overlay */}
       <AnimatePresence>
         {sidebarOpen && (
@@ -243,7 +243,7 @@ export default function ContractorDashboard({ children }: DashboardLayoutProps) 
       <motion.div
         initial={false}
         animate={{ x: sidebarOpen ? 0 : -320 }}
-        className="fixed left-0 top-0 h-full w-80 bg-white shadow-xl z-50 lg:translate-x-0 lg:static lg:z-0"
+        className="fixed left-0 top-0 h-full w-80 bg-card shadow-xl z-50 lg:translate-x-0 lg:static lg:z-0"
       >
         <div className="flex flex-col h-full">
           {/* Header */}
@@ -253,7 +253,7 @@ export default function ContractorDashboard({ children }: DashboardLayoutProps) 
                 <div className="w-8 h-8 bg-gradient-to-r from-brand-primary to-brand-primary/80 rounded-lg flex items-center justify-center">
                   <span className="text-white font-bold text-sm">F</span>
                 </div>
-                <span className="text-xl font-bold text-gray-900">FixItForMe</span>
+                <span className="text-xl font-bold text-foreground">FixItForMe</span>
               </div>
               <Button
                 variant="ghost"
@@ -276,7 +276,7 @@ export default function ContractorDashboard({ children }: DashboardLayoutProps) 
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1">
-                <h3 className="font-semibold text-gray-900">{contractor.name}</h3>
+                <h3 className="font-semibold text-foreground">{contractor.name}</h3>
                 <Badge variant="outline" className="text-xs">
                   {contractor.tier} Tier
                 </Badge>
@@ -309,7 +309,7 @@ export default function ContractorDashboard({ children }: DashboardLayoutProps) 
       {/* Main Content */}
       <div className="lg:ml-80">
         {/* Top Bar */}
-        <div className="bg-white border-b px-6 py-4 flex items-center justify-between">
+        <div className="bg-card border-b px-6 py-4 flex items-center justify-between">
           <Button
             variant="ghost"
             size="sm"

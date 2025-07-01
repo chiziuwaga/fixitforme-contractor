@@ -58,19 +58,19 @@ export default function JobBidView() {
 
   const getUrgencyColor = (urgency: string) => {
     switch (urgency) {
-      case 'high': return 'bg-red-100 text-red-800 border-red-200';
-      case 'medium': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'low': return 'bg-green-100 text-green-800 border-green-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'high': return 'bg-destructive/10 text-destructive border-destructive/20';
+      case 'medium': return 'bg-warning/10 text-warning border-warning/20';
+      case 'low': return 'bg-success/10 text-success border-success/20';
+      default: return 'bg-muted text-muted-foreground border-border';
     }
   };
 
   const getSourceColor = (source: string) => {
     switch (source) {
-      case 'felix_referral': return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'rex_discovery': return 'bg-brand-secondary/10 text-brand-secondary border-brand-secondary/20';
-      case 'direct_inquiry': return 'bg-purple-100 text-purple-800 border-purple-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'felix_referral': return 'bg-info/10 text-info border-info/20';
+      case 'rex_discovery': return 'bg-secondary/10 text-secondary border-secondary/20';
+      case 'direct_inquiry': return 'bg-accent/10 text-accent border-accent/20';
+      default: return 'bg-muted text-muted-foreground border-border';
     }
   };
 
@@ -110,7 +110,7 @@ export default function JobBidView() {
           className="space-y-8"
         >
           {/* Header */}
-          <Card className="border-2 border-brand-primary/10 shadow-xl bg-white/80 backdrop-blur-sm">
+          <Card className="border-2 border-primary/10 shadow-xl bg-card/80 backdrop-blur-sm">
             <CardHeader className="border-b border-brand-primary/10">
               <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
                 <div className="flex-1 space-y-4">
@@ -130,7 +130,7 @@ export default function JobBidView() {
                     </Badge>
                   </div>
                   
-                  <CardTitle className="text-3xl font-bold text-gray-900 leading-tight">
+                  <CardTitle className="text-3xl font-bold text-foreground leading-tight">
                     {job.title}
                   </CardTitle>
                   
@@ -165,30 +165,30 @@ export default function JobBidView() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Job Details - Main Content */}
             <div className="lg:col-span-2 space-y-6">
-              <Card className="shadow-lg border-0 bg-white/90 backdrop-blur-sm">
-                <CardHeader className="border-b bg-gradient-to-r from-brand-primary/5 to-transparent">
+              <Card className="shadow-lg border-0 bg-card/90 backdrop-blur-sm">
+                <CardHeader className="border-b bg-gradient-to-r from-primary/5 to-transparent">
                   <CardTitle className="text-xl font-semibold flex items-center gap-2">
-                    <BookOpen className="h-5 w-5 text-brand-primary" />
+                    <BookOpen className="h-5 w-5 text-primary" />
                     Job Description
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="pt-6">
-                  <p className="text-gray-700 leading-relaxed">{job.description}</p>
+                  <p className="text-muted-foreground leading-relaxed">{job.description}</p>
                 </CardContent>
               </Card>
 
               {job.requirements && job.requirements.length > 0 && (
-                <Card className="shadow-lg border-0 bg-white/90 backdrop-blur-sm">
-                  <CardHeader className="border-b bg-gradient-to-r from-brand-secondary/5 to-transparent">
+                <Card className="shadow-lg border-0 bg-card/90 backdrop-blur-sm">
+                  <CardHeader className="border-b bg-gradient-to-r from-secondary/5 to-transparent">
                     <CardTitle className="text-xl font-semibold flex items-center gap-2">
-                      <MessageSquare className="h-5 w-5 text-brand-secondary" />
+                      <MessageSquare className="h-5 w-5 text-secondary" />
                       Requirements
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="pt-6">
                     <ul className="space-y-2">
                       {job.requirements.map((req, index) => (
-                        <li key={index} className="flex items-start gap-2 text-gray-700">
+                        <li key={index} className="flex items-start gap-2 text-muted-foreground">
                           <span className="text-brand-primary font-bold mt-1">•</span>
                           <span>{req}</span>
                         </li>
@@ -225,36 +225,36 @@ export default function JobBidView() {
             {/* Sidebar */}
             <div className="space-y-6">
               {job.source === 'felix_referral' && job.homeowner_name && (
-                <Card className="shadow-lg border-0 bg-white/90 backdrop-blur-sm">
-                  <CardHeader className="border-b bg-gradient-to-r from-green-50 to-transparent">
-                    <CardTitle className="text-lg font-semibold flex items-center gap-2 text-green-800">
-                      <User className="h-5 w-5 text-green-600" />
+                <Card className="shadow-lg border-0 bg-card/90 backdrop-blur-sm">
+                  <CardHeader className="border-b bg-gradient-to-r from-success/10 to-transparent">
+                    <CardTitle className="text-lg font-semibold flex items-center gap-2 text-success">
+                      <User className="h-5 w-5 text-success" />
                       Homeowner Details
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="pt-6 space-y-3">
                     <div className="text-sm">
-                      <span className="font-semibold text-gray-700">Name:</span>
-                      <span className="ml-2 text-gray-600">{job.homeowner_name}</span>
+                      <span className="font-semibold text-muted-foreground">Name:</span>
+                      <span className="ml-2 text-foreground">{job.homeowner_name}</span>
                     </div>
                     {job.homeowner_phone && (
                       <div className="text-sm">
-                        <span className="font-semibold text-gray-700">Phone:</span>
-                        <span className="ml-2 text-gray-600">{job.homeowner_phone}</span>
+                        <span className="font-semibold text-muted-foreground">Phone:</span>
+                        <span className="ml-2 text-foreground">{job.homeowner_phone}</span>
                       </div>
                     )}
                     <div className="text-sm">
-                      <span className="font-semibold text-gray-700">Timeline:</span>
-                      <span className="ml-2 text-gray-600">{job.timeline_preference || 'Flexible'}</span>
+                      <span className="font-semibold text-muted-foreground">Timeline:</span>
+                      <span className="ml-2 text-foreground">{job.timeline_preference || 'Flexible'}</span>
                     </div>
                   </CardContent>
                 </Card>
               )}
 
-              <Card className="shadow-lg border-0 bg-white/90 backdrop-blur-sm">
-                <CardHeader className="border-b bg-gradient-to-r from-brand-primary/5 to-transparent">
+              <Card className="shadow-lg border-0 bg-card/90 backdrop-blur-sm">
+                <CardHeader className="border-b bg-gradient-to-r from-primary/5 to-transparent">
                   <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                    <Calendar className="h-5 w-5 text-brand-primary" />
+                    <Calendar className="h-5 w-5 text-primary" />
                     Quick Actions
                   </CardTitle>
                 </CardHeader>

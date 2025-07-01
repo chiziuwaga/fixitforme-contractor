@@ -570,7 +570,7 @@ export function LeadDistributionCard({
         />
         <div className="mt-4 grid grid-cols-1 gap-2 w-full text-xs">
           {data.map((item) => (
-            <div key={item.area} className="flex justify-between items-center p-2 bg-gray-50 rounded">
+            <div key={item.area} className="flex justify-between items-center p-2 bg-muted rounded">
               <span className="font-medium">{item.area}</span>
               <div className="flex items-center gap-2">
                 <span className="font-semibold">{item.count} leads</span>

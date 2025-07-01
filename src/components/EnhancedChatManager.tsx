@@ -343,7 +343,7 @@ export function EnhancedChatManager() {
                   </Button>
                 </motion.div>
               </TooltipTrigger>
-              <TooltipContent side="left" className="bg-neutral-900 text-white">
+              <TooltipContent side="left" className="bg-popover text-popover-foreground">
                 <p>Chat with Lexi, your onboarding assistant</p>
               </TooltipContent>
             </Tooltip>
@@ -361,7 +361,7 @@ export function EnhancedChatManager() {
                       "h-14 w-14 rounded-full text-white shadow-lg hover:shadow-xl transition-all duration-200 brand-transition",
                       isScaleTier 
                         ? "bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90" 
-                        : "bg-neutral-400 cursor-not-allowed opacity-60"
+                        : "bg-muted cursor-not-allowed opacity-60"
                     )}
                     disabled={!isScaleTier}
                     size="sm"
@@ -374,7 +374,7 @@ export function EnhancedChatManager() {
                   </Button>
                 </motion.div>
               </TooltipTrigger>
-              <TooltipContent side="left" className="bg-neutral-900 text-white">
+              <TooltipContent side="left" className="bg-popover text-popover-foreground">
                 <p>{isScaleTier ? "Chat with Alex for advanced bidding" : "Upgrade to Scale to use Alex"}</p>
               </TooltipContent>
             </Tooltip>
@@ -392,7 +392,7 @@ export function EnhancedChatManager() {
                       "h-14 w-14 rounded-full text-white shadow-lg hover:shadow-xl transition-all duration-200 brand-transition",
                       isScaleTier 
                         ? "bg-gradient-to-r from-secondary to-success hover:from-secondary/90 hover:to-success/90" 
-                        : "bg-neutral-400 cursor-not-allowed opacity-60"
+                        : "bg-muted cursor-not-allowed opacity-60"
                     )}
                     disabled={!isScaleTier}
                     size="sm"
@@ -405,7 +405,7 @@ export function EnhancedChatManager() {
                   </Button>
                 </motion.div>
               </TooltipTrigger>
-              <TooltipContent side="left" className="bg-neutral-900 text-white">
+              <TooltipContent side="left" className="bg-popover text-popover-foreground">
                 <p>{isScaleTier ? "Chat with Rex for lead generation" : "Upgrade to Scale to use Rex"}</p>
               </TooltipContent>
             </Tooltip>

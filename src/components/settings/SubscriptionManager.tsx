@@ -59,7 +59,7 @@ export default function SubscriptionManager({ currentTier = 'growth' }: Subscrip
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Zap className="h-5 w-5 text-brand-primary" />
+          <Zap className="h-5 w-5 text-primary" />
           Subscription Management
         </CardTitle>
       </CardHeader>
@@ -74,8 +74,8 @@ export default function SubscriptionManager({ currentTier = 'growth' }: Subscrip
                 key={tier.id}
                 className={`relative border-2 rounded-lg p-6 ${
                   isCurrentTier 
-                    ? 'border-brand-primary bg-brand-primary/5' 
-                    : 'border-gray-200 hover:border-gray-300'
+                    ? 'border-primary bg-primary/5' 
+                    : 'border-border hover:border-primary/50'
                 } ${isRecommended ? 'ring-2 ring-purple-200' : ''}`}
               >
                 {isRecommended && (
@@ -85,7 +85,7 @@ export default function SubscriptionManager({ currentTier = 'growth' }: Subscrip
                 )}
                 
                 {isCurrentTier && (
-                  <Badge className="absolute -top-3 right-4 bg-brand-primary">
+                  <Badge className="absolute -top-3 right-4 bg-primary">
                     Current Plan
                   </Badge>
                 )}
@@ -96,7 +96,7 @@ export default function SubscriptionManager({ currentTier = 'growth' }: Subscrip
 
                 <h3 className="text-xl font-bold mb-2">{tier.name}</h3>
                 <div className="mb-4">
-                  <p className="text-2xl font-bold text-gray-900">{tier.price}</p>
+                  <p className="text-2xl font-bold text-foreground">{tier.price}</p>
                   <p className="text-sm text-muted-foreground">{tier.fee}</p>
                 </div>
 
@@ -136,19 +136,19 @@ export default function SubscriptionManager({ currentTier = 'growth' }: Subscrip
         </div>
 
         {/* Current Usage */}
-        <div className="bg-gray-50 rounded-lg p-4">
+        <div className="bg-muted rounded-lg p-4">
           <h4 className="font-medium mb-3">This Month's Usage</h4>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
             <div>
-              <p className="text-2xl font-bold text-brand-primary">8</p>
+              <p className="text-2xl font-bold text-primary">8</p>
               <p className="text-sm text-muted-foreground">Bids Submitted</p>
             </div>
             <div>
-              <p className="text-2xl font-bold text-brand-primary">$245</p>
+              <p className="text-2xl font-bold text-primary">$245</p>
               <p className="text-sm text-muted-foreground">Platform Fees</p>
             </div>
             <div>
-              <p className="text-2xl font-bold text-brand-primary">3</p>
+              <p className="text-2xl font-bold text-primary">3</p>
               <p className="text-sm text-muted-foreground">Projects Won</p>
             </div>
           </div>

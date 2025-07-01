@@ -101,19 +101,19 @@ export default function LeadFeed({ contractorId }: LeadFeedProps) {
 
   const getUrgencyColor = (urgency: string) => {
     switch (urgency) {
-      case 'high': return 'bg-red-100 text-red-800 border-red-200';
-      case 'medium': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'low': return 'bg-green-100 text-green-800 border-green-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'high': return 'bg-destructive/10 text-destructive border-destructive/20';
+      case 'medium': return 'bg-warning/10 text-warning-foreground border-warning/20';
+      case 'low': return 'bg-success/10 text-success-foreground border-success/20';
+      default: return 'bg-muted text-muted-foreground border-border';
     }
   };
 
   const getSourceColor = (source: string) => {
     switch (source) {
-      case 'felix_referral': return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'rex_discovery': return 'bg-brand-secondary/10 text-brand-secondary border-brand-secondary/20';
-      case 'direct_inquiry': return 'bg-purple-100 text-purple-800 border-purple-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'felix_referral': return 'bg-info/10 text-info-foreground border-info/20';
+      case 'rex_discovery': return 'bg-secondary/10 text-secondary-foreground border-secondary/20';
+      case 'direct_inquiry': return 'bg-accent/10 text-accent-foreground border-accent/20';
+      default: return 'bg-muted text-muted-foreground border-border';
     }
   };
 
@@ -127,11 +127,11 @@ export default function LeadFeed({ contractorId }: LeadFeedProps) {
           <div className="space-y-4">
             {[...Array(3)].map((_, i) => (
               <div key={i} className="animate-pulse border rounded-lg p-4">
-                <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                <div className="h-3 bg-gray-200 rounded w-1/2 mb-3"></div>
+                <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
+                <div className="h-3 bg-muted rounded w-1/2 mb-3"></div>
                 <div className="flex gap-2">
-                  <div className="h-6 bg-gray-200 rounded w-16"></div>
-                  <div className="h-6 bg-gray-200 rounded w-20"></div>
+                  <div className="h-6 bg-muted rounded w-16"></div>
+                  <div className="h-6 bg-muted rounded w-20"></div>
                 </div>
               </div>
             ))}
@@ -158,12 +158,12 @@ export default function LeadFeed({ contractorId }: LeadFeedProps) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
               className={`border rounded-lg p-4 transition-all hover:shadow-md ${
-                !lead.viewed ? 'bg-blue-50/30 border-blue-200' : 'bg-white'
+                !lead.viewed ? 'bg-info/5 border-info/20' : 'bg-card'
               }`}
             >
               <div className="flex justify-between items-start mb-3">
                 <div className="flex-1">
-                  <h3 className="font-semibold text-gray-900 mb-1 flex items-center gap-2">
+                  <h3 className="font-semibold text-foreground mb-1 flex items-center gap-2">
                     {lead.title}
                     {!lead.viewed && (
                       <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
@@ -201,17 +201,17 @@ export default function LeadFeed({ contractorId }: LeadFeedProps) {
 
               <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mb-4">
                 <div className="flex items-center gap-1">
-                  <DollarSign className="h-4 w-4 text-brand-primary" />
+                  <DollarSign className="h-4 w-4 text-primary" />
                   <span className="font-medium">{formatBudget(lead.budget_min, lead.budget_max)}</span>
                 </div>
                 
                 <div className="flex items-center gap-1">
-                  <MapPin className="h-4 w-4 text-brand-primary" />
+                  <MapPin className="h-4 w-4 text-primary" />
                   <span>{lead.location}</span>
                 </div>
                 
                 <div className="flex items-center gap-1">
-                  <Clock className="h-4 w-4 text-brand-primary" />
+                  <Clock className="h-4 w-4 text-primary" />
                   <span>{formatTimeAgo(lead.posted_at)}</span>
                 </div>
               </div>
@@ -219,7 +219,7 @@ export default function LeadFeed({ contractorId }: LeadFeedProps) {
               <div className="flex gap-2">
                 <Button 
                   size="sm" 
-                  className="bg-brand-primary hover:bg-brand-primary/90"
+                  className="bg-primary hover:bg-primary/90"
                 >
                   View Details
                 </Button>

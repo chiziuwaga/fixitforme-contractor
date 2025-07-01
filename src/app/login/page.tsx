@@ -134,7 +134,7 @@ export default function ContractorLogin() {
         variants={containerVariants}
         className="w-full max-w-md"
       >
-        <Card className="brand-shadow-lg border-0 bg-white/95 backdrop-blur-sm">
+        <Card className="brand-shadow-lg border-0 bg-card/95 backdrop-blur-sm">
           <CardHeader className="text-center space-y-4">
             <motion.div variants={itemVariants} className="flex justify-center">
               <Image 
@@ -273,7 +273,7 @@ export default function ContractorLogin() {
             <div className="relative">
               <Separator />
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className="bg-white px-2 text-xs text-muted-foreground">Or</span>
+                <span className="bg-card px-2 text-xs text-muted-foreground">Or</span>
               </div>
             </div>
 
