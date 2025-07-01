@@ -91,3 +91,39 @@
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
+
+@layer components {
+  /* Brand Shadow Utilities */
+  .brand-shadow-lg {
+    box-shadow: 0 25px 50px -12px hsla(var(--primary), 0.15), 0 0 0 1px hsla(var(--border), 0.05);
+  }
+  
+  /* Brand Focus Utilities */
+  .brand-focus:focus {
+    outline: none;
+    border-color: hsl(var(--primary));
+    box-shadow: 0 0 0 2px hsl(var(--ring) / 0.2);
+  }
+  
+  /* Brand Transition Utilities */
+  .brand-transition {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  /* Error Color Utilities */
+  .text-error-600 {
+    color: hsl(var(--destructive));
+  }
+  
+  .border-error-200 {
+    border-color: hsl(var(--destructive) / 0.2);
+  }
+  
+  .bg-error-50 {
+    background-color: hsl(var(--destructive) / 0.05);
+  }
+  
+  .text-error-800 {
+    color: hsl(var(--destructive) / 0.9);
+  }
+}

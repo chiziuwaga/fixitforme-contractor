@@ -360,7 +360,7 @@ export function EnhancedChatManager() {
                     className={cn(
                       "h-14 w-14 rounded-full text-white shadow-lg hover:shadow-xl transition-all duration-200 brand-transition",
                       isScaleTier 
-                        ? "bg-gradient-to-r from-[rgb(var(--primary-purple))] to-[rgb(var(--primary-indigo))] hover:from-[rgb(var(--primary-purple))]/90 hover:to-[rgb(var(--primary-indigo))]/90" 
+                        ? "bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90" 
                         : "bg-neutral-400 cursor-not-allowed opacity-60"
                     )}
                     disabled={!isScaleTier}
@@ -391,7 +391,7 @@ export function EnhancedChatManager() {
                     className={cn(
                       "h-14 w-14 rounded-full text-white shadow-lg hover:shadow-xl transition-all duration-200 brand-transition",
                       isScaleTier 
-                        ? "bg-gradient-to-r from-[rgb(var(--primary-teal))] to-[rgb(var(--primary-cyan))] hover:from-[rgb(var(--primary-teal))]/90 hover:to-[rgb(var(--primary-cyan))]/90" 
+                        ? "bg-gradient-to-r from-secondary to-success hover:from-secondary/90 hover:to-success/90" 
                         : "bg-neutral-400 cursor-not-allowed opacity-60"
                     )}
                     disabled={!isScaleTier}
