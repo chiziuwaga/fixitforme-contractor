@@ -4,98 +4,78 @@
 
 @layer base {
   :root {
+    /* Base colors */
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
-
+    
+    /* Card colors */
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
-
+    
+    /* Popover colors */
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-
-    /* Felix Gold #D4A574 */
+    
+    /* Brand colors - Felix Gold #D4A574 */
     --primary: 33 41% 64%;
     --primary-foreground: 0 0% 100%;
-
+    
     /* Forest Green #1A2E1A */
     --secondary: 120 50% 14%;
     --secondary-foreground: 0 0% 100%;
-
-    /* Warm Gray #F5F5F5 */
+    
+    /* Neutral colors */
     --muted: 0 0% 96%;
-    /* Charcoal #2C2C2C */
     --muted-foreground: 0 0% 42%;
-
-    /* Steel Blue #4A6FA5 */
+    
+    /* Accent color - Steel Blue #4A6FA5 */
     --accent: 219 37% 47%;
     --accent-foreground: 0 0% 100%;
-
-    /* Error Red #DC3545 */
+    
+    /* Status colors */
     --destructive: 354 70% 54%;
     --destructive-foreground: 0 0% 100%;
-    
-    /* Success Green #28A745 */
     --success: 134 61% 41%;
     --success-foreground: 0 0% 100%;
-
-    /* Warning Orange #FFC107 */
     --warning: 45 100% 51%;
     --warning-foreground: 0 0% 17%;
-
-    /* Info Blue #17A2B8 */
     --info: 192 82% 41%;
     --info-foreground: 0 0% 100%;
-
+    
+    /* Border and input colors */
     --border: 0 0% 89.8%;
     --input: 0 0% 89.8%;
-    /* Felix Gold #D4A574 */
     --ring: 33 41% 64%;
-
+    
+    /* Border radius */
     --radius: 12px;
   }
 
   .dark {
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
-
     --card: 222.2 84% 4.9%;
     --card-foreground: 210 40% 98%;
-
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
-
-    /* Felix Gold */
     --primary: 33 41% 64%;
     --primary-foreground: 210 40% 98%;
-
-    /* Lighter Forest Green for dark mode */
     --secondary: 120 50% 20%;
     --secondary-foreground: 210 40% 98%;
-
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
-
-    /* Lighter Steel Blue for dark mode */
     --accent: 219 37% 50%;
     --accent-foreground: 210 40% 98%;
-
     --destructive: 354 70% 54%;
     --destructive-foreground: 210 40% 98%;
-    
-    /* Lighter Success Green */
     --success: 134 61% 45%;
     --success-foreground: 210 40% 98%;
-
     --warning: 45 100% 51%;
     --warning-foreground: 210 40% 98%;
-
-    /* Lighter Info Blue */
     --info: 192 82% 45%;
     --info-foreground: 210 40% 98%;
-
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    /* Felix Gold */
     --ring: 33 41% 64%;
   }
 }
@@ -104,8 +84,10 @@
   * {
     border-color: hsl(var(--border));
   }
+  
   body {
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
+    font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
