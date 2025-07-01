@@ -1,16 +1,31 @@
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
+import { DEMO_CONFIG, createDemoResponse } from '@/lib/demo-config';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  const supabase = createRouteHandlerClient({ cookies });
-  const { data: { session } } = await supabase.auth.getSession();
+  try {
+    // DEMO MODE: Return mock leads
+    if (DEMO_CONFIG.DEMO_MODE || DEMO_CONFIG.SUPABASE_DEMO.enabled) {
+      console.log('[DEMO] Returning mock leads data');
+      
+      await createDemoResponse(null, 800); // Simulate API delay
+      
+      return NextResponse.json({ 
+        leads: DEMO_CONFIG.DEMO_LEADS,
+        demo: true,
+        message: 'Demo leads data' 
+      });
+    }
 
-  if (!session) {
-    return new NextResponse(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
-  }
+    const supabase = createRouteHandlerClient({ cookies });
+    const { data: { session } } = await supabase.auth.getSession();
+
+    if (!session) {
+      return new NextResponse(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
+    }
 
   try {
     // Get contractor profile to filter leads by services and service areas

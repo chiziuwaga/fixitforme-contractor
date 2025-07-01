@@ -90,15 +90,15 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
             </div>
             <div className="ml-3 flex-1">
               {toast.title && (
-                <h4 className="text-sm font-semibold text-gray-900">
+                <h4 className="text-sm font-semibold text-foreground">
                   {toast.title}
                 </h4>
               )}
-              <p className="text-sm text-gray-700">{toast.message}</p>
+              <p className="text-sm text-muted-foreground">{toast.message}</p>
             </div>
             <button
               onClick={() => remove(toast.id)}
-              className="ml-4 flex-shrink-0 text-gray-400 hover:text-gray-600"
+              className="ml-4 flex-shrink-0 text-muted-foreground hover:text-foreground"
             >
               <X className="h-4 w-4" />
             </button>

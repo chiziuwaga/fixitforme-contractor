@@ -336,7 +336,7 @@ export function EnhancedChatManager() {
                 >
                   <Button 
                     onClick={() => openChat('lexi')} 
-                    className="h-14 w-14 rounded-full bg-gradient-to-r from-[rgb(var(--primary-orange))] to-[rgb(var(--primary-blue))] hover:from-[rgb(var(--primary-orange))]/90 hover:to-[rgb(var(--primary-blue))]/90 text-white shadow-lg hover:shadow-xl transition-all duration-200 brand-transition"
+                    className="h-14 w-14 rounded-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-white shadow-lg hover:shadow-xl transition-all duration-200 brand-transition"
                     size="sm"
                   >
                     <MessageCircle className="h-6 w-6" />

@@ -5,50 +5,53 @@ export const BRAND = {
   
   colors: {
     // Primary Brand Colors (from official brand guide)
-    primary: '#DA427A',      // Felix Gold - Primary brand color
-    secondary: '#1A2F1A',    // Forest Green - Primary text color
+    primary: '#D4A574',      // Felix Gold - Primary brand color
+    secondary: '#1A2E1A',    // Forest Green - Primary text color
+    background: '#FFFFFF',   // Pure White - Main background
     
     // Secondary Colors
-    warmGray: '#8FGF95',     // Warm Gray
-    charcoal: '#2C2CDC',     // Charcoal
+    warmGray: '#F5F5F5',     // Warm Gray - Light backgrounds
+    charcoal: '#2C2C2C',     // Charcoal - Primary text
     
     // Accent Colors
-    steelBlue: '#A46F45',    // Steel Blue
-    success: '#228745',      // Success Green (QPFEA)
-    warning: '#FFC107',      // Warning Orange (O'srkes)
-    error: '#DC3845',        // Error Red
+    steelBlue: '#4A6FA5',    // Steel Blue - Info states
+    success: '#28A745',      // Success Green (official)
+    warning: '#FFC107',      // Warning Orange
+    error: '#DC3545',        // Error Red
+    info: '#17A2B8',         // Info Blue
     
     // Agent Colors (brand-aligned)
     agents: {
-      lexi: '#DA427A',       // Felix Gold - Liaison/Guide
-      alex: '#228745',       // Success Green - Assessor/Analysis  
+      lexi: '#D4A574',       // Felix Gold - Liaison/Guide
+      alex: '#28A745',       // Success Green - Assessor/Analysis  
       rex: '#FFC107',        // Warning Orange - Retriever/Search
-      felix: '#1A2F1A',      // Forest Green - Diagnostic Agent
+      felix: '#1A2E1A',      // Forest Green - Diagnostic Agent
     },
     
     // Typography Colors
     text: {
-      primary: '#1A2F1A',    // Forest Green for primary text
-      secondary: '#8FGF95',  // Warm Gray for secondary text
-      accent: '#DA427A',     // Felix Gold for highlights
+      primary: '#1A2E1A',    // Forest Green for primary text
+      secondary: '#2C2C2C',  // Charcoal for secondary text
+      accent: '#D4A574',     // Felix Gold for highlights
       inverse: '#FFFFFF',    // White for dark backgrounds
+      muted: '#6C757D',      // Muted gray for less important text
     },
     
     // UI State Colors
     state: {
-      success: '#228745',
+      success: '#28A745',
       warning: '#FFC107', 
-      error: '#DC3845',
-      info: '#A46F45',
-      disabled: '#8FGF95',
+      error: '#DC3545',
+      info: '#17A2B8',
+      disabled: '#F5F5F5',
     },
     
-    // Background Variations
-    background: {
+    // Background Variations - renamed to avoid conflict
+    surfaces: {
       primary: '#FFFFFF',    // Pure white
-      secondary: '#F8F9FA',  // Light gray
-      tertiary: '#F1F3F4',   // Lighter gray
-      dark: '#1A2F1A',       // Forest green for dark sections
+      secondary: '#F5F5F5',  // Warm gray
+      tertiary: '#F8F9FA',   // Lighter neutral
+      dark: '#1A2E1A',       // Forest green for dark sections
     }
   },
   
@@ -149,9 +152,9 @@ export const CSS_VARIABLES = `
     --color-error: ${BRAND.colors.error};
     --color-info: ${BRAND.colors.steelBlue};
     
-    --color-bg-primary: ${BRAND.colors.background.primary};
-    --color-bg-secondary: ${BRAND.colors.background.secondary};
-    --color-bg-tertiary: ${BRAND.colors.background.tertiary};
+    --color-bg-primary: ${BRAND.colors.surfaces.primary};
+    --color-bg-secondary: ${BRAND.colors.surfaces.secondary};
+    --color-bg-tertiary: ${BRAND.colors.surfaces.tertiary};
     
     --color-text-primary: ${BRAND.colors.text.primary};
     --color-text-secondary: ${BRAND.colors.text.secondary};

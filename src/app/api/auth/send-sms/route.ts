@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
+import { DEMO_CONFIG, createDemoResponse } from '@/lib/demo-config';
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,6 +14,20 @@ export async function POST(request: NextRequest) {
     const phoneRegex = /^\+?[1-9]\d{1,14}$/;
     if (!phoneRegex.test(phone.replace(/\s+/g, ''))) {
       return NextResponse.json({ error: 'Invalid phone number format' }, { status: 400 });
+    }
+
+    // DEMO MODE: Return mock success without actual SMS
+    if (DEMO_CONFIG.SMS_DEMO.enabled || DEMO_CONFIG.DEMO_MODE) {
+      console.log(`[DEMO] SMS would be sent to: ${phone} with code: ${DEMO_CONFIG.SMS_DEMO.mockCode}`);
+      
+      await createDemoResponse(null, 1500); // Simulate API delay
+      
+      return NextResponse.json({ 
+        success: true, 
+        message: `Demo verification code sent to ${phone}`,
+        demo: true,
+        hint: `Use code: ${DEMO_CONFIG.SMS_DEMO.mockCode}` // Only for demo!
+      });
     }
 
     // Use imported supabase directly

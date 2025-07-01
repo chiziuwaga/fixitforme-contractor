@@ -56,22 +56,22 @@ export interface ChatWindowProps {
 const AGENT_CONFIG = {
   lexi: {
     name: 'Lexi the Liaison',
-    color: 'from-[rgb(var(--primary-orange))] to-[rgb(var(--primary-blue))]',
-    bgColor: 'bg-gradient-to-r from-[rgb(var(--primary-orange))] to-[rgb(var(--primary-blue))]',
+    color: 'from-primary to-primary/80',
+    bgColor: 'bg-gradient-to-r from-primary to-primary/80',
     avatar: '👩‍💼',
     description: 'Onboarding Guide',
   },
   alex: {
     name: 'Alex the Assessor',
-    color: 'from-[rgb(var(--primary-purple))] to-[rgb(var(--primary-indigo))]',
-    bgColor: 'bg-gradient-to-r from-[rgb(var(--primary-purple))] to-[rgb(var(--primary-indigo))]',
+    color: 'from-success to-success/80',
+    bgColor: 'bg-gradient-to-r from-success to-success/80',
     avatar: '📊',
     description: 'Bidding Assistant',
   },
   rex: {
     name: 'Rex the Retriever',
-    color: 'from-[rgb(var(--primary-teal))] to-[rgb(var(--primary-cyan))]',
-    bgColor: 'bg-gradient-to-r from-[rgb(var(--primary-teal))] to-[rgb(var(--primary-cyan))]',
+    color: 'from-warning to-warning/80',
+    bgColor: 'bg-gradient-to-r from-warning to-warning/80',
     avatar: '🔍',
     description: 'Lead Generator',
   },
@@ -305,8 +305,8 @@ export function ChatWindow({
                       <div className={cn(
                         "rounded-lg p-3 max-w-[85%] brand-transition",
                         isUser 
-                          ? "bg-gradient-to-r from-[rgb(var(--primary-orange))] to-[rgb(var(--primary-blue))] text-white ml-auto" 
-                          : "bg-neutral-100 text-neutral-900"
+                          ? "bg-gradient-to-r from-primary to-primary/80 text-white ml-auto" 
+                          : "bg-muted text-foreground"
                       )}>
                         <p className="text-sm leading-relaxed">{message.content}</p>
                         <GenerativeUIRenderer message={message} />

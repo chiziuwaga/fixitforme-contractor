@@ -13,33 +13,33 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 33 49% 64%; /* felix-gold */
+    --primary: 33 41% 64%; /* Felix Gold #D4A574 */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 120 33% 14%; /* forest-green */
+    --secondary: 120 50% 14%; /* Forest Green #1A2E1A */
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 0 0% 96%; /* warm-gray */
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 0 0% 96%; /* Warm Gray #F5F5F5 */
+    --muted-foreground: 0 0% 42%; /* Charcoal #2C2C2C */
 
-    --accent: 193 39% 47%; /* steel-blue */
+    --accent: 219 37% 47%; /* Steel Blue #4A6FA5 */
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 354 70% 54%; /* error-red */
+    --destructive: 354 70% 54%; /* Error Red #DC3545 */
     --destructive-foreground: 0 0% 100%;
     
-    --success: 134 61% 40%; /* success-green */
+    --success: 134 61% 41%; /* Success Green #28A745 */
     --success-foreground: 0 0% 100%;
 
-    --warning: 45 100% 51%; /* warning-orange */
+    --warning: 45 100% 51%; /* Warning Orange #FFC107 */
     --warning-foreground: 0 0% 17%;
 
-    --info: 188 82% 41%; /* info-blue */
+    --info: 192 82% 41%; /* Info Blue #17A2B8 */
     --info-foreground: 0 0% 100%;
 
     --border: 0 0% 89.8%;
     --input: 0 0% 89.8%;
-    --ring: 33 49% 64%; /* felix-gold */
+    --ring: 33 41% 64%; /* Felix Gold #D4A574 */
 
     --radius: 0.5rem;
   }
@@ -54,33 +54,33 @@
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 33 49% 64%;
+    --primary: 33 41% 64%; /* Felix Gold */
     --primary-foreground: 210 40% 98%;
 
-    --secondary: 120 33% 20%; /* Lighter forest-green for dark mode */
+    --secondary: 120 50% 20%; /* Lighter Forest Green for dark mode */
     --secondary-foreground: 210 40% 98%;
 
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
 
-    --accent: 193 39% 50%; /* Lighter steel-blue for dark mode */
+    --accent: 219 37% 50%; /* Lighter Steel Blue for dark mode */
     --accent-foreground: 210 40% 98%;
 
     --destructive: 354 70% 54%;
     --destructive-foreground: 210 40% 98%;
     
-    --success: 134 61% 45%;
+    --success: 134 61% 45%; /* Lighter Success Green */
     --success-foreground: 210 40% 98%;
 
     --warning: 45 100% 51%;
     --warning-foreground: 210 40% 98%;
 
-    --info: 188 82% 45%;
+    --info: 192 82% 45%; /* Lighter Info Blue */
     --info-foreground: 210 40% 98%;
 
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 33 49% 64%;
+    --ring: 33 41% 64%; /* Felix Gold */
   }
 }
 

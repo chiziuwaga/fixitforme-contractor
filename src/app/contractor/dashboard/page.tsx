@@ -2,13 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Building, Clock, DollarSign, MapPin, Star, Loader2 } from 'lucide-react';
 import { EnhancedChatManager } from '@/components/EnhancedChatManager';
 import { useUser } from '@/hooks/useUser';
-import { BRAND } from '@/lib/brand';
 import { motion } from 'framer-motion';
 import { containerVariants, itemVariants } from '@/lib/animations';
 import { toast } from 'sonner';
@@ -30,40 +29,40 @@ interface Lead {
 
 const LeadCard = ({ lead }: { lead: Lead }) => (
   <motion.div variants={itemVariants} whileHover={{ y: -5, transition: { duration: 0.2 } }}>
-    <Card className="border border-neutral-200 hover:shadow-lg transition-all duration-200">
+    <Card className="hover:shadow-lg transition-all duration-200">
       <CardContent className="p-4">
         <div className="space-y-4">
           <div className="flex items-start justify-between">
-            <h4 className="text-lg font-semibold text-neutral-900 line-clamp-2 flex-1 mr-3">
+            <h4 className="text-lg font-semibold text-foreground line-clamp-2 flex-1 mr-3">
               {lead.title}
             </h4>
             <Badge 
               variant={lead.quality_score > 80 ? "default" : "secondary"}
-              className={`${lead.quality_score > 80 ? 'bg-success-500 hover:bg-success-600' : 'bg-warning-500 hover:bg-warning-600'} text-white flex items-center gap-1`}
+              className={`${lead.quality_score > 80 ? 'bg-success hover:bg-success/90' : 'bg-warning hover:bg-warning/90'} text-white flex items-center gap-1`}
             >
               <Star className="h-3 w-3" />
               {lead.quality_score}
             </Badge>
           </div>
           
-          <p className="text-sm text-neutral-600 line-clamp-2">{lead.description}</p>
+          <p className="text-sm text-muted-foreground line-clamp-2">{lead.description}</p>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
             <div className="flex items-center gap-2">
-              <DollarSign className="h-4 w-4 text-neutral-500" />
-              <span className="text-neutral-700">Est. Value: ${lead.estimated_value.toLocaleString()}</span>
+              <DollarSign className="h-4 w-4 text-muted-foreground" />
+              <span className="text-foreground">Est. Value: ${lead.estimated_value.toLocaleString()}</span>
             </div>
             <div className="flex items-center gap-2">
-              <MapPin className="h-4 w-4 text-neutral-500" />
-              <span className="text-neutral-700">{lead.location_city}, {lead.location_state}</span>
+              <MapPin className="h-4 w-4 text-muted-foreground" />
+              <span className="text-foreground">{lead.location_city}, {lead.location_state}</span>
             </div>
             <div className="flex items-center gap-2">
-              <Clock className="h-4 w-4 text-neutral-500" />
-              <span className="text-neutral-700">{new Date(lead.posted_at).toLocaleDateString()}</span>
+              <Clock className="h-4 w-4 text-muted-foreground" />
+              <span className="text-foreground">{new Date(lead.posted_at).toLocaleDateString()}</span>
             </div>
             <div className="flex items-center gap-2">
-              <Building className="h-4 w-4 text-neutral-500" />
-              <span className="text-neutral-700">Source: {lead.source}</span>
+              <Building className="h-4 w-4 text-muted-foreground" />
+              <span className="text-foreground">Source: {lead.source}</span>
             </div>
           </div>
           
@@ -79,7 +78,7 @@ const LeadCard = ({ lead }: { lead: Lead }) => (
           
           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
             <Button 
-              className="w-full bg-[rgb(var(--primary-orange))] hover:bg-[rgb(var(--primary-orange))]/90 text-white"
+              className="w-full bg-primary hover:bg-primary/90 text-white"
             >
               View & Bid
             </Button>
@@ -128,7 +127,7 @@ export default function ContractorDashboard() {
   if (userLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <Loader2 className="h-8 w-8 animate-spin text-[rgb(var(--primary-orange))]" />
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
@@ -141,7 +140,7 @@ export default function ContractorDashboard() {
             <CardTitle className="text-2xl">Access Denied</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-neutral-600">Please log in to view your dashboard.</p>
+            <p className="text-muted-foreground">Please log in to view your dashboard.</p>
           </CardContent>
         </Card>
       </div>
@@ -158,7 +157,7 @@ export default function ContractorDashboard() {
       {/* Main Chat Interface */}
       <motion.div 
         variants={itemVariants} 
-        className="flex-1 h-full border-r border-neutral-200"
+        className="flex-1 h-full border-r"
         style={{ flex: '1 1 70%' }}
       >
         <EnhancedChatManager />
@@ -167,20 +166,20 @@ export default function ContractorDashboard() {
       {/* Lead Feed Sidebar */}
       <motion.div 
         variants={itemVariants} 
-        className="bg-neutral-50 h-full"
+        className="bg-muted h-full"
         style={{ flex: '1 1 30%' }}
       >
         <ScrollArea className="h-full">
           <div className="p-6">
             <motion.div variants={itemVariants}>
-              <h3 className="text-xl font-heading font-semibold text-[rgb(var(--primary-orange))] mb-6">
+              <h3 className="text-xl font-heading font-semibold text-primary mb-6">
                 Your Lead Feed
               </h3>
             </motion.div>
             
             {loading && (
               <div className="flex items-center justify-center py-8">
-                <Loader2 className="h-6 w-6 animate-spin text-[rgb(var(--primary-orange))]" />
+                <Loader2 className="h-6 w-6 animate-spin text-primary" />
               </div>
             )}
             
@@ -188,7 +187,7 @@ export default function ContractorDashboard() {
               <motion.div variants={itemVariants}>
                 <Card className="text-center">
                   <CardContent className="p-6">
-                    <p className="text-neutral-600">
+                    <p className="text-muted-foreground">
                       No new leads matching your profile right now. Check back later!
                     </p>
                   </CardContent>

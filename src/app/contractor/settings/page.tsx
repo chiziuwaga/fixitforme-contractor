@@ -6,13 +6,12 @@ import { User, CreditCard, FileText } from 'lucide-react';
 import SubscriptionManager from '@/components/settings/SubscriptionManager';
 import ProfileEditor from '@/components/settings/ProfileEditor';
 import DocumentUploader from '@/components/settings/DocumentUploader';
-import { BRAND } from '@/lib/brand';
 import { motion } from 'framer-motion';
 import { containerVariants, itemVariants } from '@/lib/animations';
 
 export default function SettingsPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-neutral-50 to-neutral-100">
+    <div className="min-h-screen bg-gradient-to-br from-background to-muted">
       <motion.div 
         variants={containerVariants} 
         initial="hidden" 
@@ -20,10 +19,10 @@ export default function SettingsPage() {
         className="container mx-auto px-6 py-8"
       >
         <motion.div variants={itemVariants} className="mb-8">
-          <h1 className="text-4xl font-heading font-bold text-[rgb(var(--primary-orange))] mb-2">
+          <h1 className="text-4xl font-heading font-bold text-primary mb-2">
             Settings
           </h1>
-          <p className="text-neutral-600 text-lg">
+          <p className="text-muted-foreground text-lg">
             Manage your account, subscription, and profile settings
           </p>
         </motion.div>
@@ -37,7 +36,7 @@ export default function SettingsPage() {
                   <TabsList className="flex flex-col h-auto w-full bg-transparent">
                     <TabsTrigger 
                       value="profile" 
-                      className="w-full justify-start gap-3 p-4 text-left data-[state=active]:bg-gradient-to-r data-[state=active]:from-[rgb(var(--primary-orange))] data-[state=active]:to-[rgb(var(--primary-blue))] data-[state=active]:text-white hover:bg-neutral-50 brand-transition"
+                      className="w-full justify-start gap-3 p-4 text-left data-[state=active]:bg-primary data-[state=active]:text-white hover:bg-muted brand-transition"
                     >
                       <User className="h-5 w-5" />
                       <div className="text-left">
@@ -48,7 +47,7 @@ export default function SettingsPage() {
                     
                     <TabsTrigger 
                       value="subscription" 
-                      className="w-full justify-start gap-3 p-4 text-left data-[state=active]:bg-gradient-to-r data-[state=active]:from-[rgb(var(--primary-purple))] data-[state=active]:to-[rgb(var(--primary-indigo))] data-[state=active]:text-white hover:bg-neutral-50 brand-transition"
+                      className="w-full justify-start gap-3 p-4 text-left data-[state=active]:bg-primary data-[state=active]:text-primary-foreground hover:bg-muted brand-transition"
                     >
                       <CreditCard className="h-5 w-5" />
                       <div className="text-left">
@@ -59,7 +58,7 @@ export default function SettingsPage() {
                     
                     <TabsTrigger 
                       value="documents" 
-                      className="w-full justify-start gap-3 p-4 text-left data-[state=active]:bg-gradient-to-r data-[state=active]:from-[rgb(var(--primary-teal))] data-[state=active]:to-[rgb(var(--primary-cyan))] data-[state=active]:text-white hover:bg-neutral-50 brand-transition"
+                      className="w-full justify-start gap-3 p-4 text-left data-[state=active]:bg-accent data-[state=active]:text-accent-foreground hover:bg-muted brand-transition"
                     >
                       <FileText className="h-5 w-5" />
                       <div className="text-left">
@@ -76,8 +75,8 @@ export default function SettingsPage() {
             <div className="col-span-12 lg:col-span-9">
               <TabsContent value="profile" className="mt-0">
                 <Card className="brand-shadow-lg border-0 bg-white/95 backdrop-blur-sm">
-                  <CardHeader className="bg-gradient-to-r from-[rgb(var(--primary-orange))]/10 to-[rgb(var(--primary-blue))]/10 border-b border-neutral-200">
-                    <CardTitle className="text-2xl text-[rgb(var(--primary-orange))] flex items-center gap-3">
+                  <CardHeader className="bg-primary/10 border-b">
+                    <CardTitle className="text-2xl text-primary flex items-center gap-3">
                       <User className="h-6 w-6" />
                       Profile Settings
                     </CardTitle>
@@ -93,8 +92,8 @@ export default function SettingsPage() {
 
               <TabsContent value="subscription" className="mt-0">
                 <Card className="brand-shadow-lg border-0 bg-white/95 backdrop-blur-sm">
-                  <CardHeader className="bg-gradient-to-r from-[rgb(var(--primary-purple))]/10 to-[rgb(var(--primary-indigo))]/10 border-b border-neutral-200">
-                    <CardTitle className="text-2xl text-[rgb(var(--primary-purple))] flex items-center gap-3">
+                  <CardHeader className="bg-secondary/10 border-b">
+                    <CardTitle className="text-2xl text-secondary flex items-center gap-3">
                       <CreditCard className="h-6 w-6" />
                       Subscription & Billing
                     </CardTitle>
@@ -110,8 +109,8 @@ export default function SettingsPage() {
 
               <TabsContent value="documents" className="mt-0">
                 <Card className="brand-shadow-lg border-0 bg-white/95 backdrop-blur-sm">
-                  <CardHeader className="bg-gradient-to-r from-[rgb(var(--primary-teal))]/10 to-[rgb(var(--primary-cyan))]/10 border-b border-neutral-200">
-                    <CardTitle className="text-2xl text-[rgb(var(--primary-teal))] flex items-center gap-3">
+                  <CardHeader className="bg-accent/10 border-b">
+                    <CardTitle className="text-2xl text-accent flex items-center gap-3">
                       <FileText className="h-6 w-6" />
                       Documents & Verification
                     </CardTitle>

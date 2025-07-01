@@ -127,7 +127,7 @@ export default function ContractorLogin() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-neutral-50 to-neutral-100 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
       <motion.div 
         initial="hidden" 
         animate="visible" 
@@ -146,10 +146,10 @@ export default function ContractorLogin() {
               />
             </motion.div>
             <motion.div variants={itemVariants} className="space-y-2">
-              <CardTitle className="text-2xl font-heading text-[rgb(var(--primary-orange))]">
+              <CardTitle className="text-2xl font-heading text-primary">
                 {BRAND.name} Contractor
               </CardTitle>
-              <CardDescription className="text-neutral-600">
+              <CardDescription className="text-muted-foreground">
                 Welcome back. Please sign in to continue.
               </CardDescription>
             </motion.div>
@@ -170,7 +170,7 @@ export default function ContractorLogin() {
                       Phone Number
                     </Label>
                     <div className="relative">
-                      <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 h-4 w-4" />
+                      <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                       <Input
                         id="phone"
                         type="tel"
@@ -186,7 +186,7 @@ export default function ContractorLogin() {
                   </div>
                   <Button 
                     onClick={handlePhoneSubmit}
-                    className="w-full brand-transition bg-[rgb(var(--primary-orange))] hover:bg-[rgb(var(--primary-orange))]/90"
+                    className="w-full brand-transition bg-primary hover:bg-primary/90"
                     size="lg"
                   >
                     <Shield className="w-4 h-4 mr-2" />
@@ -204,7 +204,7 @@ export default function ContractorLogin() {
                   className="space-y-4"
                 >
                   <div className="text-center">
-                    <p className="text-sm text-neutral-600">
+                    <p className="text-sm text-muted-foreground">
                       Enter the 6-digit code sent to {authState.phone}
                     </p>
                   </div>
@@ -230,7 +230,7 @@ export default function ContractorLogin() {
                   <div className="space-y-3">
                     <Button 
                       onClick={handleVerificationSubmit}
-                      className="w-full brand-transition bg-[rgb(var(--primary-orange))] hover:bg-[rgb(var(--primary-orange))]/90"
+                      className="w-full brand-transition bg-primary hover:bg-primary/90"
                       size="lg"
                     >
                       <Shield className="w-4 h-4 mr-2" />
@@ -239,7 +239,7 @@ export default function ContractorLogin() {
                     <Button 
                       variant="ghost" 
                       onClick={() => setAuthState(prev => ({ ...prev, step: 'phone', error: null }))}
-                      className="w-full text-neutral-600 hover:text-neutral-800"
+                      className="w-full text-muted-foreground hover:text-foreground"
                       size="sm"
                     >
                       Back to phone number
@@ -251,8 +251,8 @@ export default function ContractorLogin() {
 
             {authState.step === 'loading' && (
               <div className="flex items-center justify-center space-x-3 py-8">
-                <Loader2 className="h-5 w-5 animate-spin text-[rgb(var(--primary-orange))]" />
-                <span className="text-sm text-neutral-600">Please wait...</span>
+                <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                <span className="text-sm text-muted-foreground">Please wait...</span>
               </div>
             )}
 
@@ -273,7 +273,7 @@ export default function ContractorLogin() {
             <div className="relative">
               <Separator />
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className="bg-white px-2 text-xs text-neutral-500">Or</span>
+                <span className="bg-white px-2 text-xs text-muted-foreground">Or</span>
               </div>
             </div>
 
@@ -282,7 +282,7 @@ export default function ContractorLogin() {
                 variant="outline"
                 onClick={handleTestModeSubmit}
                 disabled={authState.step === 'loading'}
-                className="w-full border-neutral-200 text-neutral-700 hover:bg-neutral-50 brand-transition"
+                className="w-full border text-foreground hover:bg-muted brand-transition"
                 size="lg"
               >
                 Continue in Test Mode (for internal use)
