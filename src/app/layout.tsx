@@ -6,6 +6,8 @@ import { SupabaseProvider } from "@/providers/SupabaseProvider";
 import { AppSystemWrapper } from "@/components/AppSystemWrapper";
 import { BRAND } from '@/lib/brand';
 import { Toaster } from "sonner";
+import { TwentyFirstToolbar } from "@21st-extension/toolbar-next";
+import { ReactPlugin } from "@21st-extension/react";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -55,6 +57,11 @@ export default function RootLayout({
             />
           </UserProvider>
         </SupabaseProvider>
+        <TwentyFirstToolbar
+          config={{
+            plugins: [ReactPlugin],
+          }}
+        />
       </body>
     </html>
   );

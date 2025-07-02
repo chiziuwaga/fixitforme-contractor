@@ -608,10 +608,11 @@ export default function ContractorOnboarding() {
                   {/* Enhanced Navigation */}
                   <div className="flex justify-between items-center">
                     <Button 
-                      variant="outline"
+                      variant="soft"
+                      size="form"
                       onClick={() => setCurrentStep(prev => Math.max(0, prev - 1))}
                       disabled={currentStep === 0}
-                      className="flex items-center gap-2 bg-background/50 hover:bg-background/80"
+                      className="flex items-center gap-2"
                     >
                       <ChevronLeft className="w-4 h-4" />
                       Back
@@ -625,9 +626,11 @@ export default function ContractorOnboarding() {
                         </div>
                       )}
                       <Button
+                        variant="primary"
+                        size="form"
                         onClick={handleNext}
                         disabled={!isStepValid() || loading}
-                        className="flex items-center gap-2 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white min-w-[140px]"
+                        className="flex items-center gap-2 min-w-[140px]"
                       >
                         {loading ? (
                           <>

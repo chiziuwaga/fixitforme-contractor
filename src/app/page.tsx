@@ -53,34 +53,50 @@ export default function HomePage() {
     return () => subscription.unsubscribe();
   }, []);
 
-  // Mobile redirect banner
+  // Mobile redirect banner - 21st.dev inspired clean design
   const MobileRedirectBanner = () => (
     <motion.div 
-      initial={{ opacity: 0, y: -50 }}
+      initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-gradient-to-r from-primary to-primary/80 text-white p-6 text-center"
+      transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+      className="bg-card border-b border-border shadow-sm"
     >
-      <div className="flex items-center justify-center gap-3 mb-3">
-        <Monitor className="h-6 w-6" />
-        <Image 
-          src="/logo.png" 
-          alt="FixItForMe" 
-          width={120} 
-          height={30}
-          className="brightness-0 invert"
-        />
-      </div>
-      <h2 className="text-xl font-semibold mb-2">
-        Built for Professional Contractors
-      </h2>
-      <p className="text-primary-foreground/90 mb-4">
-        Access your full contractor dashboard on desktop or tablet for the complete experience.
-      </p>
-      <div className="flex items-center justify-center gap-2 text-sm">
-        <Shield className="h-4 w-4" />
-        <span>Secure</span>
-        <Zap className="h-4 w-4" />
-        <span>AI-Powered</span>
+      <div className="container mx-auto px-4 py-6">
+        <div className="text-center space-y-4 max-w-md mx-auto">
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <div className="p-2 rounded-lg bg-primary/10">
+              <Monitor className="h-5 w-5 text-primary" />
+            </div>
+            <Image 
+              src="/logo.png" 
+              alt="FixItForMe" 
+              width={100} 
+              height={25}
+              className="opacity-80"
+              priority
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <h2 className="text-lg font-semibold text-foreground">
+              Professional Contractor Platform
+            </h2>
+            <p className="text-muted-foreground text-sm leading-relaxed">
+              Access your full contractor dashboard on desktop or tablet for the complete professional experience.
+            </p>
+          </div>
+          
+          <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
+            <div className="flex items-center gap-1">
+              <Shield className="h-3 w-3" />
+              <span>Secure</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Zap className="h-3 w-3" />
+              <span>AI-Powered</span>
+            </div>
+          </div>
+        </div>
       </div>
     </motion.div>
   );
@@ -91,55 +107,33 @@ export default function HomePage() {
         <motion.div 
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="text-center space-y-4"
+          transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+          className="text-center space-y-6 max-w-md mx-auto p-8"
         >
-          <div className="flex items-center justify-center mb-6">
+          <div className="flex items-center justify-center mb-8">
             <Image 
               src="/logo.png" 
               alt="FixItForMe" 
               width={200} 
               height={50}
               className="mb-4"
+              priority
             />
           </div>
-          <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto" />
-          <p className="text-muted-foreground">Loading your contractor workspace...</p>
+          <div className="space-y-4">
+            <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto" />
+            <div className="space-y-2">
+              <p className="text-foreground font-medium">Loading your contractor workspace</p>
+              <p className="text-muted-foreground text-sm">Preparing your professional dashboard...</p>
+            </div>
+          </div>
         </motion.div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-950 via-slate-950 to-purple-950 relative overflow-hidden">
-      {/* Cinematic Background */}
-      <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/20" />
-        <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent" />
-        
-        {/* Floating particles */}
-        {[...Array(8)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-1 h-1 bg-primary/30 rounded-full"
-            animate={{
-              y: [-50, -800],
-              x: [0, Math.random() * 100 - 50],
-              opacity: [0, 0.8, 0],
-            }}
-            transition={{
-              duration: Math.random() * 8 + 12,
-              repeat: Infinity,
-              delay: Math.random() * 3,
-              ease: "linear"
-            }}
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: '100%',
-            }}
-          />
-        ))}
-      </div>
-
+    <div className="min-h-screen bg-background relative">
       <AnimatePresence>
         {isMobile && (
           <MobileRedirectBanner />

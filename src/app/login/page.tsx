@@ -411,7 +411,9 @@ export default function ContractorLogin() {
                   </div>
                   <Button 
                     type="submit" 
-                    className="w-full h-12 text-base font-semibold bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white transform transition-all duration-200 hover:scale-[1.02] hover:shadow-lg hover:shadow-primary/25" 
+                    variant="primary"
+                    size="form-lg"
+                    className="w-full" 
                     disabled={authState.isSubmitting}
                   >
                     {authState.isSubmitting ? (
@@ -497,7 +499,9 @@ export default function ContractorLogin() {
                   <div className="space-y-3">
                     <Button 
                       type="submit" 
-                      className="w-full h-12 text-base font-semibold bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white transform transition-all duration-200 hover:scale-[1.02] hover:shadow-lg hover:shadow-primary/25" 
+                      variant="primary"
+                      size="form-lg"
+                      className="w-full" 
                       disabled={authState.isSubmitting || authState.verificationCode.length !== 6}
                     >
                       {authState.isSubmitting ? (
@@ -509,14 +513,15 @@ export default function ContractorLogin() {
                     </Button>
                     <Button
                       type="button"
-                      variant="ghost"
+                      variant="soft"
+                      size="form"
+                      className="w-full"
                       onClick={() => setAuthState(prev => ({ 
                         ...prev, 
                         step: 'phone', 
                         error: null, 
                         verificationCode: '' 
                       }))}
-                      className="w-full text-accent hover:text-primary hover:bg-accent/10"
                       disabled={authState.isSubmitting}
                     >
                       ← Use a different number
@@ -537,10 +542,11 @@ export default function ContractorLogin() {
 
             <motion.div variants={itemVariants} className="!mt-6">
               <Button 
-                variant="outline" 
+                variant="soft" 
+                size="form-lg"
                 onClick={handleTestModeSubmit} 
                 disabled={authState.isSubmitting} 
-                className="w-full h-12 border-accent/30 text-accent hover:bg-accent/10 hover:border-accent hover:text-accent transition-all duration-200"
+                className="w-full"
               >
                 <Sparkles className="mr-2 h-4 w-4" />
                 Continue in Test Mode

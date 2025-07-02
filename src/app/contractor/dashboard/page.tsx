@@ -59,13 +59,13 @@ const LeadCard = ({ lead }: { lead: Lead }) => {
   
   const qualityBadgeClass =
     lead.quality_score > 80
-      ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg shadow-green-500/25'
+      ? 'bg-gradient-to-r from-success to-emerald-500 text-success-foreground shadow-lg shadow-success/25'
       : lead.quality_score > 60
-      ? 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white shadow-lg shadow-yellow-500/25'
-      : 'bg-gradient-to-r from-gray-500 to-slate-500 text-white shadow-lg shadow-gray-500/25'
+      ? 'bg-gradient-to-r from-warning to-orange-500 text-warning-foreground shadow-lg shadow-warning/25'
+      : 'bg-gradient-to-r from-muted to-slate-500 text-muted-foreground shadow-lg shadow-muted/25'
 
   const urgencyBadgeClass = lead.urgency_indicators?.length > 0
-    ? 'bg-gradient-to-r from-red-500 to-pink-500 text-white animate-pulse'
+    ? 'bg-gradient-to-r from-destructive to-pink-500 text-destructive-foreground animate-pulse'
     : ''
 
   return (
@@ -89,9 +89,9 @@ const LeadCard = ({ lead }: { lead: Lead }) => {
         {/* Quality indicator stripe */}
         <div className={cn(
           "absolute top-0 left-0 w-full h-1 bg-gradient-to-r",
-          lead.quality_score > 80 ? "from-green-500 to-emerald-500" :
-          lead.quality_score > 60 ? "from-yellow-500 to-orange-500" :
-          "from-gray-500 to-slate-500"
+          lead.quality_score > 80 ? "from-success to-emerald-500" :
+          lead.quality_score > 60 ? "from-warning to-orange-500" :
+          "from-muted to-slate-500"
         )} />
         
         <CardContent className="p-6 relative">
