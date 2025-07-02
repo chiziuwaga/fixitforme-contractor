@@ -423,7 +423,7 @@ export default function ContractorOnboarding() {
               Welcome to <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">FixItForMe</span>
             </h1>
           </div>
-          <p className="text-slate-300 max-w-md mx-auto">
+          <p className="text-muted-foreground max-w-md mx-auto">
             Join thousands of contractors growing their business with AI-powered lead generation
           </p>
         </motion.header>
@@ -478,10 +478,10 @@ export default function ContractorOnboarding() {
                   </h4>
                   <div className="space-y-3">
                     {[
-                      { icon: Bot, text: "AI agents finding leads 24/7", color: "text-blue-400" },
-                      { icon: TrendingUp, text: "40% average revenue increase", color: "text-green-400" },
-                      { icon: Shield, text: "Only 6% platform fee", color: "text-purple-400" },
-                      { icon: Users, text: "10,000+ contractor network", color: "text-orange-400" },
+                      { icon: Bot, text: "AI agents finding leads 24/7", color: "text-accent" },
+                      { icon: TrendingUp, text: "40% average revenue increase", color: "text-primary" },
+                      { icon: Shield, text: "Only 6% platform fee", color: "text-primary" },
+                      { icon: Users, text: "10,000+ contractor network", color: "text-accent" },
                     ].map((benefit, i) => (
                       <motion.div
                         key={i}
@@ -620,7 +620,7 @@ export default function ContractorOnboarding() {
                     <div className="flex items-center space-x-2">
                       {currentStep === 3 && (
                         <div className="flex items-center space-x-2 mr-4">
-                          <Heart className="w-4 h-4 text-red-500" />
+                          <Heart className="w-4 h-4 text-destructive" />
                           <span className="text-sm text-muted-foreground">Almost there!</span>
                         </div>
                       )}

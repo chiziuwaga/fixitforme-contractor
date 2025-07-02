@@ -16,6 +16,27 @@ const config: Config = {
         "2xl": "1400px",
       },
     },
+    screens: {
+      // Desktop breakpoints (10 levels)
+      'xs': '480px',      // Compact tablet
+      'sm': '640px',      // Legacy desktop  
+      'md': '768px',      // Minimum desktop
+      'lg': '1024px',     // Standard laptop
+      'xl': '1280px',     // Medium desktop  
+      '2xl': '1440px',    // Standard desktop
+      '3xl': '1920px',    // Wide desktop
+      '4xl': '2560px',    // Ultra-wide
+      
+      // Tablet-specific (6 levels)
+      'tablet-sm': '600px',   // Android tablet
+      'tablet-md': '768px',   // iPad standard
+      'tablet-lg': '834px',   // iPad Pro 11"
+      'tablet-xl': '1024px',  // iPad Pro 12.9"
+      
+      // Professional focus breakpoints
+      'desktop-min': '992px',    // Minimum professional experience
+      'professional': '1200px',  // Optimal professional layout
+    },
     extend: {
       colors: {
         border: "oklch(var(--border))",

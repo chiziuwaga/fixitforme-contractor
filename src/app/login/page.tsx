@@ -254,7 +254,7 @@ export default function ContractorLogin() {
                   Home Repairs
                 </span>
               </h1>
-              <p className="text-xl text-slate-300 leading-relaxed">
+              <p className="text-xl text-muted-foreground leading-relaxed">
                 Join thousands of contractors earning more with AI-powered lead generation and intelligent bidding assistance.
               </p>
             </motion.div>
@@ -283,7 +283,7 @@ export default function ContractorLogin() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-white">{feature.title}</h3>
-                    <p className="text-sm text-slate-400">{feature.desc}</p>
+                    <p className="text-sm text-muted-foreground">{feature.desc}</p>
                   </div>
                 </motion.div>
               ))}
@@ -293,14 +293,14 @@ export default function ContractorLogin() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1.2 }}
-              className="mt-8 flex items-center space-x-6 text-sm text-slate-400"
+              className="mt-8 flex items-center space-x-6 text-sm text-muted-foreground"
             >
               <div className="flex items-center space-x-2">
-                <CheckCircle className="w-4 h-4 text-green-400" />
+                <CheckCircle className="w-4 h-4 text-primary" />
                 <span>SOC 2 Compliant</span>
               </div>
               <div className="flex items-center space-x-2">
-                <Shield className="w-4 h-4 text-green-400" />
+                <Shield className="w-4 h-4 text-primary" />
                 <span>Bank-Level Security</span>
               </div>
               <div className="flex items-center space-x-2">
@@ -551,12 +551,12 @@ export default function ContractorLogin() {
           <CardFooter className="flex flex-col items-center justify-center px-8 pb-8 pt-4 space-y-4 relative">
             <motion.div variants={itemVariants} className="flex items-center space-x-4 text-xs text-secondary/70">
               <div className="flex items-center space-x-1">
-                <Shield size={14} className="text-green-400" />
+                <Shield size={14} className="text-primary" />
                 <span>SSL Secured</span>
               </div>
               <div className="w-1 h-1 bg-secondary/40 rounded-full" />
               <div className="flex items-center space-x-1">
-                <CheckCircle size={14} className="text-green-400" />
+                <CheckCircle size={14} className="text-primary" />
                 <span>SOC 2 Compliant</span>
               </div>
             </motion.div>
@@ -572,7 +572,7 @@ export default function ContractorLogin() {
           </CardFooter>
         </Card>
         
-        <motion.div variants={itemVariants} className="pt-6 text-center text-xs text-slate-400/70">
+        <motion.div variants={itemVariants} className="pt-6 text-center text-xs text-muted-foreground">
           &copy; {new Date().getFullYear()} {BRAND.name}. All Rights Reserved.
         </motion.div>
       </motion.div>

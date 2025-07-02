@@ -11,7 +11,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, variant = 'default', ...props }, ref) => {
     const variantClasses = {
       default:
-        "border-neutral-700/20 hover:border-neutral-700/40 focus:border-primary focus:ring-4 focus:ring-primary/10",
+        "border-border hover:border-muted-foreground focus:border-primary focus:ring-4 focus:ring-primary/10",
       error:
         "border-destructive focus:border-destructive focus:ring-4 focus:ring-destructive/10",
       success:

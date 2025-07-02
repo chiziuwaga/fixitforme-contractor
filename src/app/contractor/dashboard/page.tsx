@@ -123,7 +123,7 @@ const LeadCard = ({ lead }: { lead: Lead }) => {
                 className="flex items-center gap-2 p-2 rounded-lg bg-muted/50 transition-colors group-hover:bg-primary/5"
                 whileHover={{ scale: 1.05 }}
               >
-                <DollarSign className="h-4 w-4 text-green-600" />
+                <DollarSign className="h-4 w-4 text-primary" />
                 <span className="font-semibold text-foreground">
                   ${lead.estimated_value.toLocaleString()}
                 </span>
@@ -132,7 +132,7 @@ const LeadCard = ({ lead }: { lead: Lead }) => {
                 className="flex items-center gap-2 p-2 rounded-lg bg-muted/50 transition-colors group-hover:bg-primary/5"
                 whileHover={{ scale: 1.05 }}
               >
-                <MapPin className="h-4 w-4 text-blue-600" />
+                <MapPin className="h-4 w-4 text-primary" />
                 <span className="truncate text-foreground">
                   {lead.location_city}, {lead.location_state}
                 </span>
@@ -141,7 +141,7 @@ const LeadCard = ({ lead }: { lead: Lead }) => {
                 className="flex items-center gap-2 p-2 rounded-lg bg-muted/50 transition-colors group-hover:bg-primary/5"
                 whileHover={{ scale: 1.05 }}
               >
-                <Clock className="h-4 w-4 text-orange-600" />
+                <Clock className="h-4 w-4 text-accent" />
                 <span className="text-foreground">
                   {new Date(lead.posted_at).toLocaleDateString()}
                 </span>
@@ -150,7 +150,7 @@ const LeadCard = ({ lead }: { lead: Lead }) => {
                 className="flex items-center gap-2 p-2 rounded-lg bg-muted/50 transition-colors group-hover:bg-primary/5"
                 whileHover={{ scale: 1.05 }}
               >
-                <Building className="h-4 w-4 text-purple-600" />
+                <Building className="h-4 w-4 text-accent" />
                 <span className="truncate text-foreground font-medium">{lead.source}</span>
               </motion.div>
             </div>
@@ -299,7 +299,7 @@ export default function ContractorDashboard() {
               <div className="text-xs text-muted-foreground">New Leads</div>
             </div>
             <div className="text-center">
-              <div className="text-sm font-semibold text-green-600">
+              <div className="text-sm font-semibold text-primary">
                 ${leads.reduce((sum, lead) => sum + lead.estimated_value, 0).toLocaleString()}
               </div>
               <div className="text-xs text-muted-foreground">Total Value</div>
@@ -336,12 +336,12 @@ export default function ContractorDashboard() {
         <div className="container flex items-center justify-between text-sm">
           <div className="flex items-center space-x-6">
             <div className="flex items-center space-x-2">
-              <TrendingUp className="h-4 w-4 text-green-500" />
+              <TrendingUp className="h-4 w-4 text-primary" />
               <span className="text-muted-foreground">Today:</span>
-              <span className="font-semibold text-green-600">+3 new leads</span>
+              <span className="font-semibold text-primary">+3 new leads</span>
             </div>
             <div className="flex items-center space-x-2">
-              <BarChart3 className="h-4 w-4 text-blue-500" />
+              <BarChart3 className="h-4 w-4 text-primary" />
               <span className="text-muted-foreground">This week:</span>
               <span className="font-semibold text-primary">$45,200 potential</span>
             </div>

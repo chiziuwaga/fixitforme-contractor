@@ -3,6 +3,39 @@
 import { useEffect, useRef } from 'react'
 import * as d3 from 'd3'
 import { BaseCard } from './BaseComponents'
+import { useResponsiveChart } from '../../hooks/useResponsiveChart'
+
+// Get CSS custom property value utility
+function getCSSCustomProperty(property: string): string {
+  if (typeof window === 'undefined') return '#1A2E1A' // Fallback for SSR
+  const value = getComputedStyle(document.documentElement).getPropertyValue(property).trim()
+  return value || '#1A2E1A' // Fallback if property not found
+}
+
+// Semantic color palette using CSS variables
+const getSemanticColors = () => ({
+  primary: getCSSCustomProperty('--primary'), // Felix Gold
+  secondary: getCSSCustomProperty('--secondary'), // Forest Green  
+  accent: getCSSCustomProperty('--accent'), // Steel Blue
+  muted: getCSSCustomProperty('--muted'), // Muted gray
+  mutedForeground: getCSSCustomProperty('--muted-foreground'), // Muted text
+  foreground: getCSSCustomProperty('--foreground'), // Primary text
+  background: getCSSCustomProperty('--background'), // Background
+  border: getCSSCustomProperty('--border'), // Border color
+  // Gradients for charts using brand colors
+  brandGradient: [
+    'hsl(var(--secondary))', // Forest Green base
+    'hsl(var(--secondary) / 0.8)', // Lighter
+    'hsl(var(--accent))', // Steel Blue  
+    'hsl(var(--primary))', // Felix Gold
+    'hsl(var(--primary) / 0.7)' // Light Felix Gold
+  ],
+  statusColors: {
+    success: 'hsl(var(--success))',
+    warning: 'hsl(var(--warning))', 
+    destructive: 'hsl(var(--destructive))'
+  }
+})
 
 // Enhanced Chart Interfaces with better type safety
 interface CostBreakdownChartProps {
@@ -20,6 +53,7 @@ interface CostBreakdownChartProps {
 
 export function CostBreakdownChart({ data, totalEstimate, animated = true, interactive = true }: CostBreakdownChartProps) {
   const svgRef = useRef<SVGSVGElement>(null)
+  const { dimensions, config } = useResponsiveChart('costBreakdown')
 
   useEffect(() => {
     if (!svgRef.current) return
@@ -27,9 +61,8 @@ export function CostBreakdownChart({ data, totalEstimate, animated = true, inter
     const svg = d3.select(svgRef.current)
     svg.selectAll("*").remove() // Clear previous render
 
-    const width = 320
-    const height = 320
-    const radius = Math.min(width, height) / 2 - 10
+    const { width, height, margin } = dimensions
+    const radius = Math.min(width - margin.left - margin.right, height - margin.top - margin.bottom) / 2 - 10
 
     const g = svg
       .attr('width', width)
@@ -37,10 +70,11 @@ export function CostBreakdownChart({ data, totalEstimate, animated = true, inter
       .append('g')
       .attr('transform', `translate(${width / 2}, ${height / 2})`)
 
-    // Enhanced color scheme with better contrast
+    // Enhanced color scheme using semantic colors
+    const colors = getSemanticColors()
     const color = d3.scaleOrdinal()
       .domain(['Labor', 'Materials', 'Permits', 'Overhead', 'Profit'])
-      .range(['#1A2E1A', '#2D5A2D', '#4A8A4A', '#6BB36B', '#8FD18F'])
+      .range(colors.brandGradient)
 
     const pie = d3.pie<[string, number]>()
       .value(d => d[1])
@@ -136,24 +170,24 @@ export function CostBreakdownChart({ data, totalEstimate, animated = true, inter
     centerGroup.append('text')
       .attr('text-anchor', 'middle')
       .attr('dy', '-0.5em')
-      .attr('font-size', '14px')
+      .attr('font-size', config.fontSize)
       .attr('font-weight', 'bold')
-      .attr('fill', '#374151')
+      .attr('fill', `hsl(var(--muted-foreground))`)
       .text('Total')
 
     centerGroup.append('text')
       .attr('text-anchor', 'middle')
       .attr('dy', '1em')
-      .attr('font-size', '18px')
+      .attr('font-size', `calc(${config.fontSize} * 1.3)`)
       .attr('font-weight', 'bold')
-      .attr('fill', '#1A2E1A')
+      .attr('fill', `hsl(var(--foreground))`)
       .text(d3.format('$,.0f')(totalEstimate))
 
     // Enhanced percentage labels
     arcs.append('text')
       .attr('transform', d => `translate(${arcGenerator.centroid(d)})`)
       .attr('text-anchor', 'middle')
-      .attr('font-size', '11px')
+      .attr('font-size', `calc(${config.fontSize} * 0.9)`)
       .attr('fill', 'white')
       .attr('font-weight', 'bold')
       .style('text-shadow', '1px 1px 1px rgba(0,0,0,0.5)')
@@ -183,11 +217,11 @@ export function CostBreakdownChart({ data, totalEstimate, animated = true, inter
     legendItems.append('text')
       .attr('x', 18)
       .attr('y', 9)
-      .attr('font-size', '11px')
-      .attr('fill', '#374151')
+      .attr('font-size', config.fontSize)
+      .attr('fill', `hsl(var(--muted-foreground))`)
       .text(d => d[0])
 
-  }, [data, totalEstimate, animated, interactive])
+  }, [data, totalEstimate, animated, interactive, dimensions, config])
 
   return <svg ref={svgRef}></svg>
 }
@@ -206,6 +240,7 @@ interface LeadDistributionChartProps {
 
 export function LeadDistributionChart({ data, animated = true, interactive = true }: LeadDistributionChartProps) {
   const svgRef = useRef<SVGSVGElement>(null)
+  const { dimensions, config } = useResponsiveChart('leadDistribution')
 
   useEffect(() => {
     if (!svgRef.current) return
@@ -213,9 +248,7 @@ export function LeadDistributionChart({ data, animated = true, interactive = tru
     const svg = d3.select(svgRef.current)
     svg.selectAll("*").remove()
 
-    const width = 450
-    const height = 250
-    const margin = { top: 20, right: 30, bottom: 50, left: 60 }
+    const { width, height, margin } = dimensions
 
     const x = d3.scaleBand()
       .domain(data.map(d => d.area))
@@ -227,9 +260,10 @@ export function LeadDistributionChart({ data, animated = true, interactive = tru
       .nice()
       .range([height - margin.bottom, margin.top])
 
+    const colors = getSemanticColors()
     const colorScale = d3.scaleOrdinal()
       .domain(['low', 'medium', 'high'])
-      .range(['#10B981', '#F59E0B', '#EF4444'])
+      .range([colors.statusColors.success, colors.statusColors.warning, colors.statusColors.destructive])
 
     svg.attr('width', width).attr('height', height)
 
@@ -305,9 +339,9 @@ export function LeadDistributionChart({ data, animated = true, interactive = tru
     // X Axis
     svg.append('g')
       .attr('transform', `translate(0, ${height - margin.bottom})`)
-      .call(d3.axisBottom(x))
+      .call(d3.axisBottom(x).ticks(config.tickCount.x))
       .selectAll('text')
-      .style('font-size', '12px')
+      .style('font-size', config.fontSize)
       .style('text-anchor', 'end')
       .attr('dx', '-.8em')
       .attr('dy', '.15em')
@@ -316,9 +350,9 @@ export function LeadDistributionChart({ data, animated = true, interactive = tru
     // Y Axis
     svg.append('g')
       .attr('transform', `translate(${margin.left}, 0)`)
-      .call(d3.axisLeft(y))
+      .call(d3.axisLeft(y).ticks(config.tickCount.y))
       .selectAll('text')
-      .style('font-size', '12px')
+      .style('font-size', config.fontSize)
 
     // Axis labels
     svg.append('text')
@@ -327,8 +361,8 @@ export function LeadDistributionChart({ data, animated = true, interactive = tru
       .attr('x', 0 - (height / 2))
       .attr('dy', '1em')
       .style('text-anchor', 'middle')
-      .style('font-size', '12px')
-      .style('fill', '#374151')
+      .style('font-size', config.fontSize)
+      .style('fill', `hsl(var(--muted-foreground))`)
       .text('Lead Count')
 
     // Value labels on bars
@@ -340,12 +374,12 @@ export function LeadDistributionChart({ data, animated = true, interactive = tru
       .attr('x', d => (x(d.area) || 0) + x.bandwidth() / 2)
       .attr('y', d => y(d.count) - 5)
       .attr('text-anchor', 'middle')
-      .attr('font-size', '12px')
+      .attr('font-size', config.fontSize)
       .attr('font-weight', 'bold')
-      .attr('fill', '#374151')
+      .attr('fill', `hsl(var(--muted-foreground))`)
       .text(d => d.count)
 
-  }, [data, animated, interactive])
+  }, [data, animated, interactive, dimensions, config])
 
   return <svg ref={svgRef}></svg>
 }
@@ -365,6 +399,7 @@ interface TimelineChartProps {
 
 export function TimelineChart({ phases, animated = true, interactive = true }: TimelineChartProps) {
   const svgRef = useRef<SVGSVGElement>(null)
+  const { dimensions, config } = useResponsiveChart('timeline')
 
   useEffect(() => {
     if (!svgRef.current || phases.length === 0) return
@@ -372,9 +407,8 @@ export function TimelineChart({ phases, animated = true, interactive = true }: T
     const svg = d3.select(svgRef.current)
     svg.selectAll("*").remove()
 
-    const width = 600
+    const { width, margin } = dimensions
     const height = phases.length * 50 + 80
-    const margin = { top: 20, right: 30, bottom: 40, left: 150 }
 
     const startDate = d3.min(phases, d => d.start) || new Date()
     const endDate = d3.max(phases, d => d.end) || new Date()
@@ -413,7 +447,7 @@ export function TimelineChart({ phases, animated = true, interactive = true }: T
       .attr('y', d => y(d.name) || 0)
       .attr('width', d => x(d.end) - x(d.start))
       .attr('height', y.bandwidth())
-      .attr('fill', '#E5E7EB')
+      .attr('fill', `hsl(var(--border))`)
       .attr('rx', 4)
 
     // Progress bars
@@ -430,7 +464,7 @@ export function TimelineChart({ phases, animated = true, interactive = true }: T
         return totalWidth * (progress / 100)
       })
       .attr('height', y.bandwidth())
-      .attr('fill', '#1A2E1A')
+      .attr('fill', `hsl(var(--secondary))`)
       .attr('rx', 4)
       .style('cursor', interactive ? 'pointer' : 'default')
 
@@ -489,9 +523,9 @@ export function TimelineChart({ phases, animated = true, interactive = true }: T
       .attr('y', d => (y(d.name) || 0) + y.bandwidth() / 2)
       .attr('text-anchor', 'end')
       .attr('dominant-baseline', 'middle')
-      .attr('font-size', '12px')
+      .attr('font-size', config.fontSize)
       .attr('font-weight', '500')
-      .attr('fill', '#374151')
+      .attr('fill', `hsl(var(--muted-foreground))`)
       .text(d => d.name)
 
     // Progress text on bars
@@ -504,7 +538,7 @@ export function TimelineChart({ phases, animated = true, interactive = true }: T
       .attr('y', d => (y(d.name) || 0) + y.bandwidth() / 2)
       .attr('text-anchor', 'middle')
       .attr('dominant-baseline', 'middle')
-      .attr('font-size', '11px')
+      .attr('font-size', `calc(${config.fontSize} * 0.9)`)
       .attr('font-weight', 'bold')
       .attr('fill', 'white')
       .text(d => `${d.progress || 0}%`)
@@ -512,14 +546,14 @@ export function TimelineChart({ phases, animated = true, interactive = true }: T
     // X Axis
     svg.append('g')
       .attr('transform', `translate(0, ${height - margin.bottom})`)
-      .call(d3.axisBottom(x).tickFormat((domainValue) => {
+      .call(d3.axisBottom(x).ticks(config.tickCount.x).tickFormat((domainValue) => {
         const date = domainValue as Date
         return d3.timeFormat('%m/%d')(date)
       }))
       .selectAll('text')
-      .style('font-size', '12px')
+      .style('font-size', config.fontSize)
 
-  }, [phases, animated, interactive])
+  }, [phases, animated, interactive, dimensions, config])
 
   return <svg ref={svgRef}></svg>
 }
@@ -648,8 +682,8 @@ export function QuickMetricsChart({ metrics }: QuickMetricsProps) {
     metricGroups.append('rect')
       .attr('width', cardWidth - 10)
       .attr('height', height - margin.top - margin.bottom)
-      .attr('fill', '#F9FAFB')
-      .attr('stroke', '#E5E7EB')
+      .attr('fill', `hsl(var(--background))`)
+      .attr('stroke', `hsl(var(--border))`)
       .attr('rx', 6)
 
     // Value text
@@ -659,7 +693,7 @@ export function QuickMetricsChart({ metrics }: QuickMetricsProps) {
       .attr('text-anchor', 'middle')
       .attr('font-size', '18px')
       .attr('font-weight', 'bold')
-      .attr('fill', d => d.color || '#1A2E1A')
+      .attr('fill', d => d.color || `hsl(var(--foreground))`)
       .text(d => {
         switch (d.format) {
           case 'currency':
@@ -677,7 +711,7 @@ export function QuickMetricsChart({ metrics }: QuickMetricsProps) {
       .attr('y', 55)
       .attr('text-anchor', 'middle')
       .attr('font-size', '11px')
-      .attr('fill', '#6B7280')
+      .attr('fill', `hsl(var(--muted-foreground))`)
       .text(d => d.label)
 
   }, [metrics])

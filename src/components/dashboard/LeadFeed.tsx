@@ -175,7 +175,7 @@ export default function LeadFeed({ contractorId }: LeadFeedProps) {
                 </div>
                 
                 <div className="flex items-center gap-1 ml-4">
-                  <Star className="h-4 w-4 text-yellow-500" />
+                  <Star className="h-4 w-4 text-primary" />
                   <span className="text-sm font-medium">{lead.quality_score}/10</span>
                 </div>
               </div>

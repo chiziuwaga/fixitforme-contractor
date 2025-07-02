@@ -470,7 +470,7 @@ const GenerativeAgentAssets: React.FC<GenerativeAgentAssetsProps> = ({ type, dat
                   <TableCell>{area.drive_time}</TableCell>
                   <TableCell>
                     <div className="flex items-center gap-1">
-                      <Star className="h-4 w-4 text-yellow-500" />
+                      <Star className="h-4 w-4 text-primary" />
                       <span>{area.opportunity_score}/10</span>
                     </div>
                   </TableCell>
@@ -521,7 +521,7 @@ const GenerativeAgentAssets: React.FC<GenerativeAgentAssetsProps> = ({ type, dat
               <div className="flex justify-between items-center">
                 <Badge variant="outline">{lead.felix_category}</Badge>
                 <div className="flex items-center gap-1">
-                  <Star className="h-4 w-4 text-yellow-500" />
+                  <Star className="h-4 w-4 text-primary" />
                   <span className="text-sm font-medium">{lead.quality_score}/10</span>
                 </div>
               </div>
