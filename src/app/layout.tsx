@@ -18,13 +18,9 @@ export const metadata: Metadata = {
     template: `%s | ${BRAND.name}`,
   },
   description: BRAND.tagline,
-  icons: {
-    icon: [
-      { url: '/favicon.ico', sizes: '32x32' },
-      { url: '/logo.png', sizes: '192x192', type: 'image/png' }
-    ],
-    apple: { url: '/logo.png', sizes: '180x180', type: 'image/png' }
-  },
+  icons: [
+    { rel: "icon", url: "/logo.png" }
+  ],
 };
 
 export const viewport: Viewport = {

@@ -9,23 +9,23 @@ const cardVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-card shadow-sm border-border/70",
+        default: "bg-card shadow-sm border-border",
         elevated: "bg-card shadow-lg shadow-primary/10 border-border",
         // The premier variant for the FixItForMe contractor application.
         // Combines glassmorphism with interactive, premium feedback.
-        premium: [
-          "backdrop-blur-xl bg-background/60 dark:bg-black/50",
+        glass: [
+          "backdrop-blur-md bg-background/60 dark:bg-black/50",
           "border-primary/20",
-          "shadow-2xl shadow-primary/15",
+          "shadow-xl shadow-primary/15",
           "cursor-pointer",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ring-offset-background",
           "data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[disabled]:cursor-not-allowed",
         ],
         interactive: [
-          "bg-card shadow-md",
+          "bg-card shadow-sm",
           "border-border",
           "cursor-pointer",
-          "hover:shadow-xl hover:shadow-primary/10 hover:border-primary/40",
+          "hover:shadow-lg hover:shadow-primary/10 hover:border-primary/40",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ring-offset-background",
           "data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[disabled]:cursor-not-allowed",
         ],
@@ -42,42 +42,40 @@ export interface CardProps
     VariantProps<typeof cardVariants> {
   /**
    * If true, the card will be rendered in a disabled state,
-   * primarily affecting 'interactive' and 'premium' variants.
+   * primarily affecting 'interactive' and 'glass' variants.
    */
   disabled?: boolean
 }
 
 /**
- * A premium card component embodying the FixItForMe "gold standard".
- * Designed for professional contractor workflows, it features multiple
- * variants including an interactive 'premium' glassmorphism style.
- * Integrates Framer Motion for sophisticated, fluid micro-interactions.
+ * A premium card component for professional contractor workflows.
+ * Features a 'glass' variant for a modern, sophisticated UI.
+ * Integrates Framer Motion for smooth, satisfying interactions.
  *
  * NOTE: `framer-motion` is a required peer dependency for animations.
- * Ensure your Tailwind theme is configured with 'primary' (Felix Gold)
- * and 'secondary' (Forest Green) for optimal styling.
  */
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
   ({ className, variant, disabled = false, ...props }, ref) => {
-    const isInteractive = variant === "interactive" || variant === "premium"
+    const isInteractive = variant === "interactive" || variant === "glass"
 
     const motionProps: MotionProps | undefined =
       isInteractive && !disabled
         ? {
-            whileHover: { y: -5, scale: 1.01 },
-            whileTap: { scale: 0.99, y: -2 },
-            transition: { type: "spring", stiffness: 350, damping: 25 },
+            whileHover: { y: -4, scale: 1.02 },
+            whileTap: { scale: 0.98, y: -2 },
+            transition: { type: "spring", stiffness: 300, damping: 20 },
           }
         : undefined
 
     return (
-      <div
+      <motion.div
         ref={ref}
         className={cn(cardVariants({ variant, className }))}
         role={isInteractive ? "button" : undefined}
         tabIndex={isInteractive && !disabled ? 0 : -1}
         aria-disabled={isInteractive ? disabled : undefined}
         data-disabled={isInteractive && disabled ? "" : undefined}
+        {...motionProps}
         {...props}
       />
     )
@@ -87,11 +85,17 @@ Card.displayName = "Card"
 
 const CardHeader = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
+  React.HTMLAttributes<HTMLDivElement> & {
+    compact?: boolean
+  }
+>(({ className, compact = false, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("flex flex-col space-y-1 p-6", className)}
+    className={cn(
+      "flex flex-col space-y-1.5",
+      compact ? "p-4" : "p-6",
+      className
+    )}
     {...props}
   />
 ))
@@ -119,8 +123,8 @@ const CardTitle = React.forwardRef<HTMLHeadingElement, CardTitleProps>(
           },
           {
             "text-foreground": variant === "default",
-            "text-primary": variant === "primary", // Felix Gold
-            "text-secondary": variant === "secondary", // Forest Green
+            "text-primary": variant === "primary",
+            "text-secondary": variant === "secondary",
             "text-accent": variant === "accent",
           },
           className
@@ -138,7 +142,7 @@ const CardDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <p
     ref={ref}
-    className={cn("pt-1 text-sm text-muted-foreground", className)}
+    className={cn("text-sm text-muted-foreground", className)}
     {...props}
   />
 ))
@@ -147,12 +151,16 @@ CardDescription.displayName = "CardDescription"
 const CardContent = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
+    compact?: boolean
     noPadding?: boolean
   }
->(({ className, noPadding = false, ...props }, ref) => (
+>(({ className, compact = false, noPadding = false, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn(!noPadding && "p-6 pt-4", className)}
+    className={cn(
+      !noPadding && (compact ? "p-4 pt-0" : "p-6 pt-0"),
+      className
+    )}
     {...props}
   />
 ))
@@ -162,12 +170,14 @@ const CardFooter = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
     justify?: "start" | "center" | "end" | "between"
+    compact?: boolean
   }
->(({ className, justify = "end", ...props }, ref) => (
+>(({ className, justify = "end", compact = false, ...props }, ref) => (
   <div
     ref={ref}
     className={cn(
-      "flex items-center p-6 pt-4 border-t border-border/60",
+      "flex items-center border-t", // The border color is inherited from the parent Card
+      compact ? "p-4" : "p-6",
       {
         "justify-start": justify === "start",
         "justify-center": justify === "center",
