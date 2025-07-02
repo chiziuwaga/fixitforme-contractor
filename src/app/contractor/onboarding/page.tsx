@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -12,9 +13,26 @@ import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
-import { Building, Award, MapPin, Check, AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { 
+  Building, 
+  Award, 
+  MapPin, 
+  Check, 
+  AlertCircle, 
+  ChevronLeft, 
+  ChevronRight,
+  Sparkles,
+  Shield,
+  Users,
+  TrendingUp,
+  Bot,
+  Rocket,
+  Star,
+  Zap,
+  Heart
+} from 'lucide-react';
 import { BRAND } from '@/lib/brand';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { containerVariants, itemVariants } from '@/lib/animations';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -355,121 +373,295 @@ export default function ContractorOnboarding() {
   };
 
   return (
-    <motion.div 
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-      className="min-h-screen bg-gradient-to-br from-background to-muted/50 py-8"
-    >
-      <div className="container max-w-2xl mx-auto px-4">
-        <motion.div variants={itemVariants}>
-          <Card className="shadow-lg border-border/50">
-            <CardContent className="p-8">
-              {/* Header */}
-              <motion.div variants={itemVariants} className="text-center mb-8">
-                <div 
-                  className="text-5xl mb-4"
-                  style={{ color: BRAND.colors.primary }}
-                >
-                  🔧
-                </div>
-                <h1 className="text-3xl font-bold mb-2" style={{ color: BRAND.colors.text.primary }}>
-                  Welcome to FixItForMe
-                </h1>
-                <p className="text-lg text-muted-foreground">
-                  Let&apos;s set up your contractor profile
-                </p>
-              </motion.div>
+    <div className="min-h-screen bg-gradient-to-br from-blue-950 via-slate-950 to-purple-950 relative overflow-hidden">
+      {/* Cinematic Background */}
+      <div className="absolute inset-0">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/20" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent" />
+        
+        {/* Floating particles */}
+        {[...Array(8)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-1 h-1 bg-primary/30 rounded-full"
+            animate={{
+              y: [-50, -800],
+              x: [0, Math.random() * 100 - 50],
+              opacity: [0, 0.8, 0],
+            }}
+            transition={{
+              duration: Math.random() * 8 + 12,
+              repeat: Infinity,
+              delay: Math.random() * 3,
+              ease: "linear"
+            }}
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: '100%',
+            }}
+          />
+        ))}
+      </div>
 
-              {/* Progress */}
-              <div className="mb-8">
-                <Progress 
-                  value={(currentStep + 1) / 4 * 100} 
-                  className="mb-4"
-                />
-                <div className="text-center">
-                  <span className="text-sm text-muted-foreground">
-                    Step {currentStep + 1} of 4
-                  </span>
-                </div>
-              </div>
+      <div className="relative z-10">
+        {/* Header with Logo */}
+        <motion.header 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="p-6 text-center"
+        >
+          <div className="flex items-center justify-center space-x-3 mb-2">
+            <Image
+              src="/logo.png"
+              alt="FixItForMe Logo"
+              width={48}
+              height={48}
+              className="drop-shadow-lg"
+              priority
+            />
+            <h1 className="text-2xl font-bold text-white">
+              Welcome to <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">FixItForMe</span>
+            </h1>
+          </div>
+          <p className="text-slate-300 max-w-md mx-auto">
+            Join thousands of contractors growing their business with AI-powered lead generation
+          </p>
+        </motion.header>
 
-              {/* Step Indicators */}
-              <div className="flex items-center justify-between mb-8">
-                {[
-                  { icon: Building, label: "Company Info", description: "Basic information" },
-                  { icon: Award, label: "Services", description: "What you offer" },
-                  { icon: MapPin, label: "Location", description: "Service areas" },
-                  { icon: Check, label: "Review", description: "Confirm details" }
-                ].map((step, index) => {
-                  const Icon = step.icon;
-                  const isActive = index === currentStep;
-                  const isComplete = index < currentStep;
-                  
-                  return (
-                    <div key={index} className="flex flex-col items-center flex-1">
-                      <div className={cn(
-                        "w-10 h-10 rounded-full flex items-center justify-center mb-2 transition-colors",
-                        isActive 
-                          ? "bg-primary text-primary-foreground" 
-                          : isComplete
-                            ? "bg-primary/20 text-primary" 
-                            : "bg-muted text-muted-foreground"
-                      )}>
-                        <Icon className="w-5 h-5" />
-                      </div>
-                      <div className="text-center">
-                        <div className={cn(
-                          "text-sm font-medium",
-                          isActive ? "text-foreground" : "text-muted-foreground"
-                        )}>
-                          {step.label}
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          {step.description}
-                        </div>
-                      </div>
-                      {index < 3 && (
-                        <div className={cn(
-                          "h-px bg-border flex-1 mt-5 absolute left-1/2 transform translate-x-1/2",
-                          "hidden md:block"
-                        )} />
-                      )}
+        <motion.div 
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="container max-w-4xl mx-auto px-4 pb-8"
+        >
+          <div className="grid lg:grid-cols-3 gap-8">
+            {/* Left Side - Lexi's Guidance */}
+            <motion.div 
+              variants={itemVariants}
+              className="lg:col-span-1 space-y-6"
+            >
+              <Card className="bg-background/80 backdrop-blur-xl border border-white/20 shadow-2xl">
+                <CardContent className="p-6">
+                  <div className="text-center space-y-4">
+                    <motion.div
+                      animate={{
+                        scale: [1, 1.1, 1],
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }}
+                      className="w-16 h-16 mx-auto bg-gradient-to-r from-primary to-accent rounded-full flex items-center justify-center"
+                    >
+                      <Bot className="w-8 h-8 text-white" />
+                    </motion.div>
+                    <div>
+                      <h3 className="font-semibold text-lg text-primary">Meet Lexi</h3>
+                      <p className="text-sm text-muted-foreground">Your AI Onboarding Assistant</p>
                     </div>
-                  );
-                })}
-              </div>
+                    <div className="bg-muted/50 p-4 rounded-lg text-left">
+                      <p className="text-sm italic text-foreground">
+                        &ldquo;Hi! I&apos;m Lexi, and I&apos;m here to help you get set up for success. I&apos;ll guide you through each step and make sure you&apos;re ready to start earning more with our AI-powered platform!&rdquo;
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
 
-              {/* Step Content */}
-              <div className="min-h-[400px] mb-8">
-                {getStepContent()}
-              </div>
+              {/* Benefits Preview */}
+              <Card className="bg-gradient-to-br from-background/60 to-background/40 backdrop-blur-xl border border-white/10">
+                <CardContent className="p-6">
+                  <h4 className="font-semibold text-foreground mb-4 flex items-center gap-2">
+                    <Rocket className="w-4 h-4 text-primary" />
+                    What You&apos;ll Get
+                  </h4>
+                  <div className="space-y-3">
+                    {[
+                      { icon: Bot, text: "AI agents finding leads 24/7", color: "text-blue-400" },
+                      { icon: TrendingUp, text: "40% average revenue increase", color: "text-green-400" },
+                      { icon: Shield, text: "Only 6% platform fee", color: "text-purple-400" },
+                      { icon: Users, text: "10,000+ contractor network", color: "text-orange-400" },
+                    ].map((benefit, i) => (
+                      <motion.div
+                        key={i}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.5 + i * 0.1 }}
+                        className="flex items-center space-x-3"
+                      >
+                        <benefit.icon className={cn("w-4 h-4", benefit.color)} />
+                        <span className="text-sm text-foreground">{benefit.text}</span>
+                      </motion.div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
 
-              {/* Navigation */}
-              <div className="flex justify-between">
-                <Button 
-                  variant="outline"
-                  onClick={() => setCurrentStep(prev => Math.max(0, prev - 1))}
-                  disabled={currentStep === 0}
-                  className="flex items-center gap-2"
-                >
-                  Back
-                </Button>
-                
-                <Button
-                  onClick={handleNext}
-                  disabled={!isStepValid() || loading}
-                  className="flex items-center gap-2"
-                  style={{ backgroundColor: BRAND.colors.primary }}
-                >
-                  {loading && <div className="w-4 h-4 animate-spin rounded-full border-2 border-current border-t-transparent" />}
-                  {currentStep === 3 ? 'Complete Setup' : 'Next Step'}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+            {/* Right Side - Main Form */}
+            <motion.div variants={itemVariants} className="lg:col-span-2">
+              <Card className="bg-background/90 backdrop-blur-xl border border-white/20 shadow-2xl overflow-hidden">
+                {/* Progress header */}
+                <div className="bg-gradient-to-r from-primary/10 to-accent/10 p-6 border-b border-white/10">
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h2 className="text-xl font-semibold text-primary">
+                        {['Company Setup', 'Services & Skills', 'Service Areas', 'Final Review'][currentStep]}
+                      </h2>
+                      <p className="text-sm text-muted-foreground">
+                        Step {currentStep + 1} of 4 • {Math.round((currentStep + 1) / 4 * 100)}% Complete
+                      </p>
+                    </div>
+                    <Badge className="bg-primary/20 text-primary border-primary/20">
+                      <Zap className="w-3 h-3 mr-1" />
+                      Quick Setup
+                    </Badge>
+                  </div>
+                  
+                  <div className="relative">
+                    <Progress 
+                      value={(currentStep + 1) / 4 * 100} 
+                      className="h-2 bg-white/20"
+                    />
+                    <motion.div
+                      className="absolute top-0 left-0 h-2 bg-gradient-to-r from-primary to-accent rounded-full"
+                      initial={{ width: "0%" }}
+                      animate={{ width: `${(currentStep + 1) / 4 * 100}%` }}
+                      transition={{ duration: 0.5, ease: "easeOut" }}
+                    />
+                  </div>
+                </div>
+
+                <CardContent className="p-8">{/* Step Indicators */}
+                  <div className="flex items-center justify-between mb-8">
+                    {[
+                      { icon: Building, label: "Company", description: "Basic info" },
+                      { icon: Award, label: "Services", description: "Your expertise" },
+                      { icon: MapPin, label: "Location", description: "Service areas" },
+                      { icon: Check, label: "Review", description: "Finish setup" }
+                    ].map((step, index) => {
+                      const Icon = step.icon;
+                      const isActive = index === currentStep;
+                      const isComplete = index < currentStep;
+                      
+                      return (
+                        <motion.div 
+                          key={index} 
+                          className="flex flex-col items-center flex-1 relative"
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: index * 0.1 }}
+                        >
+                          <motion.div 
+                            className={cn(
+                              "w-12 h-12 rounded-full flex items-center justify-center mb-2 transition-all duration-300",
+                              isActive 
+                                ? "bg-gradient-to-r from-primary to-accent text-white shadow-lg shadow-primary/25" 
+                                : isComplete
+                                  ? "bg-primary/20 text-primary" 
+                                  : "bg-muted text-muted-foreground"
+                            )}
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.95 }}
+                          >
+                            {isComplete ? (
+                              <Check className="w-5 h-5" />
+                            ) : (
+                              <Icon className="w-5 h-5" />
+                            )}
+                          </motion.div>
+                          <div className="text-center">
+                            <div className={cn(
+                              "text-sm font-medium transition-colors",
+                              isActive ? "text-primary" : isComplete ? "text-primary/70" : "text-muted-foreground"
+                            )}>
+                              {step.label}
+                            </div>
+                            <div className="text-xs text-muted-foreground">
+                              {step.description}
+                            </div>
+                          </div>
+                          {index < 3 && (
+                            <div className={cn(
+                              "absolute top-6 left-full w-full h-px transition-colors hidden sm:block",
+                              isComplete ? "bg-primary/50" : "bg-border"
+                            )} />
+                          )}
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Step Content with animations */}
+                  <motion.div 
+                    key={currentStep}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.3 }}
+                    className="min-h-[400px] mb-8"
+                  >
+                    {getStepContent()}
+                  </motion.div>
+
+                  {/* Enhanced Navigation */}
+                  <div className="flex justify-between items-center">
+                    <Button 
+                      variant="outline"
+                      onClick={() => setCurrentStep(prev => Math.max(0, prev - 1))}
+                      disabled={currentStep === 0}
+                      className="flex items-center gap-2 bg-background/50 hover:bg-background/80"
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                      Back
+                    </Button>
+                    
+                    <div className="flex items-center space-x-2">
+                      {currentStep === 3 && (
+                        <div className="flex items-center space-x-2 mr-4">
+                          <Heart className="w-4 h-4 text-red-500" />
+                          <span className="text-sm text-muted-foreground">Almost there!</span>
+                        </div>
+                      )}
+                      <Button
+                        onClick={handleNext}
+                        disabled={!isStepValid() || loading}
+                        className="flex items-center gap-2 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white min-w-[140px]"
+                      >
+                        {loading ? (
+                          <>
+                            <motion.div
+                              className="w-4 h-4 rounded-full border-2 border-white border-t-transparent"
+                              animate={{ rotate: 360 }}
+                              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                            />
+                            Setting up...
+                          </>
+                        ) : (
+                          <>
+                            {currentStep === 3 ? (
+                              <>
+                                <Rocket className="w-4 h-4" />
+                                Launch Dashboard
+                              </>
+                            ) : (
+                              <>
+                                Continue
+                                <ChevronRight className="w-4 h-4" />
+                              </>
+                            )}
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </div>
         </motion.div>
       </div>
-    </motion.div>
+    </div>
   );
 }
