@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -186,12 +187,40 @@ export default function ContractorDashboard() {
   }
 
   return (
-    <motion.div
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-      className="flex h-[calc(100vh-theme(spacing.16))] flex-col lg:flex-row"
-    >
+    <div className="min-h-screen bg-background">
+      {/* Professional Header with FixItForMe Logo */}
+      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container flex h-14 items-center">
+          <div className="mr-4 flex">
+            <Image
+              src="/logo.png"
+              alt="FixItForMe Logo"
+              width={32}
+              height={32}
+              className="mr-3"
+              priority
+            />
+            <div className="hidden font-bold sm:inline-block">
+              <span className="text-primary">FixItForMe</span>
+              <span className="text-muted-foreground ml-2 text-sm font-normal">
+                Contractor Dashboard
+              </span>
+            </div>
+          </div>
+          <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
+            <div className="w-full flex-1 md:w-auto md:flex-none">
+              {/* Future: Search or additional nav items */}
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="flex h-[calc(100vh-theme(spacing.14))] flex-col lg:flex-row"
+      >
       {/* Main Chat Interface */}
       <motion.div
         variants={itemVariants}
@@ -240,5 +269,6 @@ export default function ContractorDashboard() {
         </ScrollArea>
       </motion.div>
     </motion.div>
+    </div>
   )
 }
