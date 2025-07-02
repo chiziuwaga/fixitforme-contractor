@@ -41,3 +41,37 @@ yarn-error.log*
 next-env.d.ts
 
 .vercel
+
+# v0.dev UI Improvement Files - Generated content and API responses
+v0-generated/
+v0-analysis/
+v0-backups/
+.v0-cache/
+v0-responses/
+ui-analysis-*.json
+ui-improvements-*.jsx
+ui-improvements-*.tsx
+.env.v0dev
+v0.config.json
+v0-api-key.txt
+ui-analysis-report-*.md
+ui-improvement-summary-*.md
+v0-generation-log-*.txt
+*-backup-*.tsx
+*-backup-*.jsx
+*-original-*.tsx
+*-original-*.jsx
+v0-workspace/
+ui-generation-workspace/
+component-analysis-*.json
+brand-analysis-*.json
+ui-metrics-*.json
+.v0-cli/
+v0-output/
+
+# v0.dev UI Improvement System outputs
+v0-improvement-report-*.md
+v0-analysis-data-*.json
+component-analysis-*.json
+ui-analysis-report-*.md
+*.backup-*
