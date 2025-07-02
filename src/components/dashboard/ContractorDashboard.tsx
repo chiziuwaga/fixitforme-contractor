@@ -140,15 +140,15 @@ export default function ContractorDashboard({ children }: DashboardLayoutProps) 
                   <CardContent>
                     <div className="space-y-3 text-sm">
                       <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <div className="w-2 h-2 bg-success rounded-full"></div>
                         <span className="text-muted-foreground">Bid submitted for Kitchen Remodel</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                        <div className="w-2 h-2 bg-info rounded-full"></div>
                         <span className="text-muted-foreground">New lead from Rex</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                        <div className="w-2 h-2 bg-warning rounded-full"></div>
                         <span className="text-muted-foreground">Profile updated</span>
                       </div>
                     </div>
@@ -297,7 +297,7 @@ export default function ContractorDashboard({ children }: DashboardLayoutProps) 
           <div className="p-6 border-t">
             <Button 
               variant="ghost" 
-              className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
+              className="w-full justify-start text-destructive hover:text-destructive-foreground hover:bg-destructive/10"
             >
               <LogOut className="h-4 w-4 mr-2" />
               Sign Out
@@ -322,7 +322,7 @@ export default function ContractorDashboard({ children }: DashboardLayoutProps) 
           <div className="flex items-center gap-4 ml-auto">
             <Button variant="ghost" size="sm" className="relative">
               <Bell className="h-5 w-5" />
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+              <span className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground text-xs w-5 h-5 rounded-full flex items-center justify-center">
                 5
               </span>
             </Button>

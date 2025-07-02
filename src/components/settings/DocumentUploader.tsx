@@ -56,11 +56,11 @@ export default function DocumentUploader({ contractorId }: DocumentUploaderProps
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusClasses = (status: 'approved' | 'pending' | 'rejected') => {
     switch (status) {
-      case 'approved': return 'bg-green-100 text-green-800 border-green-200';
-      case 'pending': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'rejected': return 'bg-red-100 text-red-800 border-red-200';
+      case 'approved': return 'bg-success/10 text-success-foreground border-success/20';
+      case 'pending': return 'bg-warning/10 text-warning-foreground border-warning/20';
+      case 'rejected': return 'bg-destructive/10 text-destructive-foreground border-destructive/20';
       default: return 'bg-muted text-muted-foreground border-border';
     }
   };
@@ -137,7 +137,7 @@ export default function DocumentUploader({ contractorId }: DocumentUploaderProps
                   </div>
 
                   {uploadedDoc ? (
-                    <Badge className={getStatusColor(uploadedDoc.status)} variant="outline">
+                    <Badge className={getStatusClasses(uploadedDoc.status)} variant="outline">
                       {getStatusIcon(uploadedDoc.status)}
                       <span className="ml-1 capitalize">{uploadedDoc.status}</span>
                     </Badge>
@@ -151,7 +151,7 @@ export default function DocumentUploader({ contractorId }: DocumentUploaderProps
                 {uploadedDoc ? (
                   <div className="flex items-center justify-between bg-muted rounded p-3">
                     <div className="flex items-center gap-3">
-                      <FileText className="h-8 w-8 text-blue-500" />
+                      <FileText className="h-8 w-8 text-info" />
                       <div>
                         <p className="font-medium text-sm">{uploadedDoc.name}</p>
                         <p className="text-xs text-muted-foreground">
@@ -203,10 +203,10 @@ export default function DocumentUploader({ contractorId }: DocumentUploaderProps
 
         {/* Upload Progress */}
         {uploading && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <div className="bg-info/10 border border-info/20 rounded-lg p-4">
             <div className="flex items-center gap-2">
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-              <span className="text-sm text-blue-800">Uploading document...</span>
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-info"></div>
+              <span className="text-sm text-info-foreground">Uploading document...</span>
             </div>
           </div>
         )}

@@ -1,10 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Crown, Zap, TrendingUp, Check } from 'lucide-react';
+import { Check } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface SubscriptionManagerProps {
   currentTier?: 'growth' | 'scale';
@@ -15,37 +15,40 @@ export default function SubscriptionManager({ currentTier = 'growth' }: Subscrip
 
   const tiers = [
     {
-      id: 'growth',
       name: 'Growth',
-      price: 'Pay per job',
-      fee: '10% platform fee',
+      id: 'tier-growth',
+      href: '#',
+      price: { monthly: '10%', annually: '10%' },
+      description: 'For contractors starting out, with essential tools to win bids.',
       features: [
-        'Basic lead access',
+        'Access to all leads',
         'Standard bidding tools',
+        'Basic performance analytics',
         'Email support',
-        'Basic analytics'
       ],
-      icon: TrendingUp,
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-50'
+      isRecommended: false,
+      cta: 'Downgrade to Growth',
+      color: 'text-primary',
+      bgColor: 'bg-primary/10'
     },
     {
-      id: 'scale',
       name: 'Scale',
-      price: '$250/month',
-      fee: '7% platform fee',
+      id: 'tier-scale',
+      href: '#',
+      price: { monthly: '$250', annually: '$2400' },
+      description: 'For established contractors aiming to scale their business.',
       features: [
-        'Priority lead access',
-        'Advanced AI tools (Alex, Rex)',
-        'Priority support',
-        'Advanced analytics',
-        'Lead generation tools',
-        'Market intelligence'
+        'Priority access to high-value leads',
+        'Alex AI bidding assistant',
+        'Advanced market & performance analytics',
+        'Dedicated phone and chat support',
+        'Automated follow-ups',
       ],
-      icon: Crown,
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-50'
-    }
+      isRecommended: true,
+      cta: 'Upgrade to Scale',
+      color: 'text-accent',
+      bgColor: 'bg-accent/10'
+    },
   ];
 
   const handleUpgrade = async () => {
@@ -56,116 +59,65 @@ export default function SubscriptionManager({ currentTier = 'growth' }: Subscrip
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Zap className="h-5 w-5 text-primary" />
-          Subscription Management
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {tiers.map((tier) => {
-            const isCurrentTier = tier.id === currentTier;
-            const isRecommended = tier.id === 'scale';
-            
-            return (
-              <div
-                key={tier.id}
-                className={`relative border-2 rounded-lg p-6 ${
-                  isCurrentTier 
-                    ? 'border-primary bg-primary/5' 
-                    : 'border-border hover:border-primary/50'
-                } ${isRecommended ? 'ring-2 ring-purple-200' : ''}`}
-              >
-                {isRecommended && (
-                  <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-purple-600">
+    <div className="mx-auto max-w-4xl">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {tiers.map((tier) => {
+          const isCurrentPlan = tier.id === currentTier;
+          const isRecommended = tier.isRecommended;
+          return (
+            <div
+              key={tier.id}
+              className={cn(
+                'relative flex flex-col rounded-2xl border p-8 shadow-sm',
+                { 'border-muted': !isRecommended },
+                { 'ring-2 ring-accent': isRecommended }
+              )}
+            >
+              {isRecommended && (
+                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                  <Badge className="bg-accent hover:bg-accent/90">
                     Recommended
                   </Badge>
-                )}
-                
-                {isCurrentTier && (
-                  <Badge className="absolute -top-3 right-4 bg-primary">
-                    Current Plan
-                  </Badge>
-                )}
-
-                <div className={`inline-flex items-center justify-center w-12 h-12 rounded-lg ${tier.bgColor} mb-4`}>
-                  <tier.icon className={`h-6 w-6 ${tier.color}`} />
                 </div>
-
-                <h3 className="text-xl font-bold mb-2">{tier.name}</h3>
-                <div className="mb-4">
-                  <p className="text-2xl font-bold text-foreground">{tier.price}</p>
-                  <p className="text-sm text-muted-foreground">{tier.fee}</p>
-                </div>
-
-                <ul className="space-y-2 mb-6">
-                  {tier.features.map((feature, index) => (
-                    <li key={index} className="flex items-center gap-2 text-sm">
-                      <Check className="h-4 w-4 text-green-500 flex-shrink-0" />
-                      <span>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                {isCurrentTier ? (
-                  <Button disabled className="w-full">
-                    Current Plan
-                  </Button>
-                ) : tier.id === 'scale' ? (
-                  <Button 
-                    onClick={handleUpgrade}
-                    disabled={loading}
-                    className="w-full bg-purple-600 hover:bg-purple-700"
-                  >
-                    {loading ? 'Processing...' : 'Upgrade to Scale'}
-                  </Button>
-                ) : (
-                  <Button 
-                    variant="outline" 
-                    className="w-full"
-                    disabled
-                  >
-                    Downgrade
-                  </Button>
+              )}
+              <h3 className="text-lg font-semibold leading-7">{tier.name}</h3>
+              <p className="mt-4 flex items-baseline gap-x-2">
+                <span className="text-4xl font-bold tracking-tight">
+                  {tier.price.monthly}
+                </span>
+                {tier.name === 'Growth' && <span className="text-sm text-muted-foreground">/ successful bid fee</span>}
+                {tier.name === 'Scale' && <span className="text-sm text-muted-foreground">/ month</span>}
+              </p>
+              <p className="mt-6 text-base leading-7 text-muted-foreground">{tier.description}</p>
+              <ul role="list" className="mt-8 space-y-3 text-sm leading-6 xl:mt-10">
+                {tier.features.map((feature) => (
+                  <li key={feature} className="flex gap-x-3">
+                    <Check className="h-4 w-4 text-success flex-shrink-0" />
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+              <Button
+                onClick={() => handleUpgrade()}
+                disabled={isCurrentPlan || loading}
+                className={cn(
+                  "mt-8 w-full",
+                  isRecommended ? "bg-accent hover:bg-accent/90" : "",
+                  isCurrentPlan ? "bg-muted text-muted-foreground cursor-default" : ""
                 )}
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Current Usage */}
-        <div className="bg-muted rounded-lg p-4">
-          <h4 className="font-medium mb-3">This Month's Usage</h4>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-            <div>
-              <p className="text-2xl font-bold text-primary">8</p>
-              <p className="text-sm text-muted-foreground">Bids Submitted</p>
+              >
+                {loading && (
+                  <div className="flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-background"></div>
+                    <span className="ml-2">Processing...</span>
+                  </div>
+                )}
+                {isCurrentPlan ? 'Current Plan' : tier.cta}
+              </Button>
             </div>
-            <div>
-              <p className="text-2xl font-bold text-primary">$245</p>
-              <p className="text-sm text-muted-foreground">Platform Fees</p>
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-primary">3</p>
-              <p className="text-sm text-muted-foreground">Projects Won</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Billing Information */}
-        <div className="border-t pt-4">
-          <h4 className="font-medium mb-2">Billing Information</h4>
-          <div className="text-sm text-muted-foreground space-y-1">
-            <p>Next billing date: February 1, 2024</p>
-            <p>Payment method: •••• 4242 (Visa)</p>
-          </div>
-          <Button variant="outline" size="sm" className="mt-2">
-            Update Payment Method
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+          )
+        })}
+      </div>
+    </div>
   );
 }

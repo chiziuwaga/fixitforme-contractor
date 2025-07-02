@@ -30,7 +30,7 @@ interface StatItem {
     period?: string;
   };
   icon: React.ElementType;
-  color: string;
+  color: string; // Now a string for Tailwind classes
   description?: string;
 }
 
@@ -64,7 +64,7 @@ export function QuickStats({ className }: QuickStatsProps) {
       value: tier === 'scale' ? '$12,450' : '$6,200',
       change: { value: 12.5, type: 'increase', period: 'last month' },
       icon: DollarSign,
-      color: BRAND.colors.success,
+      color: 'text-success-foreground bg-success/10',
       description: 'Total earnings this month'
     },
     {
@@ -72,7 +72,7 @@ export function QuickStats({ className }: QuickStatsProps) {
       value: tier === 'scale' ? 24 : 12,
       change: { value: 8.2, type: 'increase', period: 'this week' },
       icon: Users,
-      color: BRAND.colors.primary,
+      color: 'text-primary-foreground bg-primary/10',
       description: 'Leads in your pipeline'
     },
     {
@@ -80,7 +80,7 @@ export function QuickStats({ className }: QuickStatsProps) {
       value: tier === 'scale' ? '68%' : '45%',
       change: { value: 3.1, type: 'decrease', period: 'this month' },
       icon: Target,
-      color: BRAND.colors.steelBlue,
+      color: 'text-info-foreground bg-info/10',
       description: 'Bids won vs submitted'
     },
     {
@@ -88,7 +88,7 @@ export function QuickStats({ className }: QuickStatsProps) {
       value: tier === 'scale' ? 18 : 8,
       change: { value: 15.8, type: 'increase', period: 'this month' },
       icon: Activity,
-      color: BRAND.colors.agents.alex,
+      color: 'text-success-foreground bg-success/10',
       description: 'Successfully finished projects'
     }
   ];
@@ -128,12 +128,10 @@ export function QuickStats({ className }: QuickStatsProps) {
               {stat.title}
             </CardTitle>
             <div 
-              className="p-2 rounded-full"
-              style={{ backgroundColor: `${stat.color}20` }}
+              className={cn("p-2 rounded-full", stat.color)}
             >
               <stat.icon 
-                className="w-4 h-4" 
-                style={{ color: stat.color }}
+                className="w-4 h-4"
               />
             </div>
           </div>
@@ -152,8 +150,8 @@ export function QuickStats({ className }: QuickStatsProps) {
                   className={cn(
                     "text-xs flex items-center gap-1",
                     stat.change.type === 'increase' 
-                      ? "bg-green-100 text-green-800 hover:bg-green-100" 
-                      : "bg-red-100 text-red-800 hover:bg-red-100"
+                      ? "bg-success/10 text-success-foreground hover:bg-success/20" 
+                      : "bg-destructive/10 text-destructive-foreground hover:bg-destructive/20"
                   )}
                 >
                   {stat.change.type === 'increase' ? (

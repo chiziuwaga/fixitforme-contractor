@@ -199,19 +199,19 @@ export default function JobBidView() {
               )}
 
               <Card className="shadow-lg border-0 bg-gradient-to-br from-blue-50 to-indigo-50">
-                <CardHeader className="border-b border-blue-100">
-                  <CardTitle className="text-xl font-semibold flex items-center gap-2 text-blue-900">
-                    <User className="h-5 w-5 text-blue-600" />
+                <CardHeader className="border-b border-info/20">
+                  <CardTitle className="text-xl font-semibold flex items-center gap-2 text-info-foreground">
+                    <User className="h-5 w-5 text-info" />
                     Alex Analysis
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="pt-6 text-center">
-                  <p className="text-blue-700/70 mb-6">
+                  <p className="text-info-foreground/70 mb-6">
                     Ask @alex to analyze this job for competitive pricing and timeline estimates
                   </p>
                   <Button 
                     variant="outline" 
-                    className="w-full border-blue-200 text-blue-700 hover:bg-blue-50"
+                    className="w-full border-info/30 text-info-foreground hover:bg-info/10"
                     onClick={() => {
                       // TODO: Implement Alex analysis trigger
                     }}

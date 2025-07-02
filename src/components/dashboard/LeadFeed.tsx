@@ -166,7 +166,7 @@ export default function LeadFeed({ contractorId }: LeadFeedProps) {
                   <h3 className="font-semibold text-foreground mb-1 flex items-center gap-2">
                     {lead.title}
                     {!lead.viewed && (
-                      <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                      <span className="w-2 h-2 bg-info rounded-full"></span>
                     )}
                   </h3>
                   <p className="text-sm text-muted-foreground line-clamp-2">

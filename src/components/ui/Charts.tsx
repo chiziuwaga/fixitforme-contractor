@@ -545,7 +545,7 @@ export function CostBreakdownCard({
           {Object.entries(data).map(([key, value]) => (
             <div key={key} className="flex justify-between">
               <span className="capitalize font-medium">{key}:</span>
-              <span className="font-semibold text-green-700">${value.toLocaleString()}</span>
+              <span className="font-semibold text-success-foreground">${value.toLocaleString()}</span>
             </div>
           ))}
         </div>
@@ -575,9 +575,9 @@ export function LeadDistributionCard({
               <div className="flex items-center gap-2">
                 <span className="font-semibold">{item.count} leads</span>
                 <span className={`px-2 py-1 rounded text-xs font-medium ${
-                  item.competition === 'high' ? 'bg-red-100 text-red-800' :
-                  item.competition === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-                  'bg-green-100 text-green-800'
+                  item.competition === 'high' ? 'bg-destructive/10 text-destructive-foreground' :
+                  item.competition === 'medium' ? 'bg-warning/10 text-warning-foreground' :
+                  'bg-success/10 text-success-foreground'
                 }`}>
                   {item.competition}
                 </span>

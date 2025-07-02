@@ -136,18 +136,23 @@ export function NotificationCenter({ className }: NotificationCenterProps) {
     }
   };
 
-  const getColors = (type: Notification['type']) => {
+  const getNotificationClasses = (type: string) => {
     switch (type) {
       case 'success':
-        return 'text-green-600 bg-green-50 border-green-200';
+        return 'text-success-foreground bg-success/10 border-success/20';
       case 'error':
-        return 'text-red-600 bg-red-50 border-red-200';
+        return 'text-destructive-foreground bg-destructive/10 border-destructive/20';
       case 'warning':
-        return 'text-yellow-600 bg-yellow-50 border-yellow-200';
+        return 'text-warning-foreground bg-warning/10 border-warning/20';
       case 'info':
-        return 'text-blue-600 bg-blue-50 border-blue-200';
+      default:
+        return 'text-info-foreground bg-info/10 border-info/20';
     }
   };
+
+  const handleRemoveNotification = useCallback((id: string) => {
+    removeNotification(id);
+  }, [removeNotification]);
 
   return (
     <div className={cn("relative", className)}>
@@ -238,7 +243,7 @@ export function NotificationCenter({ className }: NotificationCenterProps) {
                         onClick={() => !notification.read && markAsRead(notification.id)}
                       >
                         <div className="flex items-start gap-3">
-                          <div className={cn("p-1 rounded-full", getColors(notification.type))}>
+                          <div className={cn("p-1 rounded-full", getNotificationClasses(notification.type))}>
                             {getIcon(notification.type)}
                           </div>
                           
@@ -255,7 +260,7 @@ export function NotificationCenter({ className }: NotificationCenterProps) {
                                 size="sm"
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  removeNotification(notification.id);
+                                  handleRemoveNotification(notification.id);
                                 }}
                                 className="p-1 h-auto opacity-60 hover:opacity-100"
                               >

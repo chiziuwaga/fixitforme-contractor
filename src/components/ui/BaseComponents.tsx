@@ -5,7 +5,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { BRAND } from '@/lib/brand';
 import { motion } from 'framer-motion';
 
 interface BaseCardProps {
@@ -31,9 +30,9 @@ export function BaseCard({
 }: BaseCardProps) {
   const statusColors = {
     default: 'border-border',
-    success: 'border-green-200 bg-green-50/50',
-    warning: 'border-yellow-200 bg-yellow-50/50',
-    error: 'border-red-200 bg-red-50/50'
+    success: 'border-success/20 bg-success/10',
+    warning: 'border-warning/20 bg-warning/10',
+    error: 'border-destructive/20 bg-destructive/10'
   };
 
   const CardWrapper = animated ? motion.div : 'div';
@@ -144,8 +143,8 @@ export function BaseStat({
               className={cn(
                 "text-xs",
                 change.type === 'increase' 
-                  ? "bg-green-100 text-green-800 hover:bg-green-100" 
-                  : "bg-red-100 text-red-800 hover:bg-red-100"
+                  ? "bg-success/10 text-success-foreground hover:bg-success/20" 
+                  : "bg-destructive/10 text-destructive-foreground hover:bg-destructive/20"
               )}
             >
               {change.type === 'increase' ? '+' : '-'}{Math.abs(change.value)}%
@@ -204,4 +203,5 @@ export function BaseButton({
   );
 }
 
-export default { BaseCard, BaseStat, BaseButton };
+const BaseComponents = { BaseCard, BaseStat, BaseButton };
+export default BaseComponents;

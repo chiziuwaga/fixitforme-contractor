@@ -9,7 +9,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { 
   Check, 
-  Building, 
   MapPin, 
   Star, 
   Info, 
@@ -191,11 +190,11 @@ const GenerativeAgentAssets: React.FC<GenerativeAgentAssetsProps> = ({ type, dat
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <h4 className="font-semibold mb-2 text-green-700">Completed Steps</h4>
+              <h4 className="font-semibold mb-2 text-success-foreground">Completed Steps</h4>
               <div className="space-y-1">
                 {onboardingData.completed_steps.map((step, index) => (
                   <div key={index} className="flex items-center gap-2 text-sm">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
+                    <CheckCircle className="h-4 w-4 text-success" />
                     <span>{step}</span>
                   </div>
                 ))}
@@ -203,11 +202,11 @@ const GenerativeAgentAssets: React.FC<GenerativeAgentAssetsProps> = ({ type, dat
             </div>
             
             <div>
-              <h4 className="font-semibold mb-2 text-orange-700">Remaining Steps</h4>
+              <h4 className="font-semibold mb-2 text-warning-foreground">Remaining Steps</h4>
               <div className="space-y-1">
                 {onboardingData.remaining_steps.map((step, index) => (
                   <div key={index} className="flex items-center gap-2 text-sm">
-                    <Clock className="h-4 w-4 text-orange-500" />
+                    <Clock className="h-4 w-4 text-warning" />
                     <span>{step}</span>
                   </div>
                 ))}
@@ -248,8 +247,8 @@ const GenerativeAgentAssets: React.FC<GenerativeAgentAssetsProps> = ({ type, dat
               
               <TabsContent value="selected" className="space-y-2">
                 {onboardingData.felix_services.selected.map((service, index) => (
-                  <div key={index} className="flex items-center gap-2 p-2 bg-green-50 rounded-lg">
-                    <Check className="h-4 w-4 text-green-600" />
+                  <div key={index} className="flex items-center gap-2 p-2 bg-success/10 rounded-lg">
+                    <Check className="h-4 w-4 text-success" />
                     <span className="text-sm">{service}</span>
                   </div>
                 ))}
@@ -257,8 +256,8 @@ const GenerativeAgentAssets: React.FC<GenerativeAgentAssetsProps> = ({ type, dat
               
               <TabsContent value="recommended" className="space-y-2">
                 {onboardingData.felix_services.recommended.map((service, index) => (
-                  <div key={index} className="flex items-center gap-2 p-2 bg-blue-50 rounded-lg">
-                    <Plus className="h-4 w-4 text-blue-600" />
+                  <div key={index} className="flex items-center gap-2 p-2 bg-info/10 rounded-lg">
+                    <Plus className="h-4 w-4 text-info" />
                     <span className="text-sm">{service}</span>
                   </div>
                 ))}
@@ -404,7 +403,7 @@ const GenerativeAgentAssets: React.FC<GenerativeAgentAssetsProps> = ({ type, dat
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
-              <p className="text-2xl font-bold text-green-600">{rexData.qualified_leads}</p>
+              <p className="text-2xl font-bold text-success">{rexData.qualified_leads}</p>
               <p className="text-sm text-muted-foreground">Qualified</p>
             </div>
           </CardContent>
@@ -413,7 +412,7 @@ const GenerativeAgentAssets: React.FC<GenerativeAgentAssetsProps> = ({ type, dat
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
-              <p className="text-2xl font-bold text-blue-600">{formatPercentage(rexData.conversion_rate)}</p>
+              <p className="text-2xl font-bold text-info">{formatPercentage(rexData.conversion_rate)}</p>
               <p className="text-sm text-muted-foreground">Conversion</p>
             </div>
           </CardContent>
@@ -422,7 +421,7 @@ const GenerativeAgentAssets: React.FC<GenerativeAgentAssetsProps> = ({ type, dat
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
-              <p className="text-2xl font-bold text-purple-600">{formatCurrency(rexData.avg_lead_value)}</p>
+              <p className="text-2xl font-bold text-accent">{formatCurrency(rexData.avg_lead_value)}</p>
               <p className="text-sm text-muted-foreground">Avg Value</p>
             </div>
           </CardContent>
@@ -431,7 +430,7 @@ const GenerativeAgentAssets: React.FC<GenerativeAgentAssetsProps> = ({ type, dat
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
-              <p className="text-2xl font-bold text-orange-600">{formatCurrency(rexData.pipeline_value)}</p>
+              <p className="text-2xl font-bold text-secondary-foreground">{formatCurrency(rexData.pipeline_value)}</p>
               <p className="text-sm text-muted-foreground">Pipeline</p>
             </div>
           </CardContent>
