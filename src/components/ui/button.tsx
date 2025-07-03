@@ -1,45 +1,32 @@
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
+import { motion, AnimatePresence } from "framer-motion"
+import { Loader2, Check } from "lucide-react"
+
 import { cn } from "@/lib/utils"
+import { MOTION_TOKENS } from "@/lib/motion"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-all duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98] cursor-pointer select-none",
+  "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
-        default:
-          "bg-primary text-primary-foreground shadow-md hover:shadow-lg transform hover:-translate-y-0.5 hover:bg-primary/90 hover:scale-[1.02]",
-        destructive:
-          "bg-destructive text-destructive-foreground shadow-md hover:shadow-lg transform hover:-translate-y-0.5 hover:bg-destructive/90 hover:scale-[1.02]",
-        outline:
-          "border-2 border-secondary bg-background text-secondary hover:bg-secondary hover:text-secondary-foreground hover:shadow-md transform hover:-translate-y-0.5 hover:scale-[1.01]",
-        secondary:
-          "bg-secondary text-secondary-foreground shadow-md hover:shadow-lg transform hover:-translate-y-0.5 hover:bg-secondary/90 hover:scale-[1.02]",
-        accent:
-          "bg-accent text-accent-foreground shadow-md hover:shadow-lg transform hover:-translate-y-0.5 hover:bg-accent/90 hover:scale-[1.02]",
-        ghost: "hover:bg-muted hover:text-muted-foreground hover:shadow-sm transform hover:scale-[1.01]",
-        link: "text-primary underline-offset-4 hover:underline hover:text-primary/80",
-        gradient: "bg-gradient-to-r from-primary to-accent text-white shadow-lg hover:shadow-xl hover:shadow-primary/25 transform hover:-translate-y-0.5 hover:scale-[1.02] hover:from-primary/90 hover:to-accent/90",
-        // Professional auth variants
-        primary: "bg-gradient-to-r from-primary to-accent text-white shadow-lg hover:shadow-xl hover:shadow-primary/25 transform hover:-translate-y-0.5 hover:scale-[1.02] hover:from-primary/90 hover:to-accent/90 font-semibold",
-        soft: "bg-secondary/10 text-secondary border border-secondary/20 hover:bg-secondary/20 hover:border-secondary/30 transform hover:scale-[1.01]",
+        default: "bg-primary text-primary-foreground shadow-lg shadow-primary/30 hover:bg-primary/90",
+        destructive: "bg-destructive text-destructive-foreground shadow-md hover:bg-destructive/90",
+        outline: "border border-input bg-transparent hover:bg-accent hover:text-accent-foreground",
+        secondary: "bg-secondary text-secondary-foreground shadow-md shadow-secondary/20 hover:bg-secondary/80",
+        ghost: "hover:bg-accent hover:text-accent-foreground",
+        link: "text-primary underline-offset-4 hover:underline",
+        gradient: "bg-gradient-to-r from-primary to-accent text-white shadow-lg hover:shadow-xl hover:shadow-primary/25",
+        glass: "bg-background/60 backdrop-blur-xl border-primary/20 text-foreground shadow-2xl shadow-primary/10 hover:bg-background/70",
       },
       size: {
-        xs: "h-8 px-3 text-xs rounded-sm gap-1",
-        sm: "h-9 px-4 text-sm rounded-md gap-1.5",
-        default: "h-10 px-6 text-sm rounded-md gap-2",
-        lg: "h-12 px-8 text-base font-semibold rounded-lg gap-2.5",
-        xl: "h-14 px-10 text-lg font-semibold rounded-lg gap-3",
-        xxl: "h-16 px-12 text-xl font-bold rounded-xl gap-3.5",
-        // Professional form sizes
-        form: "h-11 px-6 text-sm font-medium rounded-lg gap-2",
-        "form-lg": "h-12 px-8 text-base font-semibold rounded-lg gap-2.5",
-        "form-xl": "h-14 px-10 text-lg font-semibold rounded-xl gap-3",
-        // Icon variants
-        icon: "h-10 w-10 rounded-md",
-        "icon-sm": "h-8 w-8 rounded-sm",
-        "icon-lg": "h-12 w-12 rounded-lg",
+        default: "h-10 px-4 py-2",
+        sm: "h-9 rounded-md px-3",
+        lg: "h-11 rounded-md px-8 text-base",
+        xl: "h-12 rounded-lg px-10 text-lg",
+        icon: "h-10 w-10",
       },
     },
     defaultVariants: {
@@ -49,60 +36,67 @@ const buttonVariants = cva(
   }
 )
 
+const iconVariants = {
+  initial: { opacity: 0, y: -10 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: 10 },
+  transition: { duration: MOTION_TOKENS.duration.fast }
+};
+
 export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 
+    'onDrag' | 'onDragStart' | 'onDragEnd' | 'onAnimationStart' | 'onAnimationEnd' | 'onAnimationIteration' | 'onTransitionEnd'>,
     VariantProps<typeof buttonVariants> {
-  /**
-   * If `true`, the button will be rendered as a child of the immediate child.
-   * This is useful for passing props to a custom component.
-   * @default false
-   */
-  asChild?: boolean
-  /**
-   * If `true`, the button will be in a loading state.
-   * A spinner will be displayed, and the button will be disabled.
-   * @default false
-   */
-  loading?: boolean
+  asChild?: boolean;
+  loading?: boolean;
+  success?: boolean;
 }
 
-/**
- * A professional, customizable button component for business applications.
- * It supports multiple variants, sizes, and states including loading and disabled.
- * Built with semantic colors for the FixItForMe design system.
- */
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  (
-    { className, variant, size, asChild = false, loading = false, ...props },
-    ref
-  ) => {
-    const Comp = asChild ? Slot : "button"
+  ({ className, variant, size, asChild = false, loading = false, success = false, children, ...props }, ref) => {
+    const isDisabled = loading || success || props.disabled;
+
+    if (asChild) {
+      return (
+        <Slot
+          className={cn(buttonVariants({ variant, size, className }))}
+          ref={ref}
+          {...props}
+        >
+          {children}
+        </Slot>
+      );
+    }
+
     return (
-      <Comp
+      <motion.button
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
-        disabled={loading || props.disabled}
+        disabled={isDisabled}
+        whileHover={!isDisabled ? { scale: 1.02, y: -2 } : {}}
+        whileTap={!isDisabled ? { scale: 0.98 } : {}}
+        animate={{ opacity: isDisabled ? 0.5 : 1 }}
+        transition={{ duration: MOTION_TOKENS.duration.fast }}
         {...props}
       >
-        {loading && (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="mr-2 h-4 w-4 animate-spin"
-            aria-hidden="true"
-          >
-            <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-          </svg>
-        )}
-        {props.children}
-      </Comp>
+        <AnimatePresence mode="wait" initial={false}>
+          {loading ? (
+            <motion.div key="loading" {...iconVariants} className="flex items-center gap-2">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              {children && <span>{children}</span>}
+            </motion.div>
+          ) : success ? (
+            <motion.div key="success" {...iconVariants} className="flex items-center gap-2">
+              <Check className="h-4 w-4" />
+              {children && <span>{children}</span>}
+            </motion.div>
+          ) : (
+            <motion.span key="children" {...iconVariants} className="flex items-center justify-center gap-2">
+              {children}
+            </motion.span>
+          )}
+        </AnimatePresence>
+      </motion.button>
     )
   }
 )

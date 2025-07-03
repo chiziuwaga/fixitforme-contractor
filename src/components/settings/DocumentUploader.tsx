@@ -1,110 +1,40 @@
 'use client';
 
-import { useState } from 'react';
+import { useDocumentUploader } from '@/hooks/useDocumentUploader';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Upload, FileText, Check, X, AlertCircle } from 'lucide-react';
-import { toast } from 'sonner';
 
-interface Document {
-  id: string;
-  name: string;
-  type: string;
-  status: 'pending' | 'approved' | 'rejected';
-  uploadedAt: string;
-  size: number;
-}
+// This is the new, re-skinned DocumentUploader component.
+// It is now a purely presentational component.
+// All logic has been moved to the `useDocumentUploader` hook.
 
 interface DocumentUploaderProps {
   contractorId?: string;
 }
 
 export default function DocumentUploader({ contractorId }: DocumentUploaderProps) {
-  const [documents, setDocuments] = useState<Document[]>([
-    {
-      id: '1',
-      name: 'Contractor License.pdf',
-      type: 'license',
-      status: 'approved',
-      uploadedAt: '2024-01-15',
-      size: 245760
-    },
-    {
-      id: '2',
-      name: 'Insurance Certificate.pdf',
-      type: 'insurance',
-      status: 'pending',
-      uploadedAt: '2024-01-20',
-      size: 189440
-    }
-  ]);
-  const [uploading, setUploading] = useState(false);
+  const {
+    documents,
+    uploading,
+    requiredDocuments,
+    formatFileSize,
+    getStatusClasses,
+    getStatusIcon,
+    handleFileUpload,
+    handleRemoveDocument,
+    getUploadedDocument
+  } = useDocumentUploader();
 
-  const requiredDocuments = [
-    { type: 'license', label: 'Contractor License', required: true },
-    { type: 'insurance', label: 'General Liability Insurance', required: true },
-    { type: 'bond', label: 'Surety Bond', required: false },
-    { type: 'certifications', label: 'Professional Certifications', required: false }
-  ];
-
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  };
-
-  const getStatusClasses = (status: 'approved' | 'pending' | 'rejected') => {
-    switch (status) {
-      case 'approved': return 'bg-success/10 text-success-foreground border-success/20';
-      case 'pending': return 'bg-warning/10 text-warning-foreground border-warning/20';
-      case 'rejected': return 'bg-destructive/10 text-destructive-foreground border-destructive/20';
-      default: return 'bg-muted text-muted-foreground border-border';
-    }
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'approved': return <Check className="h-4 w-4" />;
-      case 'pending': return <AlertCircle className="h-4 w-4" />;
-      case 'rejected': return <X className="h-4 w-4" />;
+  const renderStatusIcon = (status: string) => {
+    const iconName = getStatusIcon(status);
+    switch (iconName) {
+      case 'Check': return <Check className="h-4 w-4" />;
+      case 'AlertCircle': return <AlertCircle className="h-4 w-4" />;
+      case 'X': return <X className="h-4 w-4" />;
       default: return null;
     }
-  };
-
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>, docType: string) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    setUploading(true);
-
-    try {
-      // Simulate upload
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      const newDocument: Document = {
-        id: Date.now().toString(),
-        name: file.name,
-        type: docType,
-        status: 'pending',
-        uploadedAt: new Date().toISOString().split('T')[0],
-        size: file.size
-      };
-
-      setDocuments(prev => [...prev, newDocument]);
-      toast.success('Document uploaded successfully!');
-    } catch (error) {
-      toast.error('Failed to upload document');
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  const handleRemoveDocument = (docId: string) => {
-    setDocuments(prev => prev.filter(doc => doc.id !== docId));
-    toast.success('Document removed');
   };
 
   return (
@@ -119,7 +49,7 @@ export default function DocumentUploader({ contractorId }: DocumentUploaderProps
         {/* Required Documents */}
         <div className="space-y-4">
           {requiredDocuments.map((reqDoc) => {
-            const uploadedDoc = documents.find(doc => doc.type === reqDoc.type);
+            const uploadedDoc = getUploadedDocument(reqDoc.type);
             
             return (
               <div key={reqDoc.type} className="border rounded-lg p-4">
@@ -138,7 +68,7 @@ export default function DocumentUploader({ contractorId }: DocumentUploaderProps
 
                   {uploadedDoc ? (
                     <Badge className={getStatusClasses(uploadedDoc.status)} variant="outline">
-                      {getStatusIcon(uploadedDoc.status)}
+                      {renderStatusIcon(uploadedDoc.status)}
                       <span className="ml-1 capitalize">{uploadedDoc.status}</span>
                     </Badge>
                   ) : (
@@ -190,7 +120,12 @@ export default function DocumentUploader({ contractorId }: DocumentUploaderProps
                         type="file"
                         className="hidden"
                         accept=".pdf,.jpg,.jpeg,.png"
-                        onChange={(e) => handleFileUpload(e, reqDoc.type)}
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            handleFileUpload(file, reqDoc.type);
+                          }
+                        }}
                         disabled={uploading}
                       />
                     </label>

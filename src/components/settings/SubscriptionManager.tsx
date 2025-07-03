@@ -1,69 +1,43 @@
 'use client';
 
-import { useState } from 'react';
+import { useSubscription, type SubscriptionTier } from '@/hooks/useSubscription';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+// This is the new, re-skinned SubscriptionManager component.
+// It is now a purely presentational component.
+// All logic has been moved to the `useSubscription` hook.
+
 interface SubscriptionManagerProps {
-  currentTier?: 'growth' | 'scale';
+  currentTier?: SubscriptionTier;
 }
 
 export default function SubscriptionManager({ currentTier = 'growth' }: SubscriptionManagerProps) {
-  const [loading, setLoading] = useState(false);
+  const {
+    tiers,
+    loading,
+    handleUpgrade,
+    handleDowngrade,
+    isCurrentPlan
+  } = useSubscription(currentTier);
 
-  const tiers = [
-    {
-      name: 'Growth',
-      id: 'tier-growth',
-      href: '#',
-      price: { monthly: '10%', annually: '10%' },
-      description: 'For contractors starting out, with essential tools to win bids.',
-      features: [
-        'Access to all leads',
-        'Standard bidding tools',
-        'Basic performance analytics',
-        'Email support',
-      ],
-      isRecommended: false,
-      cta: 'Downgrade to Growth',
-      color: 'text-primary',
-      bgColor: 'bg-primary/10'
-    },
-    {
-      name: 'Scale',
-      id: 'tier-scale',
-      href: '#',
-      price: { monthly: '$250', annually: '$2400' },
-      description: 'For established contractors aiming to scale their business.',
-      features: [
-        'Priority access to high-value leads',
-        'Alex AI bidding assistant',
-        'Advanced market & performance analytics',
-        'Dedicated phone and chat support',
-        'Automated follow-ups',
-      ],
-      isRecommended: true,
-      cta: 'Upgrade to Scale',
-      color: 'text-accent',
-      bgColor: 'bg-accent/10'
-    },
-  ];
-
-  const handleUpgrade = async () => {
-    setLoading(true);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    setLoading(false);
+  const handleTierAction = (tierId: string) => {
+    if (tierId === 'scale' && currentTier === 'growth') {
+      handleUpgrade('scale');
+    } else if (tierId === 'growth' && currentTier === 'scale') {
+      handleDowngrade('growth');
+    }
   };
 
   return (
     <div className="mx-auto max-w-4xl">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {tiers.map((tier) => {
-          const isCurrentPlan = tier.id === currentTier;
+          const isCurrentTierPlan = isCurrentPlan(tier.id);
           const isRecommended = tier.isRecommended;
+          
           return (
             <div
               key={tier.id}
@@ -98,12 +72,12 @@ export default function SubscriptionManager({ currentTier = 'growth' }: Subscrip
                 ))}
               </ul>
               <Button
-                onClick={() => handleUpgrade()}
-                disabled={isCurrentPlan || loading}
+                onClick={() => handleTierAction(tier.id)}
+                disabled={isCurrentTierPlan || loading}
                 className={cn(
                   "mt-8 w-full",
                   isRecommended ? "bg-accent hover:bg-accent/90" : "",
-                  isCurrentPlan ? "bg-muted text-muted-foreground cursor-default" : ""
+                  isCurrentTierPlan ? "bg-muted text-muted-foreground cursor-default" : ""
                 )}
               >
                 {loading && (
@@ -112,10 +86,10 @@ export default function SubscriptionManager({ currentTier = 'growth' }: Subscrip
                     <span className="ml-2">Processing...</span>
                   </div>
                 )}
-                {isCurrentPlan ? 'Current Plan' : tier.cta}
+                {!loading && (isCurrentTierPlan ? 'Current Plan' : tier.cta)}
               </Button>
             </div>
-          )
+          );
         })}
       </div>
     </div>

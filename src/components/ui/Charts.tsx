@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 import * as d3 from 'd3'
-import { BaseCard } from './BaseComponents'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useResponsiveChart } from '../../hooks/useResponsiveChart'
 
 // Get CSS custom property value utility
@@ -567,8 +567,12 @@ export function CostBreakdownCard({
   interactive = true 
 }: CostBreakdownChartProps & { title?: string }) {
   return (
-    <BaseCard title={title}>
-      <div className="flex flex-col items-center">
+    <Card>
+      <CardHeader>
+        <CardTitle>{title}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="flex flex-col items-center">
         <CostBreakdownChart 
           data={data} 
           totalEstimate={totalEstimate} 
@@ -584,7 +588,8 @@ export function CostBreakdownCard({
           ))}
         </div>
       </div>
-    </BaseCard>
+      </CardContent>
+    </Card>
   )
 }
 
@@ -595,8 +600,12 @@ export function LeadDistributionCard({
   interactive = true
 }: LeadDistributionChartProps & { title?: string }) {
   return (
-    <BaseCard title={title}>
-      <div className="flex flex-col items-center">
+    <Card>
+      <CardHeader>
+        <CardTitle>{title}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="flex flex-col items-center">
         <LeadDistributionChart 
           data={data} 
           animated={animated}
@@ -620,7 +629,8 @@ export function LeadDistributionCard({
           ))}
         </div>
       </div>
-    </BaseCard>
+      </CardContent>
+    </Card>
   )
 }
 
@@ -631,15 +641,20 @@ export function TimelineCard({
   interactive = true
 }: TimelineChartProps & { title?: string }) {
   return (
-    <BaseCard title={title}>
-      <div className="flex flex-col items-center">
+    <Card>
+      <CardHeader>
+        <CardTitle>{title}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="flex flex-col items-center">
         <TimelineChart 
           phases={phases} 
           animated={animated}
           interactive={interactive}
         />
       </div>
-    </BaseCard>
+      </CardContent>
+    </Card>
   )
 }
 

@@ -1,34 +1,18 @@
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
-import { motion, type MotionProps } from "framer-motion"
+import { motion } from "framer-motion"
 
 import { cn } from "@/lib/utils"
 
 const cardVariants = cva(
-  "rounded-xl border text-card-foreground transition-shadow duration-300",
+  "rounded-xl border bg-card text-card-foreground shadow-sm transition-all",
   {
     variants: {
       variant: {
-        default: "bg-card shadow-sm border-border/70",
-        elevated: "bg-card shadow-lg shadow-primary/10 border-border",
-        // The premier variant for the FixItForMe contractor application.
-        // Combines glassmorphism with interactive, premium feedback.
-        premium: [
-          "backdrop-blur-xl bg-background/60 dark:bg-black/50",
-          "border-primary/20",
-          "shadow-2xl shadow-primary/15",
-          "cursor-pointer",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ring-offset-background",
-          "data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[disabled]:cursor-not-allowed",
-        ],
-        interactive: [
-          "bg-card shadow-md",
-          "border-border",
-          "cursor-pointer",
-          "hover:shadow-xl hover:shadow-primary/10 hover:border-primary/40",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ring-offset-background",
-          "data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[disabled]:cursor-not-allowed",
-        ],
+        default: "",
+        glass: "bg-card/60 border-primary/20 backdrop-blur-lg shadow-2xl shadow-primary/10",
+        interactive: "hover:shadow-lg hover:-translate-y-1 cursor-pointer",
+        premium: "bg-background/60 backdrop-blur-xl border-primary/20 shadow-2xl shadow-primary/10 hover:shadow-3xl hover:shadow-primary/20",
       },
     },
     defaultVariants: {
@@ -37,47 +21,36 @@ const cardVariants = cva(
   }
 )
 
-export interface CardProps
-  extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof cardVariants> {
-  /**
-   * If true, the card will be rendered in a disabled state,
-   * primarily affecting 'interactive' and 'premium' variants.
-   */
-  disabled?: boolean
+export interface CardProps extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof cardVariants> {
+  useMotion?: boolean;
 }
 
-/**
- * A premium card component embodying the FixItForMe "gold standard".
- * Designed for professional contractor workflows, it features multiple
- * variants including an interactive 'premium' glassmorphism style.
- * Integrates Framer Motion for sophisticated, fluid micro-interactions.
- *
- * NOTE: `framer-motion` is a required peer dependency for animations.
- * Ensure your Tailwind theme is configured with 'primary' (Felix Gold)
- * and 'secondary' (Forest Green) for optimal styling.
- */
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
-  ({ className, variant, disabled = false, ...props }, ref) => {
-    const isInteractive = variant === "interactive" || variant === "premium"
-
-    const motionProps: MotionProps | undefined =
-      isInteractive && !disabled
-        ? {
-            whileHover: { y: -5, scale: 1.01 },
-            whileTap: { scale: 0.99, y: -2 },
-            transition: { type: "spring", stiffness: 350, damping: 25 },
-          }
-        : undefined
+  ({ className, variant, useMotion = false, ...props }, ref) => {
+    if (useMotion) {
+      return (
+        <motion.div
+          ref={ref}
+          className={cn(cardVariants({ variant, className }))}
+          whileHover={variant === "interactive" || variant === "premium" ? { scale: 1.02, y: -2 } : {}}
+          whileTap={variant === "interactive" || variant === "premium" ? { scale: 0.98 } : {}}
+          style={props.style}
+          onClick={props.onClick}
+          onMouseEnter={props.onMouseEnter}
+          onMouseLeave={props.onMouseLeave}
+          id={props.id}
+          role={props.role}
+          tabIndex={props.tabIndex}
+        >
+          {props.children}
+        </motion.div>
+      )
+    }
 
     return (
       <div
         ref={ref}
         className={cn(cardVariants({ variant, className }))}
-        role={isInteractive ? "button" : undefined}
-        tabIndex={isInteractive && !disabled ? 0 : -1}
-        aria-disabled={isInteractive ? disabled : undefined}
-        data-disabled={isInteractive && disabled ? "" : undefined}
         {...props}
       />
     )
@@ -85,132 +58,29 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
 )
 Card.displayName = "Card"
 
-const CardHeader = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn("flex flex-col space-y-1 p-6", className)}
-    {...props}
-  />
+const CardHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({ className, ...props }, ref) => (
+  <div ref={ref} className={cn("flex flex-col space-y-1.5 p-6", className)} {...props} />
 ))
 CardHeader.displayName = "CardHeader"
 
-export interface CardTitleProps
-  extends React.HTMLAttributes<HTMLHeadingElement> {
-  level?: 1 | 2 | 3 | 4 | 5 | 6
-  variant?: "default" | "primary" | "secondary" | "accent"
-}
-
-const CardTitle = React.forwardRef<HTMLHeadingElement, CardTitleProps>(
-  ({ className, level = 3, variant = "default", ...props }, ref) => {
-    const Component = `h${level}` as React.ElementType
-    return (
-      <Component
-        ref={ref}
-        className={cn(
-          "font-semibold leading-none tracking-tight",
-          {
-            "text-3xl": level === 1,
-            "text-2xl": level === 2,
-            "text-xl": level === 3,
-            "text-lg": level >= 4,
-          },
-          {
-            "text-foreground": variant === "default",
-            "text-primary": variant === "primary", // Felix Gold
-            "text-secondary": variant === "secondary", // Forest Green
-            "text-accent": variant === "accent",
-          },
-          className
-        )}
-        {...props}
-      />
-    )
-  }
-)
+const CardTitle = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLHeadingElement>>(({ className, ...props }, ref) => (
+  <h3 ref={ref} className={cn("text-2xl font-semibold leading-none tracking-tight", className)} {...props} />
+))
 CardTitle.displayName = "CardTitle"
 
-const CardDescription = React.forwardRef<
-  HTMLParagraphElement,
-  React.HTMLAttributes<HTMLParagraphElement>
->(({ className, ...props }, ref) => (
-  <p
-    ref={ref}
-    className={cn("pt-1 text-sm text-muted-foreground", className)}
-    {...props}
-  />
+const CardDescription = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLParagraphElement>>(({ className, ...props }, ref) => (
+  <p ref={ref} className={cn("text-sm text-muted-foreground", className)} {...props} />
 ))
 CardDescription.displayName = "CardDescription"
 
-const CardContent = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & {
-    noPadding?: boolean
-  }
->(({ className, noPadding = false, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn(!noPadding && "p-6 pt-4", className)}
-    {...props}
-  />
+const CardContent = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({ className, ...props }, ref) => (
+  <div ref={ref} className={cn("p-6 pt-0", className)} {...props} />
 ))
 CardContent.displayName = "CardContent"
 
-const CardFooter = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & {
-    justify?: "start" | "center" | "end" | "between"
-  }
->(({ className, justify = "end", ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn(
-      "flex items-center p-6 pt-4 border-t border-border/60",
-      {
-        "justify-start": justify === "start",
-        "justify-center": justify === "center",
-        "justify-end": justify === "end",
-        "justify-between": justify === "between",
-      },
-      className
-    )}
-    {...props}
-  />
+const CardFooter = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({ className, ...props }, ref) => (
+  <div ref={ref} className={cn("flex items-center p-6 pt-0", className)} {...props} />
 ))
 CardFooter.displayName = "CardFooter"
 
-const CardActions = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & {
-    justify?: "start" | "center" | "end"
-  }
->(({ className, justify = "end", ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn(
-      "flex flex-1 items-center gap-2",
-      {
-        "justify-start": justify === "start",
-        "justify-center": justify === "center",
-        "justify-end": justify === "end",
-      },
-      className
-    )}
-    role="group"
-    aria-label="Card actions"
-    {...props}
-  />
-))
-CardActions.displayName = "CardActions"
-
-export {
-  Card,
-  CardHeader,
-  CardFooter,
-  CardTitle,
-  CardDescription,
-  CardContent,
-  CardActions,
-}
+export { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }

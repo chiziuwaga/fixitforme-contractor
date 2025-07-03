@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -7,24 +8,44 @@ import { Label } from '@/components/ui/label'
 import { Progress } from '@/components/ui/progress'
 import Confetti from 'react-confetti'
 import { cn } from '@/lib/utils'
-import { useOnboarding } from '@/hooks/useOnboarding'
+import { toast } from 'sonner'
+
+const steps = [
+  'Contact Info',
+  'Business Details',
+  'Services Selection',
+  'Review & Submit'
+]
 
 export default function OnboardingPage() {
-  const {
-    step,
-    form,
-    submitted,
-    windowWidth,
-    windowHeight,
-    isSubmitting,
-    steps,
-    availableServices,
-    handleNext,
-    handlePrev,
-    updateForm,
-    toggleService,
-    getProgress,
-  } = useOnboarding()
+  const [step, setStep] = useState(0)
+  const [form, setForm] = useState({
+    companyName: '',
+    contactName: '',
+    email: '',
+    businessType: '',
+    services: [] as string[],
+  })
+  const [submitted, setSubmitted] = useState(false)
+  const [windowWidth, setWindowWidth] = useState(800)
+  const [windowHeight, setWindowHeight] = useState(600)
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setWindowWidth(window.innerWidth)
+      setWindowHeight(window.innerHeight)
+    }
+  }, [])
+
+  const handleNext = () => {
+    if (step < steps.length - 1) setStep(step + 1)
+    else {
+      setSubmitted(true)
+      toast.success('Onboarding completed! Welcome to FixItForMe!')
+    }
+  }
+
+  const handlePrev = () => setStep(Math.max(step - 1, 0))
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-secondary-dark via-secondary to-secondary-light flex items-center justify-center p-6">
@@ -37,7 +58,7 @@ export default function OnboardingPage() {
       >
         <h2 className="text-2xl font-bold text-gray-900 mb-4">Welcome to FixItForMe!</h2>
         <p className="text-sm text-muted-foreground mb-6">Let&apos;s get you set up with a few quick steps. Lexi will guide you.</p>
-        <Progress value={getProgress()} className="mb-6" aria-label="Onboarding progress" />
+        <Progress value={((step + 1) / steps.length) * 100} className="mb-6" aria-label="Onboarding progress" />
         
         <motion.div
           key={step}
@@ -53,7 +74,7 @@ export default function OnboardingPage() {
                 <Input
                   id="companyName"
                   value={form.companyName}
-                  onChange={e => updateForm({ companyName: e.target.value })}
+                  onChange={e => setForm({ ...form, companyName: e.target.value })}
                   required
                   className="mt-1"
                   aria-required="true"
@@ -64,7 +85,7 @@ export default function OnboardingPage() {
                 <Input
                   id="contactName"
                   value={form.contactName}
-                  onChange={e => updateForm({ contactName: e.target.value })}
+                  onChange={e => setForm({ ...form, contactName: e.target.value })}
                   required
                   className="mt-1"
                   aria-required="true"
@@ -76,7 +97,7 @@ export default function OnboardingPage() {
                   id="email"
                   type="email"
                   value={form.email}
-                  onChange={e => updateForm({ email: e.target.value })}
+                  onChange={e => setForm({ ...form, email: e.target.value })}
                   required
                   className="mt-1"
                   aria-required="true"
@@ -92,7 +113,7 @@ export default function OnboardingPage() {
                 <Input
                   id="businessType"
                   value={form.businessType}
-                  onChange={e => updateForm({ businessType: e.target.value })}
+                  onChange={e => setForm({ ...form, businessType: e.target.value })}
                   placeholder="e.g., Plumbing, Electrical"
                   className="mt-1"
                 />
@@ -114,22 +135,27 @@ export default function OnboardingPage() {
             <div className="space-y-4">
               <Label>Select Your Services</Label>
               <div className="grid grid-cols-2 gap-3">
-                {availableServices.map(service => (
+                {['Plumbing','Electrical','Carpentry','Painting'].map(svc => (
                   <motion.div
-                    key={service}
-                    onClick={() => toggleService(service)}
+                    key={svc}
+                    onClick={() => {
+                      const arr = form.services.includes(svc)
+                        ? form.services.filter(x => x !== svc)
+                        : [...form.services, svc]
+                      setForm({ ...form, services: arr })
+                    }}
                     whileHover={{ scale: 1.03 }}
                     className={cn(
                       'cursor-pointer p-3 border rounded-lg text-center select-none',
-                      form.services.includes(service)
+                      form.services.includes(svc)
                         ? 'bg-primary text-white border-primary'
                         : 'bg-white/50 border-gray-200'
                     )}
                     tabIndex={0}
                     role="button"
-                    aria-pressed={form.services.includes(service)}
+                    aria-pressed={form.services.includes(svc)}
                   >
-                    {service}
+                    {svc}
                   </motion.div>
                 ))}
               </div>
@@ -139,7 +165,7 @@ export default function OnboardingPage() {
           {step === 3 && (
             <div className="space-y-4">
               <h3 className="font-medium">Review Your Info</h3>
-              <ul className="list-disc list-inside text-sm space-y-1">
+              <ul className="list-disc list-inside text-sm">
                 <li><strong>Company:</strong> {form.companyName}</li>
                 <li><strong>Name:</strong> {form.contactName}</li>
                 <li><strong>Email:</strong> {form.email}</li>
@@ -150,26 +176,8 @@ export default function OnboardingPage() {
           )}
           
           <div className="mt-6 flex justify-between">
-            <Button 
-              variant="outline" 
-              disabled={step === 0 || isSubmitting} 
-              onClick={handlePrev}
-            >
-              Back
-            </Button>
-            <Button 
-              onClick={handleNext}
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                  Setting up...
-                </>
-              ) : (
-                step === steps.length - 1 ? 'Finish Setup' : 'Next Step'
-              )}
-            </Button>
+            <Button variant="outline" disabled={step===0} onClick={handlePrev}>Back</Button>
+            <Button onClick={handleNext}>{step===steps.length-1 ? 'Finish Setup' : 'Next Step'}</Button>
           </div>
         </motion.div>
       </motion.div>

@@ -1,29 +1,29 @@
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Progress } from '@/components/ui/progress';
-import { cn } from '@/lib/utils';
 import { BRAND } from '@/lib/brand';
+import { useAgentUI, type AgentAction } from '@/hooks/useAgentUI';
 
 // Alex Cost Breakdown Component
 interface AlexCostBreakdownProps {
-  data: any;
-  actions?: Array<{
-    type: string;
-    label: string;
-    style: string;
-  }>;
+  data: Record<string, unknown>;
+  actions?: AgentAction[];
 }
 
 export function AlexCostBreakdown({ data, actions }: AlexCostBreakdownProps) {
+  const { executeAction } = useAgentUI();
+
+  const handleActionClick = async (actionType: string) => {
+    await executeAction('alex-cost-breakdown', actionType, data);
+  };
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>Cost Breakdown Analysis</CardTitle>
-        <CardDescription>Alex's detailed project cost assessment</CardDescription>
+        <CardDescription>Alex&apos;s detailed project cost assessment</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
@@ -34,7 +34,12 @@ export function AlexCostBreakdown({ data, actions }: AlexCostBreakdownProps) {
           {actions && (
             <div className="flex gap-2">
               {actions.map((action, index) => (
-                <Button key={index} variant={action.style === 'primary' ? 'default' : 'outline'}>
+                <Button 
+                  key={index} 
+                  variant={action.style === 'primary' ? 'default' : 'outline'}
+                  onClick={() => handleActionClick(action.type)}
+                  disabled={action.disabled}
+                >
                   {action.label}
                 </Button>
               ))}
@@ -48,20 +53,22 @@ export function AlexCostBreakdown({ data, actions }: AlexCostBreakdownProps) {
 
 // Rex Lead Dashboard Component
 interface RexLeadDashboardProps {
-  data: any;
-  actions?: Array<{
-    type: string;
-    label: string;
-    style: string;
-  }>;
+  data: Record<string, unknown>;
+  actions?: AgentAction[];
 }
 
 export function RexLeadDashboard({ data, actions }: RexLeadDashboardProps) {
+  const { executeAction } = useAgentUI();
+
+  const handleActionClick = async (actionType: string) => {
+    await executeAction('rex-lead-dashboard', actionType, data);
+  };
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>Lead Generation Dashboard</CardTitle>
-        <CardDescription>Rex's market intelligence and lead analysis</CardDescription>
+        <CardDescription>Rex&apos;s market intelligence and lead analysis</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
@@ -72,7 +79,12 @@ export function RexLeadDashboard({ data, actions }: RexLeadDashboardProps) {
           {actions && (
             <div className="flex gap-2">
               {actions.map((action, index) => (
-                <Button key={index} variant={action.style === 'primary' ? 'default' : 'outline'}>
+                <Button 
+                  key={index} 
+                  variant={action.style === 'primary' ? 'default' : 'outline'}
+                  onClick={() => handleActionClick(action.type)}
+                  disabled={action.disabled}
+                >
                   {action.label}
                 </Button>
               ))}
@@ -86,20 +98,22 @@ export function RexLeadDashboard({ data, actions }: RexLeadDashboardProps) {
 
 // Lexi Onboarding Component
 interface LexiOnboardingProps {
-  data: any;
-  actions?: Array<{
-    type: string;
-    label: string;
-    style: string;
-  }>;
+  data: Record<string, unknown>;
+  actions?: AgentAction[];
 }
 
 export function LexiOnboarding({ data, actions }: LexiOnboardingProps) {
+  const { executeAction } = useAgentUI();
+
+  const handleActionClick = async (actionType: string) => {
+    await executeAction('lexi-onboarding', actionType, data);
+  };
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>Onboarding Progress</CardTitle>
-        <CardDescription>Lexi's guided setup assistance</CardDescription>
+        <CardDescription>Lexi&apos;s guided setup assistance</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
@@ -110,7 +124,12 @@ export function LexiOnboarding({ data, actions }: LexiOnboardingProps) {
           {actions && (
             <div className="flex gap-2">
               {actions.map((action, index) => (
-                <Button key={index} variant={action.style === 'primary' ? 'default' : 'outline'}>
+                <Button 
+                  key={index} 
+                  variant={action.style === 'primary' ? 'default' : 'outline'}
+                  onClick={() => handleActionClick(action.type)}
+                  disabled={action.disabled}
+                >
                   {action.label}
                 </Button>
               ))}
@@ -124,15 +143,17 @@ export function LexiOnboarding({ data, actions }: LexiOnboardingProps) {
 
 // Upgrade Prompt Component
 interface UpgradePromptProps {
-  data: any;
-  actions?: Array<{
-    type: string;
-    label: string;
-    style: string;
-  }>;
+  data: Record<string, unknown>;
+  actions?: AgentAction[];
 }
 
 export function UpgradePrompt({ data, actions }: UpgradePromptProps) {
+  const { handleUpgradeAction } = useAgentUI();
+
+  const handleActionClick = async (actionType: string) => {
+    await handleUpgradeAction(actionType);
+  };
+
   return (
     <Alert>
       <AlertDescription>
@@ -151,6 +172,8 @@ export function UpgradePrompt({ data, actions }: UpgradePromptProps) {
                   key={index} 
                   variant={action.style === 'primary' ? 'default' : 'outline'}
                   style={action.style === 'primary' ? { backgroundColor: BRAND.colors.primary } : {}}
+                  onClick={() => handleActionClick(action.type)}
+                  disabled={action.disabled}
                 >
                   {action.label}
                 </Button>
@@ -166,7 +189,7 @@ export function UpgradePrompt({ data, actions }: UpgradePromptProps) {
 // System Message Component
 interface SystemMessageProps {
   message: string;
-  data?: any;
+  data?: Record<string, unknown>;
   icon?: React.ElementType;
 }
 
