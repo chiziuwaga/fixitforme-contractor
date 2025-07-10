@@ -33,6 +33,20 @@ interface ProfileData {
   services: string[]
   serviceAreas: string[]
   bio: string
+  // Extended fields for comprehensive profile
+  businessName?: string
+  phone?: string
+  email?: string
+  address?: string
+  city?: string
+  state?: string
+  zipCode?: string
+  insuranceNumber?: string
+  specialties?: string[]
+  serviceRadius?: number
+  availabilityNotifications?: boolean
+  marketingEmails?: boolean
+  avatarUrl?: string
 }
 
 export function useProfile() {
@@ -47,6 +61,20 @@ export function useProfile() {
     services: [],
     serviceAreas: [],
     bio: "",
+    // Extended fields
+    businessName: "",
+    phone: "",
+    email: "",
+    address: "",
+    city: "",
+    state: "",
+    zipCode: "",
+    insuranceNumber: "",
+    specialties: [],
+    serviceRadius: 25,
+    availabilityNotifications: true,
+    marketingEmails: false,
+    avatarUrl: "",
   })
 
   // Fetch initial profile data
@@ -126,7 +154,73 @@ export function useProfile() {
     })
   }
 
+  const updateProfile = async (updates: Partial<ProfileData>) => {
+    if (!user) {
+      throw new Error("You must be logged in to update your profile.")
+    }
+
+    const { error } = await supabase.from("contractor_profiles").upsert({
+      user_id: user.id,
+      company_name: updates.companyName || updates.businessName,
+      contact_name: updates.contactName,
+      license_number: updates.licenseNumber,
+      insurance_number: updates.insuranceNumber,
+      experience_years: updates.experienceYears,
+      services_offered: updates.services,
+      service_areas: updates.serviceAreas,
+      bio: updates.bio,
+      phone: updates.phone,
+      email: updates.email,
+      address: updates.address,
+      city: updates.city,
+      state: updates.state,
+      zip_code: updates.zipCode,
+      specialties: updates.specialties,
+      service_radius: updates.serviceRadius,
+      availability_notifications: updates.availabilityNotifications,
+      marketing_emails: updates.marketingEmails,
+      avatar_url: updates.avatarUrl,
+      updated_at: new Date().toISOString(),
+    })
+
+    if (error) throw error
+
+    // Update local state
+    setFormData(prev => ({ ...prev, ...updates }))
+  }
+
+  const uploadAvatar = async (file: File) => {
+    if (!user) {
+      throw new Error("You must be logged in to upload files.")
+    }
+
+    // Upload to Supabase Storage
+    const fileExt = file.name.split('.').pop()
+    const fileName = `${user.id}_${Date.now()}.${fileExt}`
+    const filePath = `avatars/${fileName}`
+
+    const { error: uploadError } = await supabase.storage
+      .from('contractor_files')
+      .upload(filePath, file, {
+        cacheControl: '3600',
+        upsert: true
+      })
+
+    if (uploadError) throw uploadError
+
+    // Get public URL
+    const { data: { publicUrl } } = supabase.storage
+      .from('contractor_files')
+      .getPublicUrl(filePath)
+
+    // Update profile with new avatar URL
+    await updateProfile({ avatarUrl: publicUrl })
+
+    return publicUrl
+  }
+
   return {
+    profile: formData,
     formData,
     loading,
     serviceOptions: MOCK_SERVICE_OPTIONS,
@@ -134,5 +228,7 @@ export function useProfile() {
     handleSubmit,
     handleChange,
     handleMultiSelectChange,
+    updateProfile,
+    uploadAvatar,
   }
 }

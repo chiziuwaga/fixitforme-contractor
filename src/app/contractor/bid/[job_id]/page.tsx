@@ -10,7 +10,20 @@ import { JobSidebar } from "@/components/job-bid/JobSidebar"
 import AgentPrompts from "@/components/job-bid/AgentPrompts"
 
 export default function JobBidPage() {
-  const { job, loading, error, getUrgencyColor, getSourceColor, formatBudget } = useJobBid()
+  const { 
+    job, 
+    loading, 
+    error, 
+    bidAmount, 
+    setBidAmount, 
+    coverLetter, 
+    setCoverLetter, 
+    isLoading, 
+    submitBid, 
+    getUrgencyColor, 
+    getSourceColor, 
+    formatBudget 
+  } = useJobBid()
 
   if (loading) {
     return (
@@ -49,12 +62,28 @@ export default function JobBidPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-6">
-              <JobDetailsCard job={job} />
+              <JobDetailsCard 
+                job={job}
+                getUrgencyColor={getUrgencyColor}
+                getSourceColor={getSourceColor}
+                formatBudget={formatBudget}
+              />
               <AgentPrompts />
             </div>
 
             <div className="space-y-6">
-              <JobSidebar job={job} />
+              <JobSidebar 
+                job={job}
+                bidAmount={bidAmount}
+                setBidAmount={setBidAmount}
+                coverLetter={coverLetter}
+                setCoverLetter={setCoverLetter}
+                isLoading={isLoading}
+                submitBid={submitBid}
+                getUrgencyColor={getUrgencyColor}
+                getSourceColor={getSourceColor}
+                formatBudget={formatBudget}
+              />
             </div>
           </div>
         </motion.div>

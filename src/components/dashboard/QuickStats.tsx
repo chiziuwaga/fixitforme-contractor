@@ -85,7 +85,7 @@ export function QuickStats({ className, metrics, stats, loading }: QuickStatsPro
 
   // Get contractor data from context instead of props
   const contractorId = user?.id
-  const tier = profile?.tier || "growth"
+  const tier = profile?.subscription_tier || "growth"
   const servicesOffered = profile?.services_offered || []
 
   // Mock data - in real app this would be fetched using contractorId

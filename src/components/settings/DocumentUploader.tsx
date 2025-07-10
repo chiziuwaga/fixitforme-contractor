@@ -112,7 +112,11 @@ const DocumentUploader: React.FC = () => {
   }, [])
 
   const { getRootProps, getInputProps, isFocused, isDragAccept, isDragReject, open } = useDropzone({
-    accept: supportedFormats.map((format) => `.${format}`).join(","),
+    accept: {
+      'application/pdf': ['.pdf'],
+      'application/msword': ['.doc'],
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx']
+    },
     onDrop,
     noClick: true,
     noKeyboard: true,

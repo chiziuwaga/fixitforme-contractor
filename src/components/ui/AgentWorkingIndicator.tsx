@@ -28,7 +28,7 @@ const agentConfig = {
   alex: {
     name: 'Alex',
     icon: Calculator,
-    color: BRAND.colors.steelBlue,
+    color: BRAND.colors.accent,
     tasks: [
       'Analyzing project requirements...',
       'Calculating material costs...',

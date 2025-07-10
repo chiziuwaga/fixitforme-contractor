@@ -18,8 +18,8 @@ export default function OnboardingPage() {
 
   const containerVariants = {
     hidden: { opacity: 0, x: 50 },
-    visible: { opacity: 1, x: 0, transition: { type: "spring", stiffness: 100, damping: 20 } },
-    exit: { opacity: 0, x: -50, transition: { ease: "easeInOut" } },
+    visible: { opacity: 1, x: 0, transition: { type: "spring" as const, stiffness: 100, damping: 20 } },
+    exit: { opacity: 0, x: -50, transition: { ease: "easeInOut" as const } },
   }
 
   const renderStepContent = () => {
@@ -31,7 +31,7 @@ export default function OnboardingPage() {
       case 3:
         return <OnboardingStep3 {...onboarding} />
       case 4:
-        return <OnboardingStep4 />
+        return <OnboardingStep4 {...onboarding} />
       default:
         return null
     }

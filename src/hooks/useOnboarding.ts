@@ -86,6 +86,10 @@ export function useOnboarding() {
     setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
+  const handleMultiSelectChange = (field: keyof OnboardingFormData, value: string[]) => {
+    setFormData((prev) => ({ ...prev, [field]: value }))
+  }
+
   const finishOnboarding = async () => {
     if (!user) {
       toast.error("You must be logged in to complete onboarding.")
@@ -137,6 +141,7 @@ export function useOnboarding() {
     nextStep,
     prevStep,
     handleChange,
+    handleMultiSelectChange,
     finishOnboarding,
   }
 }

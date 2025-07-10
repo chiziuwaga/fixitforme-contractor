@@ -6,7 +6,7 @@ import { ChatWindow, type AgentType, type Message } from "./EnhancedChatWindow"
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Lock, MessageCircle, Calculator, Search } from "lucide-react"
-import { useUser } from "@/providers/UserProvider"
+import { useUser } from "@/hooks/useUser"
 import { useConcurrentExecutionManager } from "@/components/ui/ConcurrentExecutionManager"
 import { useNotifications } from "@/components/ui/NotificationCenter"
 import { toast } from "sonner"
@@ -19,13 +19,14 @@ interface ChatState {
   isOpen: boolean
   isMinimized: boolean
   messages: Message[]
+  executionId?: string | null
 }
 
 type ChatStates = Record<AgentType, ChatState>
 
 export default function EnhancedChatManager() {
   const { profile } = useUser()
-  const { activeSessions, startExecution, endExecution, canStartNew } = useConcurrentExecutionManager()
+  const { activeSessions, startExecution, completeExecution, canStartNew } = useConcurrentExecutionManager()
   const { addNotification, removeNotification } = useNotifications()
   const router = useRouter()
 
@@ -39,7 +40,12 @@ export default function EnhancedChatManager() {
   })
 
   const onFinish = (agent: AgentType, message: VercelMessage) => {
-    endExecution(agent)
+    // Complete execution if there's an active execution for this agent
+    const activeSession = activeSessions.find(s => s.agent === agent)
+    if (activeSession) {
+      completeExecution(activeSession.id)
+    }
+    
     try {
       const parsed = JSON.parse(message.content)
       const newMessage: Message = {
@@ -115,7 +121,6 @@ export default function EnhancedChatManager() {
       }
       const executionId = await startExecution(agentType, 300000) // 5 min timeout
       addNotification({
-        id: executionId,
         type: "info",
         title: `@${agentType} is working...`,
         message: "You will be notified when the task is complete.",
@@ -139,7 +144,7 @@ export default function EnhancedChatManager() {
 
   useEffect(() => {
     activeSessions.forEach((session) => {
-      if (session.status === "finished" || session.status === "failed") {
+      if (session.status === "completed" || session.status === "failed") {
         removeNotification(session.id)
       }
     })

@@ -84,7 +84,7 @@ export const useEnhancedChat = () => {
     rex: { isOpen: false, isMinimized: false },
   });
 
-  const { subscription } = useUser();
+  const { profile } = useUser();
   const { activeSessions, startExecution, canStartNew } = useConcurrentExecutionManager();
   
   // Chat instances for each agent
@@ -93,7 +93,7 @@ export const useEnhancedChat = () => {
   const rexChat = useAIChat({ api: '/api/agents/rex', id: 'rex' });
 
   // Derived state and limits
-  const isScaleTier = subscription?.tier === 'scale';
+  const isScaleTier = profile?.subscription_tier === 'scale';
   const limits: ChatLimits = useMemo(() => ({
     chatThreadLimit: isScaleTier ? 30 : 10,
     messagesPerChatLimit: isScaleTier ? 200 : 50,

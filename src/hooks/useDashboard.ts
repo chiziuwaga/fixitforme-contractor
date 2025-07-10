@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import React, { useState, useEffect, useCallback } from "react"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { toast } from "sonner"
 
@@ -9,6 +9,17 @@ export interface DashboardStats {
   activeJobs: number
   jobsCompleted: number
   conversionRate: number
+}
+
+export interface Metric {
+  id: string
+  title: string
+  value: string | number
+  label: string
+  change: string | number
+  trend: "up" | "down"
+  icon: React.ComponentType<{ className?: string }>
+  color: string
 }
 
 export interface Lead {
@@ -25,7 +36,7 @@ export interface Lead {
   quality_score: number
 }
 
-interface ContractorProfile {
+export interface ContractorProfile {
   id: string
   user_id: string
   tier: string
