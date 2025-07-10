@@ -54,19 +54,19 @@ Successfully completed comprehensive visual audit and brand consistency fixes ac
 ## Brand Colors in Use
 
 ### Primary Palette
-```css
+\`\`\`css
 --primary: 33 41% 64%;        /* Felix Gold #D4A574 */
 --secondary: 120 50% 14%;     /* Forest Green #1A2E1A */
 --accent: 219 37% 47%;        /* Steel Blue #4A6FA5 */
-```
+\`\`\`
 
 ### Status Colors
-```css
+\`\`\`css
 --destructive: 354 70% 54%;   /* Error Red */
 --success: 134 61% 41%;       /* Success Green */
 --warning: 45 100% 51%;       /* Warning Yellow */
 --info: 192 82% 41%;          /* Info Blue */
-```
+\`\`\`
 
 ## Files Modified (Key Changes)
 - `src/app/globals.css` - CSS variables and brand utilities

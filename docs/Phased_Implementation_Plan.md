@@ -107,7 +107,7 @@ This ensures contractors stay logged in across work sessions while maintaining t
 Following v0.dev patterns with comprehensive component library:
 
 **Advanced D3.js Chart Components:**
-```typescript
+\`\`\`typescript
 // Interactive Cost Breakdown with animations and tooltips
 <CostBreakdownChart 
   data={{labor: 6000, materials: 4500, permits: 350, overhead: 1500, profit: 2000}}
@@ -135,10 +135,10 @@ Following v0.dev patterns with comprehensive component library:
   animated={true}
   interactive={true}
 />
-```
+\`\`\`
 
 **Agent-Specific UI Components:**
-```typescript
+\`\`\`typescript
 // Alex's comprehensive bidding interface
 <AlexCostBreakdown 
   data={{
@@ -179,7 +179,7 @@ Following v0.dev patterns with comprehensive component library:
   }}
   actions={[{type: "continue_onboarding", label: "Continue Setup", style: "primary"}]}
 />
-```
+\`\`\`
 
 ### **🤖 AGENT CAPABILITIES DOCUMENTATION:**
 
@@ -195,7 +195,7 @@ Following v0.dev patterns with comprehensive component library:
 - **Rex**: Multi-platform lead generation with quality scoring algorithm (Quality 40% + Recency 30% + Value 20% + Urgency 10%)
 
 **Alex the Assessor - Enhanced Usage Guidance (IndyDev Dan Analyst Chain):**
-```
+\`\`\`
 📊 Comprehensive Cost Analysis: 'Analyze this kitchen remodel for competitive pricing'
 🏗️ Detailed Material Estimates: 'Calculate materials for 120 sq ft tile installation'
 ⏱️ Project Timeline Planning: 'Create realistic timeline for bathroom renovation'
@@ -204,10 +204,10 @@ Following v0.dev patterns with comprehensive component library:
 🎯 Bid Strategy Development: 'Help me create a winning proposal for this job'
 - **Specialist Tools**: Comparative analysis using live data from Home Depot, Lowe's, and other supplier sites based on project zip code.
 🔍 Tool Chain Architecture: Context → Analysis → Critique → Refinement → Structured Output
-```
+\`\`\`
 
 **Rex the Retriever - Enhanced Usage Guidance (IndyDev Dan Tool User Chain):**
-```
+\`\`\`
 🎯 Lead Performance Analysis: 'Show me my lead metrics for the last 30 days'
 📍 Geographic & Market Intelligence: 'Where are highest-value opportunities in Oakland?'
 📈 Service Demand Insights: 'What Felix problems have highest demand trending?'
@@ -217,10 +217,10 @@ Following v0.dev patterns with comprehensive component library:
 🛠️ Specialist Tools: Craigslist/SAMs.gov scrapers → Quality filters → Relevance ranking → Felix categorization
 ⏰ Recency Priority: Shows exact posting time - fresh leads get priority scoring
 📊 Relevance Algorithm: Quality (40%) + Recency (30%) + Value (20%) + Urgency (10%) = Top 10 leads
-```
+\`\`\`
 
 **Lexi the Liaison - Enhanced Usage Guidance (IndyDev Dan Planner Chain):**
-```
+\`\`\`
 🎯 Profile Setup & Optimization: 'Help me complete my contractor profile'
 - **Capacity & Team Size**: 'Help me set my business capacity and team size'
 🛠️ Service Selection Strategy: 'Guide me through Felix's 40-problem framework' (*Note: 5 services for Growth tier, 15 for Scale tier*)
@@ -229,7 +229,7 @@ Following v0.dev patterns with comprehensive component library:
 💼 Business Strategy Guidance: 'Explain Growth vs Scale tier benefits'
 🚀 Getting Started Checklist: 'What steps do I need to complete to start?'
 🎭 Co-Creation Flow: Human intent → AI guidance → Interactive refinement → Progress tracking
-```
+\`\`\`
 
 **Key Tasks:**
 
@@ -273,7 +273,7 @@ Following v0.dev patterns with comprehensive component library:
 ### **🔍 REX SEARCH CATEGORIES (Felix + AgentQL + Expanded Vocabulary):**
 
 **Core Felix Categories (Primary Search Terms):**
-```typescript
+\`\`\`typescript
 plumbing: [
   // Felix Core
   "running toilet repair", "leaky faucet fix", "clogged drain", "toilet flush mechanism",
@@ -298,10 +298,10 @@ carpentry: [
   // AgentQL Expanded  
   "custom shelving", "trim work", "stair repair", "window installation", "door hanging"
 ]
-```
+\`\`\`
 
 **AgentQL Specialized Categories (High-Value Opportunities):**
-```typescript
+\`\`\`typescript
 roofing: [
   "roof leak repair", "shingle replacement", "gutter cleaning", "roof inspection",
   "emergency roof repair", "flat roof repair", "skylight repair", "ice dam removal",
@@ -332,12 +332,12 @@ emergency_services: [
   "power outage", "heating emergency", "plumbing emergency", "roof emergency",
   "flood cleanup", "mold remediation", "fire damage", "structural repair"
 ]
-```
+\`\`\`
 
 ### **🎯 INDYDEV DAN INTEGRATION - TOOL USER CHAIN ARCHITECTURE:**
 
 **Rex as Specialist Tool User:**
-```typescript
+\`\`\`typescript
 // Context: Rich contractor profile and search parameters
 const rexContext = {
   contractor_profile: {
@@ -375,7 +375,7 @@ const output = {
   ui_assets: {...}, // Component specifications for React
   quality_score: 0.85 // Overall batch quality indicator
 };
-```
+\`\`\`
 
 ### **🔧 TECHNICAL IMPLEMENTATION ROADMAP:**
 1. **Database Schema**: Complete Supabase tables with RLS policies
@@ -400,11 +400,11 @@ const output = {
 **Rex's Role:** Uses Felix categories as **search terms** to find leads on Craigslist/SAMs.gov, not complex Felix mapping.
 
 **Correct Approach:**
-```typescript
+\`\`\`typescript
 // Rex searches with Felix terms as vocabulary
 const searchTerms = ["toilet repair", "roof leak", "drywall patch"]; // From Felix
 searchCraigslist(searchTerms, location, budget_range); // Simple search, no mapping
-```
+\`\`\`
 
 **Key Tasks:**
 
@@ -594,7 +594,7 @@ To ensure a robust and fair platform, the following system-level constraints wil
 
 ### **🔔 DESKTOP NOTIFICATION SYSTEM:**
 **Browser Push Notifications for Tablet/Desktop:**
-```typescript
+\`\`\`typescript
 // Request notification permission on app load
 await Notification.requestPermission();
 
@@ -614,7 +614,7 @@ notificationCenter.onClick = (notification) => {
   navigateToThread(notification.thread_id, notification.position);
   highlightItem(notification.position, 3000); // 3-second highlight
 };
-```
+\`\`\`
 
 **Key Tasks:**
 
@@ -701,7 +701,7 @@ notificationCenter.onClick = (notification) => {
 
 ### **🎨 21ST.DEV UI COMPONENT INTEGRATION:**
 **Advanced Component Library Expansion:**
-```typescript
+\`\`\`typescript
 // 21st.dev Magic Component Integration
 import { 
   AdvancedDateRangePicker,
@@ -717,7 +717,7 @@ import {
 - Progressive disclosure patterns for complex forms
 - Micro-interactions for enhanced user engagement
 - Accessibility improvements (WCAG 2.1 AA compliance)
-```
+\`\`\`
 
 ### **🤖 AI-POWERED UX ENHANCEMENTS:**
 - **Smart Onboarding**: Adaptive onboarding flow based on contractor experience

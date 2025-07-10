@@ -5,7 +5,7 @@
 Based on the 40 Felix problems, Rex should search for these specific contractor opportunities:
 
 ### **Plumbing Searches (Problems 1-8)**
-```python
+\`\`\`python
 plumbing_queries = {
     "craigslist_gigs": [
         "toilet repair running water",
@@ -23,10 +23,10 @@ plumbing_queries = {
         "emergency plumbing contractor"
     ]
 }
-```
+\`\`\`
 
 ### **Electrical Searches (Problems 7, 15, 32, 39)**
-```python
+\`\`\`python
 electrical_queries = {
     "craigslist_gigs": [
         "light fixture replacement install",
@@ -42,10 +42,10 @@ electrical_queries = {
         "lighting system upgrades"
     ]
 }
-```
+\`\`\`
 
 ### **HVAC Searches (Problems 17, 38, 39)**
-```python
+\`\`\`python
 hvac_queries = {
     "craigslist_gigs": [
         "HVAC repair heating cooling",
@@ -60,10 +60,10 @@ hvac_queries = {
         "energy efficiency upgrades"
     ]
 }
-```
+\`\`\`
 
 ### **Carpentry/Handyman (Problems 4, 12, 25, 35)**
-```python
+\`\`\`python
 carpentry_queries = {
     "craigslist_gigs": [
         "drywall repair patch holes",
@@ -79,10 +79,10 @@ carpentry_queries = {
         "interior renovation services"
     ]
 }
-```
+\`\`\`
 
 ### **Roofing/Exterior (Problems 18, 14, 35)**
-```python
+\`\`\`python
 roofing_queries = {
     "craigslist_gigs": [
         "roof leak repair emergency",
@@ -97,7 +97,7 @@ roofing_queries = {
         "exterior maintenance contract"
     ]
 }
-```
+\`\`\`
 
 ## Value Thresholds by Felix Problem Type
 
@@ -135,7 +135,7 @@ roofing_queries = {
 ## AgentQL Integration Points
 
 ### **1. Problem Classification**
-```python
+\`\`\`python
 def classify_lead_by_felix(lead_description):
     felix_mapping = {
         "toilet": {"felix_id": 1, "category": "plumbing", "difficulty": "easy"},
@@ -144,10 +144,10 @@ def classify_lead_by_felix(lead_description):
         "roof leak": {"felix_id": 18, "category": "roofing", "difficulty": "hard"}
     }
     return felix_mapping.get(extract_keywords(lead_description))
-```
+\`\`\`
 
 ### **2. Quality Scoring Enhancement**
-```python
+\`\`\`python
 def calculate_felix_quality_score(lead):
     base_score = calculate_recency_score(lead.posted_time)
     
@@ -160,10 +160,10 @@ def calculate_felix_quality_score(lead):
         base_score *= 0.8
         
     return base_score
-```
+\`\`\`
 
 ### **3. Contractor Matching**
-```python
+\`\`\`python
 def match_contractor_to_felix_problem(contractor_profile, felix_id):
     contractor_services = contractor_profile.selected_services
     felix_problem = get_felix_problem(felix_id)
@@ -175,7 +175,7 @@ def match_contractor_to_felix_problem(contractor_profile, felix_id):
             return {"match": True, "priority": "medium"}
     
     return {"match": False}
-```
+\`\`\`
 
 ## Search Automation Schedule
 

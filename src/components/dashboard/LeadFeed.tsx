@@ -1,106 +1,103 @@
-'use client';
+"use client"
 
-import { useLeads } from '@/hooks/useLeads';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { MapPin, Clock, DollarSign, Star, Eye, MessageSquare } from 'lucide-react';
-import { motion } from 'framer-motion';
-
-// This is the new, re-skinned LeadFeed component.
-// It is now a purely presentational component.
-// All logic has been moved to the `useLeads` hook.
+import Link from "next/link"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Skeleton } from "@/components/ui/skeleton"
+import { ArrowRight, MapPin, Clock, DollarSign } from "lucide-react"
+import type { Lead } from "@/hooks/useDashboard"
+import { cn } from "@/lib/utils"
+import { lt } from "lodash"
 
 interface LeadFeedProps {
-  contractorId: string;
+  leads: Lead[]
+  loading: boolean
 }
 
-export default function LeadFeed({ contractorId }: LeadFeedProps) {
-  const { leads, loading, error, markAsViewed } = useLeads(contractorId);
+const formatTimeAgo = (dateString: string) => {
+  const now = new Date()
+  const posted = new Date(dateString)
+  const diffInSeconds = Math.floor((now.getTime() - posted.getTime()) / 1000)
 
-  const formatBudget = (min: number, max: number) => {
-    if (min === max) return `$${min.toLocaleString()}`;
-    return `$${min.toLocaleString()} - $${max.toLocaleString()}`;
-  };
+  if (lt(diffInSeconds, 60)) return "Just now"
+  const diffInMinutes = Math.floor(diffInSeconds / 60)
+  if (lt(diffInMinutes, 60)) return `${diffInMinutes}m ago`
+  const diffInHours = Math.floor(diffInMinutes / 60)
+  if (lt(diffInHours, 24)) return `${diffInHours}h ago`
+  const diffInDays = Math.floor(diffInHours / 24)
+  return `${diffInDays}d ago`
+}
 
-  const formatTimeAgo = (dateString: string) => {
-    const now = new Date();
-    const posted = new Date(dateString);
-    const diffInHours = Math.floor((now.getTime() - posted.getTime()) / (1000 * 60 * 60));
-    
-    if (diffInHours < 1) return 'Just posted';
-    if (diffInHours < 24) return `${diffInHours}h ago`;
-    const diffInDays = Math.floor(diffInHours / 24);
-    return `${diffInDays}d ago`;
-  };
+const getUrgencyBadgeClass = (urgency: Lead["urgency"]) => {
+  switch (urgency) {
+    case "high":
+      return "bg-destructive/10 text-destructive border-destructive/20"
+    case "medium":
+      return "bg-yellow-400/10 text-yellow-500 border-yellow-400/20"
+    case "low":
+      return "bg-primary/10 text-primary border-primary/20"
+  }
+}
 
-  const getUrgencyColor = (urgency: string) => {
-    switch (urgency) {
-      case 'high': return 'bg-red-500';
-      case 'medium': return 'bg-yellow-500';
-      case 'low': return 'bg-green-500';
-      default: return 'bg-gray-500';
-    }
-  };
-
-  const getSourceColor = (source: string) => {
-    switch (source) {
-      case 'felix_referral': return 'bg-blue-500';
-      case 'rex_discovery': return 'bg-purple-500';
-      case 'direct_inquiry': return 'bg-teal-500';
-      default: return 'bg-gray-500';
-    }
-  };
-
+export function LeadFeed({ leads, loading }: LeadFeedProps) {
   if (loading) {
-    return <div>Loading leads...</div>;
+    return (
+      <div className="space-y-4">
+        {[...Array(3)].map((_, i) => (
+          <Skeleton key={i} className="h-32 w-full" />
+        ))}
+      </div>
+    )
   }
 
-  if (error) {
-    return <div className="text-red-500">Error: {error}</div>;
+  if (leads.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <h3 className="text-lg font-medium">No new leads right now.</h3>
+        <p className="text-muted-foreground mt-1">Check back later or ask @rex to find more opportunities.</p>
+      </div>
+    )
   }
 
   return (
     <div className="space-y-4">
-      {leads.map((lead, index) => (
-        <motion.div
-          key={lead.id}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: index * 0.05 }}
-        >
-          <Card className={`border-l-4 ${lead.viewed ? 'border-gray-300' : 'border-primary'}`}>
-            <CardHeader>
-              <div className="flex justify-between items-start">
-                <CardTitle>{lead.title}</CardTitle>
-                <div className="flex items-center space-x-2">
-                  <Badge variant="secondary" className={getSourceColor(lead.source)}>{lead.source.replace('_', ' ')}</Badge>
-                  <Badge variant="outline" className={getUrgencyColor(lead.urgency)}>{lead.urgency}</Badge>
-                </div>
+      {leads.map((lead) => (
+        <Card key={lead.id} className="hover:border-primary/50 transition-colors">
+          <CardHeader>
+            <div className="flex items-start justify-between gap-4">
+              <CardTitle className="text-lg">{lead.title}</CardTitle>
+              <Badge variant="outline" className={cn("capitalize flex-shrink-0", getUrgencyBadgeClass(lead.urgency))}>
+                {lead.urgency} Urgency
+              </Badge>
+            </div>
+            <div className="flex items-center gap-4 text-sm text-muted-foreground pt-1">
+              <div className="flex items-center gap-1.5">
+                <DollarSign className="h-4 w-4" />
+                <span>
+                  ${lead.budget_min.toLocaleString()} - ${lead.budget_max.toLocaleString()}
+                </span>
               </div>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground mb-4">{lead.description}</p>
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div className="flex items-center"><MapPin className="w-4 h-4 mr-2" /> {lead.location}</div>
-                <div className="flex items-center"><Clock className="w-4 h-4 mr-2" /> {formatTimeAgo(lead.posted_at)}</div>
-                <div className="flex items-center"><DollarSign className="w-4 h-4 mr-2" /> {formatBudget(lead.budget_min, lead.budget_max)}</div>
-                <div className="flex items-center"><Star className="w-4 h-4 mr-2" /> {lead.quality_score}/10 Quality</div>
+              <div className="flex items-center gap-1.5">
+                <MapPin className="h-4 w-4" />
+                <span>{lead.location}</span>
               </div>
-              <div className="flex justify-end items-center mt-4">
-                <Button variant="ghost" size="sm" onClick={() => markAsViewed(lead.id)} disabled={lead.viewed}>
-                  <Eye className="w-4 h-4 mr-2" />
-                  {lead.viewed ? 'Viewed' : 'Mark as Viewed'}
-                </Button>
-                <Button size="sm">
-                  <MessageSquare className="w-4 h-4 mr-2" />
-                  View Details & Bid
-                </Button>
+              <div className="flex items-center gap-1.5">
+                <Clock className="h-4 w-4" />
+                <span>{formatTimeAgo(lead.posted_at)}</span>
               </div>
-            </CardContent>
-          </Card>
-        </motion.div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground mb-4 line-clamp-2">{lead.description}</p>
+            <Link href={`/contractor/bid/${lead.id}`}>
+              <Button>
+                View Details & Bid <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
       ))}
     </div>
-  );
+  )
 }

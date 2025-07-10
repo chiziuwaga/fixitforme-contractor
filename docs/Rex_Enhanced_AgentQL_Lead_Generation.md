@@ -7,7 +7,7 @@ Rex the Retriever is enhanced with sophisticated AgentQL-powered lead generation
 
 ### Platform-Specific Query Strategies
 
-```typescript
+\`\`\`typescript
 // AgentQL queries optimized for each lead source platform
 const leadSourceQueries = {
   craigslist: {
@@ -74,11 +74,11 @@ const leadSourceQueries = {
     }
   }
 };
-```
+\`\`\`
 
 ### Felix-Driven Search Term Generation
 
-```typescript
+\`\`\`typescript
 interface RexSearchContext {
   contractor_profile: {
     services: number[]; // Felix problem IDs
@@ -133,11 +133,11 @@ class FelixSearchTermEngine {
     );
   }
 }
-```
+\`\`\`
 
 ### Location-Aware Lead Intelligence
 
-```typescript
+\`\`\`typescript
 interface LocationContext {
   contractor_base: {
     zip_code: string;
@@ -212,11 +212,11 @@ class LocationAwareLeadEngine {
     });
   }
 }
-```
+\`\`\`
 
 ### Advanced Quality Control & Spam Detection
 
-```typescript
+\`\`\`typescript
 class RexQualityControl {
   async applyQualityFilters(leads: Lead[]): Promise<Lead[]> {
     const agentql = new AgentQLClient();
@@ -267,11 +267,11 @@ class RexQualityControl {
     return Math.max(0, Math.min(1, score));
   }
 }
-```
+\`\`\`
 
 ### Recency and Urgency Intelligence
 
-```typescript
+\`\`\`typescript
 class RecencyIntelligenceEngine {
   calculateRecencyScore(postedTime: Date): number {
     const hoursAgo = (Date.now() - postedTime.getTime()) / (1000 * 60 * 60);
@@ -305,11 +305,11 @@ class RecencyIntelligenceEngine {
     };
   }
 }
-```
+\`\`\`
 
 ### Geographic Market Intelligence
 
-```typescript
+\`\`\`typescript
 class GeographicIntelligence {
   async analyzeMarketConditions(serviceArea: ServiceArea): Promise<MarketAnalysis> {
     const agentql = new AgentQLClient();
@@ -363,11 +363,11 @@ class GeographicIntelligence {
     };
   }
 }
-```
+\`\`\`
 
 ### Lead Relevance Scoring Algorithm
 
-```typescript
+\`\`\`typescript
 interface LeadScoringWeights {
   quality: 0.40;      // Professional posting, clear requirements, legitimate contact
   recency: 0.30;      // How recently posted - fresher leads have higher conversion
@@ -411,23 +411,23 @@ class RexRelevanceEngine {
     return finalLeads.slice(0, 10); // Return exactly 10 top leads
   }
 }
-```
+\`\`\`
 
 ### Rex Pre-Prompt System
 
 Rex will always provide three strategic pre-prompts after each analysis:
 
-```typescript
+\`\`\`typescript
 const rexPrePrompts = [
   "📊 **Analyze lead patterns**: 'Show me which lead sources perform best for my services'",
   "🎯 **Optimize search strategy**: 'How can I find more high-value leads in my area?'",
   "📈 **Track performance metrics**: 'Compare my conversion rates to last month'"
 ];
-```
+\`\`\`
 
 ### Integration with Supabase for Lead Storage
 
-```typescript
+\`\`\`typescript
 class RexDataPersistence {
   async storeleads(leads: Lead[], execution_id: string): Promise<void> {
     const supabase = createClient();
@@ -470,6 +470,6 @@ class RexDataPersistence {
       .eq('id', execution_id);
   }
 }
-```
+\`\`\`
 
 This enhanced Rex engine provides comprehensive, location-aware lead generation with sophisticated quality control and relevance scoring, ensuring contractors receive the highest-value opportunities matching their specific service capabilities and market position.

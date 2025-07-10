@@ -10,7 +10,7 @@ Each agent returns specific UI components that transform raw AI output into inte
 ### Primary Components Generated
 
 #### 1. **AlexCostBreakdown** - The Core Bidding Interface
-```typescript
+\`\`\`typescript
 <AlexCostBreakdown 
   data={{
     project_title: "Kitchen Renovation - Oakland Hills",
@@ -45,7 +45,7 @@ Each agent returns specific UI components that transform raw AI output into inte
     {type: "material_research", label: "Research Current Prices", style: "outline"}
   ]}
 />
-```
+\`\`\`
 
 **Why This Component:**
 - **Professional Presentation**: Transforms Alex's analysis into client-ready format
@@ -55,7 +55,7 @@ Each agent returns specific UI components that transform raw AI output into inte
 - **Action-Oriented**: Direct paths to formal proposal generation
 
 #### 2. **MaterialResearchPanel** - AgentQL Integration Results
-```typescript
+\`\`\`typescript
 <MaterialResearchPanel
   data={{
     research_timestamp: "2025-06-23T10:30:00Z",
@@ -78,7 +78,7 @@ Each agent returns specific UI components that transform raw AI output into inte
     ]
   }}
 />
-```
+\`\`\`
 
 **Why This Component:**
 - **Real-Time Intelligence**: Live pricing data prevents outdated estimates
@@ -87,7 +87,7 @@ Each agent returns specific UI components that transform raw AI output into inte
 - **Professional Insights**: Leverages AgentQL research for competitive advantage
 
 #### 3. **TimelineChart** - Project Scheduling Visualization
-```typescript
+\`\`\`typescript
 <TimelineChart
   phases={[
     {name: "Demo & Prep", start: new Date("2025-07-15"), end: new Date("2025-07-18"), progress: 100, status: "completed"},
@@ -102,7 +102,7 @@ Each agent returns specific UI components that transform raw AI output into inte
   weather_impact={true}
   permit_delays={["Electrical inspection required before rough-in completion"]}
 />
-```
+\`\`\`
 
 **Why This Component:**
 - **Visual Planning**: Clear project timeline helps contractors and clients
@@ -111,7 +111,7 @@ Each agent returns specific UI components that transform raw AI output into inte
 - **Client Communication**: Professional timeline builds confidence
 
 #### 4. **RiskAnalysis** - Project Risk Assessment
-```typescript
+\`\`\`typescript
 <RiskAnalysis
   data={{
     overall_risk: "medium",
@@ -135,7 +135,7 @@ Each agent returns specific UI components that transform raw AI output into inte
     insurance_requirements: ["General liability", "Workers compensation"]
   }}
 />
-```
+\`\`\`
 
 **Why This Component:**
 - **Professional Risk Management**: Shows contractor understands project complexities
@@ -150,7 +150,7 @@ Each agent returns specific UI components that transform raw AI output into inte
 ### Primary Components Generated
 
 #### 1. **RexLeadDashboard** - Performance Analytics Hub
-```typescript
+\`\`\`typescript
 <RexLeadDashboard
   data={{
     summary: {
@@ -182,7 +182,7 @@ Each agent returns specific UI components that transform raw AI output into inte
     {type: "optimize_targeting", label: "Optimize Search Parameters", style: "secondary"}
   ]}
 />
-```
+\`\`\`
 
 **Why This Component:**
 - **Business Intelligence**: Shows contractors their market performance
@@ -191,7 +191,7 @@ Each agent returns specific UI components that transform raw AI output into inte
 - **Tier Management**: Displays remaining search session allowance
 
 #### 2. **LeadCard** - Individual Lead Display
-```typescript
+\`\`\`typescript
 <LeadCard
   data={{
     id: "lead_12345",
@@ -217,7 +217,7 @@ Each agent returns specific UI components that transform raw AI output into inte
     {type: "analyze_project", label: "Get Alex Analysis", style: "outline"}
   ]}
 />
-```
+\`\`\`
 
 **Why This Component:**
 - **Instant Qualification**: All key lead info at a glance
@@ -226,7 +226,7 @@ Each agent returns specific UI components that transform raw AI output into inte
 - **Integration Ready**: Links to Alex for immediate project analysis
 
 #### 3. **LeadDistributionChart** - Geographic Intelligence
-```typescript
+\`\`\`typescript
 <LeadDistributionChart
   data={[
     {area: "Oakland Hills", count: 12, avg_value: 12000, competition: "medium", lat: 37.8199, lng: -122.2483},
@@ -238,7 +238,7 @@ Each agent returns specific UI components that transform raw AI output into inte
   animated={true}
   interactive={true}
 />
-```
+\`\`\`
 
 **Why This Component:**
 - **Market Intelligence**: Visual understanding of opportunity distribution
@@ -253,7 +253,7 @@ Each agent returns specific UI components that transform raw AI output into inte
 ### Primary Components Generated
 
 #### 1. **LexiOnboarding** - Progress Tracking Interface
-```typescript
+\`\`\`typescript
 <LexiOnboarding
   data={{
     overall_progress: 75,
@@ -279,7 +279,7 @@ Each agent returns specific UI components that transform raw AI output into inte
     {type: "upgrade_tier", label: "Upgrade to Scale", style: "outline"}
   ]}
 />
-```
+\`\`\`
 
 **Why This Component:**
 - **Progress Motivation**: Clear visual progress encourages completion
@@ -288,7 +288,7 @@ Each agent returns specific UI components that transform raw AI output into inte
 - **Flexibility**: Allows saving progress for busy contractors
 
 #### 2. **SystemMessage** - Conversational Limit Enforcement
-```typescript
+\`\`\`typescript
 <SystemMessage
   type="limit_reached"
   data={{
@@ -317,7 +317,7 @@ Each agent returns specific UI components that transform raw AI output into inte
     ]
   }}
 />
-```
+\`\`\`
 
 **Why This Component:**
 - **Graceful Degradation**: Limits don't break the experience
@@ -326,7 +326,7 @@ Each agent returns specific UI components that transform raw AI output into inte
 - **Conversational**: Maintains chat-centric experience
 
 #### 3. **FeatureEducation** - Platform Capability Training
-```typescript
+\`\`\`typescript
 <FeatureEducation
   data={{
     agent: "alex",
@@ -356,7 +356,7 @@ Each agent returns specific UI components that transform raw AI output into inte
     ]
   }}
 />
-```
+\`\`\`
 
 **Why This Component:**
 - **User Education**: Helps contractors understand agent capabilities
@@ -371,7 +371,7 @@ Each agent returns specific UI components that transform raw AI output into inte
 ### Implementation Strategy
 After each agent response, the system automatically generates three contextual follow-up prompts:
 
-```typescript
+\`\`\`typescript
 // Dynamic prompt generation based on conversation context
 function generateThreePrompts(agentType: string, lastResponse: any, contractorProfile: any): string[] {
   const promptTemplates = {
@@ -419,6 +419,6 @@ function generateThreePrompts(agentType: string, lastResponse: any, contractorPr
     "What should I do next?"
   ];
 }
-```
+\`\`\`
 
 This generative UI system transforms raw AI output into professional, interactive interfaces that provide immediate business value to contractors while maintaining the conversational, chat-centric experience that makes the platform approachable and efficient.

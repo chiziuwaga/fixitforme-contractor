@@ -107,7 +107,7 @@ When no explicit @ mention is used, the system automatically routes messages bas
 #### JSON Response Format
 All agent responses must support structured data alongside conversational text:
 
-```json
+\`\`\`json
 {
   "message": "Conversational response text",
   "ui_assets": {
@@ -129,12 +129,12 @@ All agent responses must support structured data alongside conversational text:
     }
   ]
 }
-```
+\`\`\`
 
 #### UI Component Types
 
 **Alex's Cost Breakdown Cards:**
-```json
+\`\`\`json
 {
   "type": "cost_breakdown",
   "data": {
@@ -149,10 +149,10 @@ All agent responses must support structured data alongside conversational text:
     "timeline": "3-4 days"
   }
 }
-```
+\`\`\`
 
 **Rex's Lead Summary Cards:**
-```json
+\`\`\`json
 {
   "type": "lead_summary",
   "data": {
@@ -163,10 +163,10 @@ All agent responses must support structured data alongside conversational text:
     "conversion_probability": 0.68
   }
 }
-```
+\`\`\`
 
 **Lexi's Onboarding Checklists:**
-```json
+\`\`\`json
 {
   "type": "onboarding_checklist",
   "data": {
@@ -178,7 +178,7 @@ All agent responses must support structured data alongside conversational text:
     "completion_percentage": 60
   }
 }
-```
+\`\`\`
 
 ### Reference Implementation
 See [v0.dev contractor chat example](https://v0.dev/chat/b/b_MX1Ev6PvA7e) for generative UI patterns and component interactions.

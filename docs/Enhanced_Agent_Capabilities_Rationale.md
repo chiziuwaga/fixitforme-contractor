@@ -6,7 +6,7 @@
 
 Alex needs sophisticated material research capabilities that go beyond static databases. Here's the enhanced architecture:
 
-```typescript
+\`\`\`typescript
 // Alex's Enhanced AgentQL Integration
 interface AlexAgentQLCapabilities {
   // Dynamic material price research
@@ -89,11 +89,11 @@ const felixPlusAgentQL = {
     code_requirement_scraper: AgentQLQuery
   }
 };
-```
+\`\`\`
 
 ### **Enhanced Alex Capabilities - Comprehensive Project Scoping**
 
-```typescript
+\`\`\`typescript
 // Alex's Enhanced System Prompt with AgentQL Research
 const alexEnhancedPrompt = `
 You are Alex the Assessor, the most sophisticated analytical bidding assistant in the construction industry. You combine the expertise of a quantity surveyor with real-time market intelligence and dynamic material research capabilities.
@@ -137,7 +137,7 @@ When contractors engage with me, I provide:
 GENERATIVE UI ASSETS:
 I return structured JSON with multiple UI components for rich contractor experience.
 `;
-```
+\`\`\`
 
 ---
 
@@ -145,7 +145,7 @@ I return structured JSON with multiple UI components for rich contractor experie
 
 ### **Hyper-Intelligent Lead Discovery System**
 
-```typescript
+\`\`\`typescript
 // Rex's Enhanced AgentQL Architecture
 interface RexAgentQLCapabilities {
   // Multi-source lead generation
@@ -205,7 +205,7 @@ const rexLeadGenerationProcess = {
     output_format: "enriched_lead_cards_with_analytics"
   }
 };
-```
+\`\`\`
 
 ---
 
@@ -213,7 +213,7 @@ const rexLeadGenerationProcess = {
 
 ### **Comprehensive Platform Education & Guidance**
 
-```typescript
+\`\`\`typescript
 // Lexi's Enhanced Knowledge Base
 const lexiSystemKnowledge = {
   // Platform Features Deep Knowledge
@@ -310,7 +310,7 @@ ENHANCED KNOWLEDGE AREAS:
 THREE-PROMPT GUIDANCE SYSTEM:
 After every interaction, I automatically provide 3 contextual prompts to guide contractors toward their next best action.
 `;
-```
+\`\`\`
 
 ---
 
@@ -318,7 +318,7 @@ After every interaction, I automatically provide 3 contextual prompts to guide c
 
 ### **Why These Specific UI Components?**
 
-```typescript
+\`\`\`typescript
 // UI Asset Design Philosophy
 const uiAssetRationale = {
   // Alex's UI Assets (4 components)
@@ -393,11 +393,11 @@ const uiAssetRationale = {
     }
   }
 };
-```
+\`\`\`
 
 ### **Three-Prompt Guidance System Implementation**
 
-```typescript
+\`\`\`typescript
 // Post-Interaction Guidance Protocol
 const generateThreePrompts = (agentType: string, context: any, userTier: string) => {
   const promptSuggestions = {
@@ -424,6 +424,6 @@ const generateThreePrompts = (agentType: string, context: any, userTier: string)
     style: "suggestion"
   }));
 };
-```
+\`\`\`
 
 This comprehensive enhancement transforms our agents from basic chatbots into sophisticated business intelligence tools with real-time market research capabilities, comprehensive project scoping, and rich interactive interfaces designed specifically for contractor workflows.

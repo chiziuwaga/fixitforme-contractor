@@ -14,7 +14,7 @@ The Vercel deployment was failing due to configuration and file structure issues
 **Status**: COMPLETED
 
 ### Enhanced `vercel.json` Configuration:
-```json
+\`\`\`json
 {
   "framework": "nextjs",
   "buildCommand": "npm run build",
@@ -33,7 +33,7 @@ The Vercel deployment was failing due to configuration and file structure issues
     }
   ]
 }
-```
+\`\`\`
 
 **Key Improvements:**
 - Added Node.js 20.x runtime specification
@@ -59,7 +59,7 @@ The Vercel deployment was failing due to configuration and file structure issues
 - ⚠️ Supabase realtime warnings (non-critical)
 
 **Route Configuration:**
-```
+\`\`\`
 Route (app)                          Size     First Load JS
 ├ ○ /                               14.8 kB   294 kB
 ├ ○ /login                          14.8 kB   172 kB  
@@ -67,7 +67,7 @@ Route (app)                          Size     First Load JS
 ├ ƒ /api/agents/alex                173 B     102 kB
 ├ ƒ /api/agents/rex                 173 B     102 kB
 └ ... (20 more routes)
-```
+\`\`\`
 
 ## Step 5: Deployment Trigger ✅
 **Status**: COMPLETED
@@ -78,7 +78,7 @@ Route (app)                          Size     First Load JS
 ## Environment Requirements
 
 ### Required Environment Variables:
-```bash
+\`\`\`bash
 # Supabase Configuration
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
@@ -95,7 +95,7 @@ STRIPE_WEBHOOK_SECRET=your_webhook_secret
 
 # Application Configuration
 NEXT_PUBLIC_SITE_URL=https://your-vercel-domain.vercel.app
-```
+\`\`\`
 
 ### Vercel Deployment Settings:
 - **Framework**: Next.js
@@ -124,32 +124,32 @@ NEXT_PUBLIC_SITE_URL=https://your-vercel-domain.vercel.app
 
 ### Issue 1: Build Failures
 **Solution**: Ensure all TypeScript files compile locally first
-```bash
+\`\`\`bash
 npm run build
 npm run lint
-```
+\`\`\`
 
 ### Issue 2: API Route Errors
 **Solution**: Verify API routes use proper Next.js App Router structure
-```
+\`\`\`
 src/app/api/[endpoint]/route.ts
-```
+\`\`\`
 
 ### Issue 3: Environment Variable Issues
 **Solution**: Set all required variables in Vercel dashboard
-```
+\`\`\`
 Project Settings → Environment Variables
-```
+\`\`\`
 
 ### Issue 4: Import Path Issues
 **Solution**: Use proper TypeScript path mapping
-```typescript
+\`\`\`typescript
 // ✅ Correct
 import { component } from '@/components/Component'
 
 // ❌ Incorrect  
 import { component } from '../../../components/Component'
-```
+\`\`\`
 
 ## Expected Deployment Outcome
 

@@ -57,7 +57,7 @@
 
 ### **🔧 TECHNICAL IMPLEMENTATION:**
 
-```typescript
+\`\`\`typescript
 // Admin Authentication Structure
 /api/admin/auth/          # Admin login, 2FA, session management
 /api/admin/contractors/   # Contractor management (CRUD, status, tier)
@@ -67,7 +67,7 @@
 /api/admin/agents/        # AI agent monitoring and training
 /api/admin/analytics/     # Platform analytics and reporting
 /api/admin/system/        # Health monitoring and maintenance
-```
+\`\`\`
 
 ---
 
@@ -120,7 +120,7 @@
 ## 💡 KEY ARCHITECTURAL DECISIONS
 
 ### **Desktop Notification Strategy:**
-```typescript
+\`\`\`typescript
 // Thread-based navigation implementation
 interface ThreadNotification {
   thread_id: string;
@@ -130,7 +130,7 @@ interface ThreadNotification {
 }
 
 // Usage: Click notification → Navigate to thread → Highlight item
-```
+\`\`\`
 
 ### **Admin Data Endpoints Philosophy:**
 - **Session-aware**: All admin endpoints require valid admin JWT

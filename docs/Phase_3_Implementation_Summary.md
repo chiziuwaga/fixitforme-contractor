@@ -28,7 +28,7 @@ We are successfully implementing Phase 3 with a corrected understanding of the F
 ## 🔍 **Enhanced Search Strategy:**
 
 ### **Felix-Informed Search Categories:**
-```typescript
+\`\`\`typescript
 const searchCategories = {
   // Core Felix Categories (40-problem framework)
   plumbing: ["running toilet repair", "leaky faucet fix", "clogged drain", "toilet flush mechanism"],
@@ -42,7 +42,7 @@ const searchCategories = {
   flooring: ["tile repair", "hardwood refinishing", "grout resealing", "floor leveling"],
   exterior: ["siding repair", "deck staining", "pressure washing", "window screen repair"]
 };
-```
+\`\`\`
 
 ### **Platform Prioritization (AgentQL-Based):**
 1. **Craigslist Labor Gigs** (`/lbg/`) - 70% success rate
@@ -55,7 +55,7 @@ const searchCategories = {
 ## 🏗️ **Implementation Architecture:**
 
 ### **Background Lead Generation (`/api/agents/rex_run`):**
-```typescript
+\`\`\`typescript
 POST /api/agents/rex_run
 {
   contractor_id: string,
@@ -76,10 +76,10 @@ Response:
     category_distribution: { Plumbing: 4, Electrical: 3, Roofing: 1 }
   }
 }
-```
+\`\`\`
 
 ### **Quality Control (AgentQL Patterns):**
-```typescript
+\`\`\`typescript
 // Spam Detection
 const spamPatterns = [
   /\$500 bonus/i, /same day cash/i, /www\.rentatech\.org/i,
@@ -99,7 +99,7 @@ const valueThresholds = {
 - High-value budget: +15 points
 - Recent posting: +10 points
 - Verified platform: +5 points
-```
+\`\`\`
 
 ---
 

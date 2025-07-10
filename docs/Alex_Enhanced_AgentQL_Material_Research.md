@@ -7,7 +7,7 @@ Alex the Assessor is enhanced with comprehensive AgentQL-powered material resear
 
 ### Core Material Research Queries
 
-```typescript
+\`\`\`typescript
 // AgentQL queries for major retailers
 const materialQueries = {
   homedepot: {
@@ -31,11 +31,11 @@ const materialQueries = {
     stock_status: ".stock-message"
   }
 };
-```
+\`\`\`
 
 ### Dynamic Query Generation System
 
-```typescript
+\`\`\`typescript
 interface MaterialSearchContext {
   project_type: 'kitchen' | 'bathroom' | 'electrical' | 'plumbing' | 'hvac' | 'roofing' | 'drywall' | 'flooring';
   location: {
@@ -82,11 +82,11 @@ function buildMaterialQuery(context: MaterialSearchContext): AgentQLQuery {
   
   return generateLocationAwareQuery(baseQuery, context);
 }
-```
+\`\`\`
 
 ### Felix Problem-Specific Material Templates
 
-```typescript
+\`\`\`typescript
 const felixMaterialMappings = {
   // Felix Problem #1: Running toilet won't stop
   1: {
@@ -132,11 +132,11 @@ const felixMaterialMappings = {
     labor_time_hours: 40
   }
 };
-```
+\`\`\`
 
 ### Location-Aware Pricing Strategy
 
-```typescript
+\`\`\`typescript
 interface LocationPricingContext {
   contractor_zip: string;
   project_zip: string;
@@ -182,11 +182,11 @@ class LocationAwarePricing {
     }
   }
 }
-```
+\`\`\`
 
 ### Real-Time Cost Analysis Integration
 
-```typescript
+\`\`\`typescript
 interface AlexCostAnalysis {
   materials: MaterialCostBreakdown;
   labor: LaborCostBreakdown;
@@ -232,11 +232,11 @@ class EnhancedAlexAgent {
     return results;
   }
 }
-```
+\`\`\`
 
 ### Quality and Availability Intelligence
 
-```typescript
+\`\`\`typescript
 interface MaterialIntelligence {
   price_trends: PriceTrend[];
   availability_forecast: AvailabilityForecast;
@@ -276,13 +276,13 @@ class MaterialIntelligenceEngine {
     return this.synthesizeIntelligence(reviews, pricing, material);
   }
 }
-```
+\`\`\`
 
 ## Integration with Alex's Bidding Strategy
 
 ### Automated Material List Generation
 
-```typescript
+\`\`\`typescript
 class AlexBiddingEngine {
   async generateMaterialList(project: ProjectDetails): Promise<MaterialList> {
     // Felix problem identification
@@ -320,25 +320,25 @@ class AlexBiddingEngine {
     return this.processProductResults(specificProducts, template);
   }
 }
-```
+\`\`\`
 
 ### Pre-Prompt System Integration
 
 Alex will always provide three pre-prompts after each analysis:
 
-```typescript
+\`\`\`typescript
 const alexPrePrompts = [
   "🔍 **Research deeper materials**: 'Find alternative suppliers for [specific material]'",
   "📊 **Analyze project phases**: 'Break down this project into manageable phases'", 
   "💰 **Optimize pricing strategy**: 'How can I improve my profit margin on this bid?'"
 ];
-```
+\`\`\`
 
 ## Location-Specific Optimizations
 
 ### Regional Pricing Intelligence
 
-```typescript
+\`\`\`typescript
 const regionalSupplierStrategy = {
   northeast: {
     primary_suppliers: ["Home Depot", "Lowes", "84 Lumber"],
@@ -359,6 +359,6 @@ const regionalSupplierStrategy = {
     delivery_considerations: "Earthquake/wildfire disruptions"
   }
 };
-```
+\`\`\`
 
 This enhanced Alex agent will provide contractors with real-time, location-aware material research, comprehensive cost analysis, and strategic bidding intelligence powered by AgentQL's web automation capabilities.

@@ -48,33 +48,33 @@ This is the contractor-facing module for FixItForMe, a robust, AI-driven platfor
 ## 🛠️ Development Setup
 
 1.  **Clone the repository:**
-    ```bash
+    \`\`\`bash
     git clone https://github.com/your-username/fixitforme-contractor.git
     cd fixitforme-contractor
-    ```
+    \`\`\`
 
 2.  **Install dependencies:**
-    ```bash
+    \`\`\`bash
     npm install
-    ```
+    \`\`\`
 
 3.  **Set up environment variables:**
     Create a `.env.local` file by copying the example:
-    ```bash
+    \`\`\`bash
     cp .env.local.example .env.local
-    ```
+    \`\`\`
     Then, edit `.env.local` with your actual keys from Supabase, Stripe, etc.
 
 4.  **Run the development server:**
-    ```bash
+    \`\`\`bash
     npm run dev
-    ```
+    \`\`\`
 
 5.  **Open your browser** to `http://localhost:3000`.
 
 ## 📁 Key Project Structure
 
-```
+\`\`\`
 src/
 ├── app/
 │   ├── contractor/          # Contractor-facing pages (dashboard, settings)
@@ -92,7 +92,7 @@ src/
     ├── ai.ts               # Vercel AI SDK configuration
     ├── brand.ts            # Centralized brand assets and styles
     └── felix.ts            # Felix 40-problem reference module
-```
+\`\`\`
 
 ## 📚 Documentation
 
@@ -147,13 +147,13 @@ This project is configured for continuous deployment on Vercel. Simply push to t
 - ✅ Cleaned up duplicate files and imports
 
 ### Manual Deployment:
-```bash
+\`\`\`bash
 # Build locally first
 npm run build
 
 # Deploy to Vercel
 vercel --prod
-```
+\`\`\`
 
 ### Troubleshooting Vercel Deployment:
 1. **Root Directory Error**: Ensure Vercel project settings have Root Directory set to blank or "/"

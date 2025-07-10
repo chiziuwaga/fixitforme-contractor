@@ -1,128 +1,112 @@
-'use client';
+"use client"
 
-import { useProfile } from '@/hooks/useProfile';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { MultiSelect } from '@/components/ui/multi-select';
-
-// This is the new, re-skinned ProfileEditor component.
-// It is now a purely presentational component.
-// All logic has been moved to the `useProfile` hook.
+import { useProfile } from "@/hooks/useProfile"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { Loader2 } from "lucide-react"
+import { MultiSelect } from "@/components/ui/multi-select"
+import { LAYOUTS, SPACING } from "@/lib/design-system"
 
 export default function ProfileEditor() {
-  const { 
-    formData, 
-    loading, 
-    serviceOptions, 
-    areaOptions, 
-    handleSubmit, 
-    handleChange 
-  } = useProfile();
+  const { formData, loading, serviceOptions, areaOptions, handleSubmit, handleChange, handleMultiSelectChange } =
+    useProfile()
 
   return (
-    <Card>
+    <Card className="w-full">
       <CardHeader>
-        <CardTitle>Edit Profile</CardTitle>
+        <CardTitle>Company Profile</CardTitle>
+        <CardDescription>This information will be visible to homeowners on your public profile.</CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Full Name</Label>
+        <form onSubmit={handleSubmit} className={SPACING.component.md}>
+          <div className={LAYOUTS.grid[2]}>
+            <div className={SPACING.component.xs}>
+              <Label htmlFor="companyName">Company Name</Label>
               <Input
-                id="name"
-                value={formData.name}
-                onChange={(e) => handleChange('name', e.target.value)}
-                placeholder="Your full name"
+                id="companyName"
+                value={formData.companyName}
+                onChange={(e) => handleChange("companyName", e.target.value)}
+                placeholder="e.g., Acme Construction"
+                disabled={loading}
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+            <div className={SPACING.component.xs}>
+              <Label htmlFor="contactName">Contact Name</Label>
               <Input
-                id="email"
-                type="email"
-                value={formData.email}
-                onChange={(e) => handleChange('email', e.target.value)}
-                placeholder="your.email@example.com"
+                id="contactName"
+                value={formData.contactName}
+                onChange={(e) => handleChange("contactName", e.target.value)}
+                placeholder="e.g., John Doe"
+                disabled={loading}
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="phone">Phone Number</Label>
+            <div className={SPACING.component.xs}>
+              <Label htmlFor="licenseNumber">License Number</Label>
               <Input
-                id="phone"
-                value={formData.phone}
-                onChange={(e) => handleChange('phone', e.target.value)}
-                placeholder="(123) 456-7890"
+                id="licenseNumber"
+                value={formData.licenseNumber}
+                onChange={(e) => handleChange("licenseNumber", e.target.value)}
+                placeholder="e.g., CSLB #123456"
+                disabled={loading}
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="company">Company Name</Label>
+            <div className={SPACING.component.xs}>
+              <Label htmlFor="experienceYears">Years of Experience</Label>
               <Input
-                id="company"
-                value={formData.company}
-                onChange={(e) => handleChange('company', e.target.value)}
-                placeholder="Your Company, Inc."
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="license_number">License Number</Label>
-              <Input
-                id="license_number"
-                value={formData.license_number}
-                onChange={(e) => handleChange('license_number', e.target.value)}
-                placeholder="Your license number"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="experience_years">Years of Experience</Label>
-              <Input
-                id="experience_years"
+                id="experienceYears"
                 type="number"
-                value={formData.experience_years}
-                onChange={(e) => handleChange('experience_years', parseInt(e.target.value, 10))}
+                value={formData.experienceYears}
+                onChange={(e) => handleChange("experienceYears", Number.parseInt(e.target.value, 10))}
+                disabled={loading}
               />
             </div>
           </div>
 
-          <div className="space-y-2">
+          <div className={SPACING.component.xs}>
             <Label>Services Offered</Label>
-            <MultiSelect 
-              options={serviceOptions} 
+            <MultiSelect
+              options={serviceOptions}
               value={formData.services}
-              onValueChange={(value) => handleChange('services', value)}
-              placeholder="Select services you offer"
+              onValueChange={(value) => handleMultiSelectChange("services", value)}
+              placeholder="Select the services you provide..."
+              disabled={loading}
             />
           </div>
 
-          <div className="space-y-2">
+          <div className={SPACING.component.xs}>
             <Label>Service Areas</Label>
-            <MultiSelect 
-              options={areaOptions} 
-              value={formData.service_areas}
-              onValueChange={(value) => handleChange('service_areas', value)}
-              placeholder="Select your service areas"
+            <MultiSelect
+              options={areaOptions}
+              value={formData.serviceAreas}
+              onValueChange={(value) => handleMultiSelectChange("serviceAreas", value)}
+              placeholder="Select the cities or regions you serve..."
+              disabled={loading}
             />
           </div>
 
-          <div className="space-y-2">
+          <div className={SPACING.component.xs}>
             <Label htmlFor="bio">Short Bio</Label>
-            <textarea
+            <Textarea
               id="bio"
               value={formData.bio}
-              onChange={(e) => handleChange('bio', e.target.value)}
-              className="w-full p-2 border rounded-md"
+              onChange={(e) => handleChange("bio", e.target.value)}
               rows={4}
-              placeholder="Tell us a little about yourself and your company"
+              placeholder="Tell potential customers about your company's expertise and values."
+              disabled={loading}
             />
           </div>
 
-          <Button type="submit" disabled={loading} className="w-full">
-            {loading ? 'Saving...' : 'Save Changes'}
-          </Button>
+          <div className="flex justify-end">
+            <Button type="submit" disabled={loading}>
+              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {loading ? "Saving..." : "Save Changes"}
+            </Button>
+          </div>
         </form>
       </CardContent>
     </Card>
-  );
+  )
 }

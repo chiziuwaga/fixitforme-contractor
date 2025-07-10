@@ -1,66 +1,65 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { streamText } from 'ai';
-import { supabase } from '@/lib/supabase';
-import { deepseek } from '@/lib/ai';
+import { type NextRequest, NextResponse } from "next/server"
+import { streamText } from "ai"
+import { supabase } from "@/lib/supabase"
+import { deepseek } from "@/lib/ai"
 
 export async function POST(request: NextRequest) {
   try {
-    const { messages } = await request.json();
-    
+    const { messages } = await request.json()
+
     // Verify contractor authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser()
     if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
     // Get contractor profile and current state
-    const { data: contractorProfile } = await supabase
-      .from('contractors')
-      .select('*')
-      .eq('id', user.id)
-      .single();
+    const { data: contractorProfile } = await supabase.from("contractors").select("*").eq("id", user.id).single()
 
     // Get current subscription tier
     const { data: subscription } = await supabase
-      .from('subscriptions')
-      .select('*')
-      .eq('contractor_id', user.id)
-      .eq('status', 'active')
-      .single();
+      .from("subscriptions")
+      .select("*")
+      .eq("contractor_id", user.id)
+      .eq("status", "active")
+      .single()
 
     // Get onboarding completion status
     const { data: onboardingSteps } = await supabase
-      .from('onboarding_progress')
-      .select('*')
-      .eq('contractor_id', user.id);
+      .from("onboarding_progress")
+      .select("*")
+      .eq("contractor_id", user.id)
 
     // Get current month's usage statistics
-    const startOfMonth = new Date();
-    startOfMonth.setDate(1);
-    startOfMonth.setHours(0, 0, 0, 0);
+    const startOfMonth = new Date()
+    startOfMonth.setDate(1)
+    startOfMonth.setHours(0, 0, 0, 0)
 
     const { data: currentUsage } = await supabase
-      .from('usage_tracking')
-      .select('*')
-      .eq('contractor_id', user.id)
-      .gte('created_at', startOfMonth.toISOString());    // Calculate usage limits based on tier
-    const currentTier = subscription?.tier || 'growth';
+      .from("usage_tracking")
+      .select("*")
+      .eq("contractor_id", user.id)
+      .gte("created_at", startOfMonth.toISOString()) // Calculate usage limits based on tier
+    const currentTier = subscription?.tier || "growth"
     const tierLimits: Record<string, { bids: number; chats: number; messages: number; services: number }> = {
       growth: { bids: 10, chats: 10, messages: 50, services: 5 },
-      scale: { bids: 50, chats: 30, messages: 200, services: 15 }
-    };
+      scale: { bids: 50, chats: 30, messages: 200, services: 15 },
+    }
 
     // Get peer benchmarking data (anonymous aggregated data)
     const { data: peerData } = await supabase
-      .from('contractors')
-      .select('avg_bid_value, conversion_rate, services')
-      .eq('location', contractorProfile?.location)
-      .neq('id', user.id);
+      .from("contractors")
+      .select("avg_bid_value, conversion_rate, services")
+      .eq("location", contractorProfile?.location)
+      .neq("id", user.id)
 
     // Calculate profile completion score
-    const profileFields = ['business_name', 'phone', 'location', 'services', 'bio', 'certifications'];
-    const completedFields = profileFields.filter(field => contractorProfile?.[field]);
-    const profileCompletionScore = Math.round((completedFields.length / profileFields.length) * 100);
+    const profileFields = ["business_name", "phone", "location", "services", "bio", "certifications"]
+    const completedFields = profileFields.filter((field) => contractorProfile?.[field])
+    const profileCompletionScore = Math.round((completedFields.length / profileFields.length) * 100)
 
     // Prepare contractor intelligence context for agent
     const contractorContext = {
@@ -70,37 +69,73 @@ export async function POST(request: NextRequest) {
       limits: tierLimits[currentTier],
       onboarding: onboardingSteps,
       profileScore: profileCompletionScore,
-      peerBenchmarks: peerData ? {
-        avgBidValue: peerData.reduce((sum, p) => sum + (p.avg_bid_value || 0), 0) / peerData.length,
-        avgConversionRate: peerData.reduce((sum, p) => sum + (p.conversion_rate || 0), 0) / peerData.length,
-        commonServices: peerData.flatMap(p => p.services || []).slice(0, 5)
-      } : null
-    };
+      peerBenchmarks: peerData
+        ? {
+            avgBidValue: peerData.reduce((sum, p) => sum + (p.avg_bid_value || 0), 0) / peerData.length,
+            avgConversionRate: peerData.reduce((sum, p) => sum + (p.conversion_rate || 0), 0) / peerData.length,
+            commonServices: peerData.flatMap((p) => p.services || []).slice(0, 5),
+          }
+        : null,
+    }
 
     // Enhanced system prompt with real-time contractor data
-    const enhancedSystemPrompt = `You are Lexi the Liaison, the friendly onboarding guide and system expert for FixItForMe contractors.
+    const enhancedSystemPrompt = `You are Lexi the Liaison, the friendly onboarding guide and system expert for FixItForMe.
+
+PERSONALITY:
+- Warm, encouraging, and genuinely helpful.
+- Patient and professional, breaking down complex topics into simple steps.
 
 CURRENT CONTRACTOR CONTEXT:
-- Profile Completion: ${profileCompletionScore}% (${profileFields.length - completedFields.length} fields missing)
-- Current Tier: ${currentTier.toUpperCase()} 
-- Monthly Usage: ${currentUsage?.length || 0} activities
-- Location: ${contractorProfile?.location || 'Not set'}
-- Services: ${contractorProfile?.services?.length || 0} selected
-${contractorContext.peerBenchmarks ? `
-- Peer Benchmark (Local Market):
-  * Average Bid Value: $${Math.round(contractorContext.peerBenchmarks.avgBidValue || 0)}
-  * Average Conversion Rate: ${Math.round(contractorContext.peerBenchmarks.avgConversionRate || 0)}%
-  * Popular Services: ${contractorContext.peerBenchmarks.commonServices.join(', ')}
-` : ''}
+- Profile Completion: ${profileCompletionScore}%
+- Current Tier: ${currentTier.toUpperCase()}
+- Location: ${contractorProfile?.location || "Not set"}
+- Services: ${contractorProfile?.services?.join(", ") || "None selected"}
 
-PERSONALIZED GUIDANCE PRIORITIES:
-${profileCompletionScore < 100 ? '🔴 URGENT: Complete profile setup for better lead matching' : '✅ Profile complete'}
-${currentTier === 'growth' ? '💡 OPPORTUNITY: Scale tier offers 3% lower fees + advanced features' : '✅ Scale tier active'}
-${(contractorProfile?.services?.length || 0) < 3 ? '⚠️  Consider adding more services for broader opportunities' : '✅ Good service coverage'}
-${!contractorProfile?.location ? '🔴 CRITICAL: Location required for lead matching' : '✅ Location set'}`;
+CORE RESPONSIBILITIES:
+1.  **Onboarding Guidance**: Walk users through completing their profile and selecting services from Felix's 40-problem framework.
+2.  **Feature Education**: Explain how the platform, tiers, and agents (Alex & Rex) work.
+3.  **System Expert**: Answer questions about platform limits, billing, and best practices.
+4.  **Profile Optimization**: Provide personalized recommendations to help contractors get more leads, using peer benchmarks when available.
+
+RESPONSE FORMAT:
+You MUST respond with a single, valid JSON object. Do not include any text outside of this JSON structure.
+
+{
+  "role": "assistant",
+  "content": "Your warm, encouraging, and helpful message to the contractor.",
+  "ui_assets": {
+    "type": "lexi_onboarding",
+    "data": {
+      "overall_progress": ${profileCompletionScore},
+      "profile_strength": {
+        "score": ${profileCompletionScore},
+        "impact": "Completing your profile can increase lead matching by up to ${100 - profileCompletionScore}%."
+      },
+      "tier_benefits": {
+        "current": "${currentTier}",
+        "upgrade_benefits": ["2% lower platform fees", "Full access to Alex & Rex", "Higher usage limits"]
+      },
+      "peer_benchmarks": {
+        "avg_bid_value": ${contractorContext.peerBenchmarks ? Math.round(contractorContext.peerBenchmarks.avgBidValue || 0) : "N/A"},
+        "avg_conversion_rate": ${contractorContext.peerBenchmarks ? Math.round(contractorContext.peerBenchmarks.avgConversionRate || 0) : "N/A"}
+      }
+    }
+  },
+  "actions": [
+    {"type": "continue_onboarding", "label": "Complete My Profile", "style": "primary"},
+    {"type": "upgrade_tier", "label": "Compare Tiers", "style": "secondary"}
+  ],
+  "follow_up_prompts": [
+    "Show me a Scale tier ROI calculator.",
+    "Help me complete my profile step-by-step.",
+    "Which services should I add for my market?"
+  ]
+}`
 
     // Lexi's system prompt - The comprehensive onboarding and system guide with real-time data
-    const systemPrompt = enhancedSystemPrompt + `
+    const systemPrompt =
+      enhancedSystemPrompt +
+      `
 
 PERSONALITY:
 - Warm, encouraging, and genuinely helpful
@@ -169,7 +204,7 @@ I help contractors select from Felix's comprehensive service categories:
 - **#21-30**: Renovation projects (kitchen, bathroom, flooring, painting)
 - **#31-40**: Specialized services (roofing, foundation, landscaping, emergency)
 
-� **SYSTEM CONSTRAINTS (Conversationally Enforced):**
+ **SYSTEM CONSTRAINTS (Conversationally Enforced):**
 - Max 2 concurrent agent operations per account (visual progress tracking)
 - Document uploads limited to 20MB per file
 - All limits enforced through friendly chat messages with upgrade options
@@ -230,7 +265,7 @@ You must respond with structured JSON that includes both conversational text and
       "overall_progress": ${profileCompletionScore},
       "current_step": "profile_setup|service_selection|pricing_strategy|platform_tour",
       "completed_steps": ${JSON.stringify(completedFields)},
-      "remaining_steps": ${JSON.stringify(profileFields.filter(f => !completedFields.includes(f)))},
+      "remaining_steps": ${JSON.stringify(profileFields.filter((f) => !completedFields.includes(f)))},
       "felix_services": {
         "selected": ${JSON.stringify(contractorProfile?.services || [])},
         "recommended": ${JSON.stringify(contractorContext.peerBenchmarks?.commonServices || [])}, 
@@ -240,7 +275,7 @@ You must respond with structured JSON that includes both conversational text and
       },
       "profile_strength": {
         "score": ${profileCompletionScore},
-        "missing_elements": ${JSON.stringify(profileFields.filter(f => !completedFields.includes(f)))},
+        "missing_elements": ${JSON.stringify(profileFields.filter((f) => !completedFields.includes(f)))},
         "impact": "Complete profile increases lead matching by ${100 - profileCompletionScore}%"
       },
       "tier_benefits": {
@@ -253,13 +288,17 @@ You must respond with structured JSON that includes both conversational text and
         "current_usage": ${currentUsage?.length || 0},
         "monthly_limits": ${JSON.stringify(tierLimits[currentTier])},
         "percentage_used": ${Math.round(((currentUsage?.length || 0) / tierLimits[currentTier].bids) * 100)}
-      }${contractorContext.peerBenchmarks ? `,
+      }${
+        contractorContext.peerBenchmarks
+          ? `,
       "peer_benchmarks": {
         "avg_bid_value": ${Math.round(contractorContext.peerBenchmarks.avgBidValue || 0)},
         "avg_conversion_rate": ${Math.round(contractorContext.peerBenchmarks.avgConversionRate || 0)},
         "your_position": "above_average|average|below_average",
         "improvement_tips": ["Optimize pricing strategy", "Expand service offerings", "Improve response time"]
-      }` : ''}
+      }`
+          : ""
+      }
     },
     "render_hints": {
       "component": "LexiOnboarding|TierComparison|FeatureEducation|SystemMessage",
@@ -286,9 +325,9 @@ You must respond with structured JSON that includes both conversational text and
     }
   ],
   "follow_up_prompts": [
-    "${currentTier === 'growth' ? 'Show me Scale tier ROI calculator' : 'How can I maximize my Scale tier benefits?'}",
-    "${profileCompletionScore < 100 ? 'Help me complete my profile step-by-step' : 'What are the best practices for lead conversion?'}", 
-    "${(contractorProfile?.services?.length || 0) < 3 ? 'Which services should I add for my market?' : 'How do I optimize my pricing strategy?'}"
+    "${currentTier === "growth" ? "Show me Scale tier ROI calculator" : "How can I maximize my Scale tier benefits?"}",
+    "${profileCompletionScore < 100 ? "Help me complete my profile step-by-step" : "What are the best practices for lead conversion?"}", 
+    "${(contractorProfile?.services?.length || 0) < 3 ? "Which services should I add for my market?" : "How do I optimize my pricing strategy?"}"
   ]
 }
 
@@ -299,7 +338,7 @@ ONBOARDING FLOW WITH REAL-TIME INTELLIGENCE:
 4. Explain platform tiers with personalized ROI calculations
 5. Tour of dashboard features and agent capabilities
 
-Always ask one question at a time and wait for responses. Keep interactions focused and actionable. Reference the @ mention system for calling specific agents (@alex for bidding, @rex for leads).`;
+Always ask one question at a time and wait for responses. Keep interactions focused and actionable. Reference the @ mention system for calling specific agents (@alex for bidding, @rex for leads).`
 
     const result = await streamText({
       model: deepseek,
@@ -307,14 +346,11 @@ Always ask one question at a time and wait for responses. Keep interactions focu
       messages,
       temperature: 0.7,
       maxTokens: 1200,
-    });
+    })
 
-    return result.toDataStreamResponse();
+    return result.toDataStreamResponse()
   } catch (error) {
-    console.error('Lexi agent error:', error);
-    return NextResponse.json(
-      { error: 'Failed to process request' }, 
-      { status: 500 }
-    );
+    console.error("Lexi agent error:", error)
+    return NextResponse.json({ error: "Failed to process request" }, { status: 500 })
   }
 }

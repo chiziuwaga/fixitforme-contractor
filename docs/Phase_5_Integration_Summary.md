@@ -66,16 +66,16 @@
 ## 🛠 Technical Architecture
 
 ### State Management
-```typescript
+\`\`\`typescript
 // Execution tracking through context
 const { activeSessions, startExecution, canStartNew } = useConcurrentExecutionManager();
 
 // Notification management
 const { notifications, addNotification, dismissNotification } = useNotifications();
-```
+\`\`\`
 
 ### Agent Integration
-```typescript
+\`\`\`typescript
 // Rex endpoint with execution tracking
 POST /api/agents/rex_run
 {
@@ -83,10 +83,10 @@ POST /api/agents/rex_run
   categories: string[],
   execution_id?: string  // New parameter for tracking
 }
-```
+\`\`\`
 
 ### UI Component Structure
-```
+\`\`\`
 AppSystemWrapper
 ├── ConcurrentExecutionProvider
 ├── NotificationCenter (floating)
@@ -94,7 +94,7 @@ AppSystemWrapper
     └── EnhancedChatManager
         ├── AgentWorkingIndicator (when active)
         └── ChatWindow (per agent)
-```
+\`\`\`
 
 ---
 

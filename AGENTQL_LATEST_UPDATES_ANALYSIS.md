@@ -42,7 +42,7 @@
 - Provides **serverless browsing** with CDP (Chrome DevTools Protocol) access
 
 **API Changes:**
-```javascript
+\`\`\`javascript
 // OLD WAY (still works)
 const browser = await chromium.launch();
 const page = await browser.newPage();
@@ -50,7 +50,7 @@ const page = await browser.newPage();
 // NEW WAY (Tetra Browser)
 const session = await createBrowserSession();
 const browser = await chromium.connectOverCDP(session.cdpUrl);
-```
+\`\`\`
 
 **Impact on FixItForMe:**
 - ✅ **GOOD:** Our current Rex lead generation can use serverless browsers
@@ -60,22 +60,22 @@ const browser = await chromium.connectOverCDP(session.cdpUrl);
 ### **2. Updated REST API - `/v1/tetra/sessions`**
 
 **New Endpoint:**
-```bash
+\`\`\`bash
 POST https://api.agentql.com/v1/tetra/sessions
 Content-Type: application/json
 {
   "browser_ua_preset": "windows" // Optional: windows, macos, linux
 }
-```
+\`\`\`
 
 **Response:**
-```json
+\`\`\`json
 {
   "session_id": "ca7947a1-a188-4391-be82-fb968ce4df4a",
   "cdp_url": "wss://ca7947a1-a188-4391-be82-fb968ce4df4a.tetra.agentql.com",
   "base_url": "https://ca7947a1-a188-4391-be82-fb968ce4df4a.tetra.agentql.com"
 }
-```
+\`\`\`
 
 ### **3. Pricing Model Updates**
 
@@ -115,7 +115,7 @@ Content-Type: application/json
 ### **IMMEDIATE (Before Deployment)**
 
 1. **Update Rex Agent Implementation**
-   ```python
+   \`\`\`python
    # OLD (current in our code)
    # Direct Playwright usage
    
@@ -123,15 +123,15 @@ Content-Type: application/json
    from agentql.tools.sync_api import create_browser_session
    session = create_browser_session()
    browser = await playwright.chromium.connect_over_cdp(session.cdp_url)
-   ```
+   \`\`\`
 
 2. **Update Environment Variables**
-   ```bash
+   \`\`\`bash
    # Add to .env.local
    AGENTQL_API_KEY=your-key-here
    AGENTQL_MODE=fast  # or standard
    AGENTQL_BROWSER_PRESET=windows
-   ```
+   \`\`\`
 
 3. **Cost Optimization Strategy**
    - Implement browser session reuse
@@ -154,7 +154,7 @@ Content-Type: application/json
 
 ### **For Rex Agent Updates:**
 
-```python
+\`\`\`python
 # src/app/api/agents/rex/route.ts - Enhanced Implementation
 export async function POST(request: Request) {
   try {
@@ -173,11 +173,11 @@ export async function POST(request: Request) {
     // Enhanced error handling for remote browser failures
   }
 }
-```
+\`\`\`
 
 ### **Cost Management:**
 
-```javascript
+\`\`\`javascript
 // Implement session pooling
 const sessionPool = new Map();
 const MAX_SESSION_DURATION = 3600000; // 1 hour
@@ -186,7 +186,7 @@ function getOrCreateSession(userAgent = 'windows') {
   // Reuse existing sessions when possible
   // Auto-cleanup after 1 hour
 }
-```
+\`\`\`
 
 ---
 

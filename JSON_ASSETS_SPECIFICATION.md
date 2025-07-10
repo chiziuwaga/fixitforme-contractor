@@ -10,7 +10,7 @@ This document defines all JSON asset structures required for the FixItForMe cont
 
 All agent responses adhere to this base schema, providing conversational text, structured UI assets, and actionable buttons.
 
-```json
+\`\`\`json
 {
   "message": "Conversational response text that accompanies the UI assets.",
   "ui_assets": {
@@ -38,7 +38,7 @@ All agent responses adhere to this base schema, providing conversational text, s
     "requires_auth": true
   }
 }
-```
+\`\`\`
 
 ---
 
@@ -50,7 +50,7 @@ All agent responses adhere to this base schema, providing conversational text, s
 Used to guide new contractors through the setup process.
 
 **JSON Schema: `onboarding_checklist`**
-```json
+\`\`\`json
 {
   "ui_assets": {
     "type": "onboarding_checklist",
@@ -103,7 +103,7 @@ Used to guide new contractors through the setup process.
     }
   }
 }
-```
+\`\`\`
 
 ---
 
@@ -113,7 +113,7 @@ Used to guide new contractors through the setup process.
 Provides a detailed cost estimate for a specific job.
 
 **JSON Schema: `cost_breakdown`**
-```json
+\`\`\`json
 {
   "ui_assets": {
     "type": "cost_breakdown",
@@ -155,13 +155,13 @@ Provides a detailed cost estimate for a specific job.
     }
   }
 }
-```
+\`\`\`
 
 #### 2. Material Analysis
 Compares different materials for a job.
 
 **JSON Schema: `material_analysis`**
-```json
+\`\`\`json
 {
   "ui_assets": {
     "type": "material_analysis",
@@ -185,7 +185,7 @@ Compares different materials for a job.
     }
   }
 }
-```
+\`\`\`
 
 ---
 
@@ -195,7 +195,7 @@ Compares different materials for a job.
 Presents a list of available leads with key details.
 
 **JSON Schema: `lead_summary`**
-```json
+\`\`\`json
 {
   "ui_assets": {
     "type": "lead_summary",
@@ -219,7 +219,7 @@ Presents a list of available leads with key details.
     }
   }
 }
-```
+\`\`\`
 
 ---
 
@@ -231,7 +231,7 @@ These assets are not tied to a specific agent but are used to render common UI e
 For displaying key performance indicators on the dashboard.
 
 **JSON Schema: `performance_metrics`**
-```json
+\`\`\`json
 {
   "ui_assets": {
     "type": "performance_metrics",
@@ -264,13 +264,13 @@ For displaying key performance indicators on the dashboard.
     }
   }
 }
-```
+\`\`\`
 
 ### 2. Dynamic Form
 For rendering forms based on a JSON configuration, used in profile settings and other areas.
 
 **JSON Schema: `dynamic_form`**
-```json
+\`\`\`json
 {
   "ui_assets": {
     "type": "dynamic_form",
@@ -301,13 +301,13 @@ For rendering forms based on a JSON configuration, used in profile settings and 
     }
   }
 }
-```
+\`\`\`
 
 ### 3. Notification Center
 For displaying system notifications to the user.
 
 **JSON Schema: `notification_center`**
-```json
+\`\`\`json
 {
   "ui_assets": {
     "type": "notification_center",
@@ -330,6 +330,6 @@ For displaying system notifications to the user.
     }
   }
 }
-```
+\`\`\`
 
 This comprehensive JSON asset specification ensures consistent, predictable data structures for all UI components while maintaining flexibility for future enhancements and agent capabilities.

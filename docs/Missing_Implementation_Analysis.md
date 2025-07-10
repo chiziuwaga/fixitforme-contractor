@@ -55,7 +55,7 @@
 ## 🎯 **IMMEDIATE PRIORITIES (Phase 1 Completion):**
 
 ### **Priority 1: Authentication System**
-```typescript
+\`\`\`typescript
 // /api/auth/send-verification.ts
 export async function POST(request: NextRequest) {
   const { phone } = await request.json();
@@ -70,10 +70,10 @@ export async function POST(request: NextRequest) {
   
   return NextResponse.json({ success: true, data });
 }
-```
+\`\`\`
 
 ### **Priority 2: Felix Data Seeding**
-```json
+\`\`\`json
 // /database/felix-40-problems.json
 {
   "problems": [
@@ -89,10 +89,10 @@ export async function POST(request: NextRequest) {
     // ... 39 more problems
   ]
 }
-```
+\`\`\`
 
 ### **Priority 3: Dashboard Layout Implementation**
-```tsx
+\`\`\`tsx
 // Enhanced /contractor/dashboard/page.tsx
 export default function ContractorDashboard() {
   return (
@@ -110,7 +110,7 @@ export default function ContractorDashboard() {
     </div>
   );
 }
-```
+\`\`\`
 
 ## 🛠️ **IMPLEMENTATION ORDER:**
 

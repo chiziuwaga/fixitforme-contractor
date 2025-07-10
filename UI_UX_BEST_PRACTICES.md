@@ -29,7 +29,7 @@
 
 #### Brand Color Usage
 
-```typescript
+\`\`\`typescript
 // Primary brand colors
 primary: '#D4A574',      // Felix Gold - Primary actions, highlights
 secondary: '#1A2E1A',    // Forest Green - Text, navigation
@@ -42,7 +42,7 @@ agents: {
   rex: '#4A6FA5',        // Steel Blue - Professional, methodical
   felix: '#1A2E1A',      // Forest Green - Diagnostic, technical
 }
-```
+\`\`\`
 
 #### Color Application Rules
 
@@ -61,7 +61,7 @@ agents: {
 
 #### Typography Scale
 
-```typescript
+\`\`\`typescript
 fontSize: {
   xs: '0.75rem',     // 12px - Captions, metadata
   sm: '0.875rem',    // 14px - Secondary text
@@ -72,7 +72,7 @@ fontSize: {
   '3xl': '1.875rem', // 30px - Page titles
   '4xl': '2.25rem',  // 36px - Hero text
 }
-```
+\`\`\`
 
 #### Typography Usage Rules
 
@@ -87,7 +87,7 @@ fontSize: {
 
 #### Chat Interface Patterns
 
-```typescript
+\`\`\`typescript
 interface AgentChatProps {
   agent: 'lexi' | 'alex' | 'rex';
   messages: AgentMessage[];
@@ -95,7 +95,7 @@ interface AgentChatProps {
   isStreaming?: boolean;
   showTypingIndicator?: boolean;
 }
-```
+\`\`\`
 
 #### Agent Message Types
 
@@ -114,7 +114,7 @@ interface AgentChatProps {
 
 #### Metrics Display
 
-```typescript
+\`\`\`typescript
 interface MetricCardProps {
   title: string;
   value: number | string;
@@ -127,7 +127,7 @@ interface MetricCardProps {
   icon?: React.ReactNode;
   variant?: 'default' | 'success' | 'warning' | 'error';
 }
-```
+\`\`\`
 
 #### Chart Components
 
@@ -140,7 +140,7 @@ interface MetricCardProps {
 
 #### Input Components
 
-```typescript
+\`\`\`typescript
 interface FormInputProps {
   label: string;
   placeholder?: string;
@@ -150,7 +150,7 @@ interface FormInputProps {
   variant?: 'default' | 'success' | 'error';
   size?: 'sm' | 'md' | 'lg';
 }
-```
+\`\`\`
 
 #### Form Validation
 
@@ -163,7 +163,7 @@ interface FormInputProps {
 
 ### Breakpoint System
 
-```typescript
+\`\`\`typescript
 breakpoints: {
   mobile: '640px',     // Mobile phones
   tablet: '768px',     // Tablets and small laptops
@@ -171,7 +171,7 @@ breakpoints: {
   wide: '1280px',      // Wide screens
   ultrawide: '1536px', // Ultra-wide displays
 }
-```
+\`\`\`
 
 ### Mobile-First Approach
 
@@ -191,14 +191,14 @@ breakpoints: {
 
 ### Loading States
 
-```typescript
+\`\`\`typescript
 interface LoadingStateProps {
   type: 'spinner' | 'skeleton' | 'progress' | 'dots';
   size?: 'sm' | 'md' | 'lg';
   message?: string;
   progress?: number;
 }
-```
+\`\`\`
 
 #### Loading Patterns
 
@@ -209,7 +209,7 @@ interface LoadingStateProps {
 
 ### Error Handling
 
-```typescript
+\`\`\`typescript
 interface ErrorStateProps {
   title: string;
   message: string;
@@ -217,7 +217,7 @@ interface ErrorStateProps {
   onAction?: () => void;
   variant?: 'error' | 'warning' | 'info';
 }
-```
+\`\`\`
 
 #### Error Display Patterns
 
@@ -237,14 +237,14 @@ interface ErrorStateProps {
 
 ### Navigation Patterns
 
-```typescript
+\`\`\`typescript
 interface NavigationProps {
   items: NavigationItem[];
   currentPath: string;
   userRole: 'contractor' | 'admin';
   isCollapsed?: boolean;
 }
-```
+\`\`\`
 
 #### Navigation Hierarchy
 
@@ -278,7 +278,7 @@ interface NavigationProps {
 
 ### Implementation Checklist
 
-```typescript
+\`\`\`typescript
 interface AccessibilityProps {
   ariaLabel?: string;
   ariaDescribedBy?: string;
@@ -287,7 +287,7 @@ interface AccessibilityProps {
   'aria-expanded'?: boolean;
   'aria-selected'?: boolean;
 }
-```
+\`\`\`
 
 #### Accessibility Features
 
@@ -323,14 +323,14 @@ interface AccessibilityProps {
 
 ### Component Testing
 
-```typescript
+\`\`\`typescript
 interface ComponentTestProps {
   component: React.ComponentType;
   props: Record<string, any>;
   expectedBehavior: string[];
   accessibilityTests: boolean;
 }
-```
+\`\`\`
 
 #### Testing Categories
 

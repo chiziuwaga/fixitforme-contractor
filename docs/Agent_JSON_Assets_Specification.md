@@ -83,7 +83,7 @@ Each agent in the FixItForMe platform returns structured JSON responses that inc
 ## Generative UI Architecture
 
 ### Response Structure
-```typescript
+\`\`\`typescript
 {
   "message": "Conversational response text",
   "ui_assets": {
@@ -103,7 +103,7 @@ Each agent in the FixItForMe platform returns structured JSON responses that inc
     }
   ]
 }
-```
+\`\`\`
 
 ### Rendering Logic
 - **High Priority**: Renders immediately with full interactivity

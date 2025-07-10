@@ -31,7 +31,7 @@
 ## Technical Implementation Updates
 
 ### Supabase Configuration Enhanced
-```typescript
+\`\`\`typescript
 // Updated supabase.ts with 48-hour session config
 const contractorSessionConfig = {
   auth: {
@@ -48,7 +48,7 @@ export async function withTimeout<T>(
   promise: Promise<T>, 
   timeoutMs: number = 600000 // 10 minutes
 ): Promise<T>
-```
+\`\`\`
 
 ### Rex Endpoint Updated
 - Wrapped main search operation with 10-minute timeout

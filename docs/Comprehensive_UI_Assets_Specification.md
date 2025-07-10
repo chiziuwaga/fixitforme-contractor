@@ -13,7 +13,7 @@ This document defines the comprehensive generative UI asset system for all three
 5. **Mobile Responsiveness**: Components adapt to desktop-primary but remain functional on tablets
 
 ### Component Architecture
-```typescript
+\`\`\`typescript
 interface GenerativeUIAsset {
   type: string;
   agent: 'lexi' | 'alex' | 'rex';
@@ -33,7 +33,7 @@ interface UIAction {
   handler?: string;
   payload?: any;
 }
-```
+\`\`\`
 
 ---
 
@@ -45,7 +45,7 @@ interface UIAction {
 **Purpose**: Track comprehensive contractor onboarding progress with Felix framework integration
 **When Used**: Initial signup, profile completion, feature discovery
 
-```typescript
+\`\`\`typescript
 interface LexiOnboardingData {
   overall_progress: number; // 0-100 percentage
   current_step: 'welcome' | 'profile_basic' | 'service_selection' | 'territory_setup' | 'document_upload' | 'tier_selection' | 'completion';
@@ -84,13 +84,13 @@ interface LexiOnboardingData {
     { type: "save_and_resume", label: "Save Progress", style: "secondary" }
   ]
 }
-```
+\`\`\`
 
 ### 2. LexiSystemGuide Component
 **Purpose**: Provide contextual help and feature education throughout the platform
 **When Used**: Feature introduction, tier upgrade explanations, workflow guidance
 
-```typescript
+\`\`\`typescript
 interface LexiSystemGuideData {
   guide_type: 'feature_intro' | 'tier_comparison' | 'workflow_help' | 'tips_and_tricks';
   title: string;
@@ -122,13 +122,13 @@ interface LexiSystemGuideData {
     { type: "learn_more", label: "See All Features", style: "secondary" }
   ]
 }
-```
+\`\`\`
 
 ### 3. LexiNotification Component  
 **Purpose**: System messages, limit notifications, and conversational enforcement
 **When Used**: Chat limits reached, tier restrictions, system status updates
 
-```typescript
+\`\`\`typescript
 interface LexiNotificationData {
   notification_type: 'limit_reached' | 'system_update' | 'tip' | 'celebration';
   severity: 'info' | 'warning' | 'success' | 'error';
@@ -152,7 +152,7 @@ interface LexiNotificationData {
     ]
   }
 }
-```
+\`\`\`
 
 ---
 
@@ -164,7 +164,7 @@ interface LexiNotificationData {
 **Purpose**: Comprehensive project cost analysis with interactive breakdown charts
 **When Used**: Bid analysis, cost estimation requests, project planning
 
-```typescript
+\`\`\`typescript
 interface AlexCostBreakdownData {
   project_title: string;
   total_estimate: number;
@@ -231,13 +231,13 @@ interface MaterialCost {
     { type: "research_materials", label: "Find Better Suppliers", style: "tertiary" }
   ]
 }
-```
+\`\`\`
 
 ### 2. AlexTimelineChart Component
 **Purpose**: Project scheduling visualization with critical path analysis
 **When Used**: Timeline planning, client communication, resource scheduling
 
-```typescript
+\`\`\`typescript
 interface AlexTimelineData {
   project_duration: number; // Total days
   phases: ProjectPhase[];
@@ -291,13 +291,13 @@ interface ProjectPhase {
     { type: "export_schedule", label: "Export to Calendar", style: "secondary" }
   ]
 }
-```
+\`\`\`
 
 ### 3. AlexMarketAnalysis Component
 **Purpose**: Competitive intelligence and pricing strategy recommendations
 **When Used**: Bid strategy development, market positioning, pricing optimization
 
-```typescript
+\`\`\`typescript
 interface AlexMarketAnalysisData {
   service_area: string;
   competition_level: 'low' | 'medium' | 'high';
@@ -329,7 +329,7 @@ interface AlexMarketAnalysisData {
     { type: "explore_market_gaps", label: "Find Opportunities", style: "secondary" }
   ]
 }
-```
+\`\`\`
 
 ---
 
@@ -341,7 +341,7 @@ interface AlexMarketAnalysisData {
 **Purpose**: Comprehensive lead generation performance analytics and KPI tracking
 **When Used**: Performance reviews, strategy optimization, monthly reporting
 
-```typescript
+\`\`\`typescript
 interface RexLeadDashboardData {
   summary: LeadSummary;
   geographic_breakdown: GeographicLead[];
@@ -390,13 +390,13 @@ interface LeadSummary {
     { type: "analyze_trends", label: "Deep Dive Analytics", style: "secondary" }
   ]
 }
-```
+\`\`\`
 
 ### 2. RexLeadCard Component
 **Purpose**: Individual lead display with all relevant information and action buttons
 **When Used**: Lead feed display, search results, lead management
 
-```typescript
+\`\`\`typescript
 interface RexLeadCardData {
   lead_id: string;
   title: string;
@@ -447,13 +447,13 @@ interface RexLeadCardData {
     { type: "get_directions", label: "Get Directions", style: "tertiary" }
   ]
 }
-```
+\`\`\`
 
 ### 3. RexMarketIntelligence Component
 **Purpose**: Geographic market analysis and opportunity identification
 **When Used**: Market expansion planning, service area optimization, strategic planning
 
-```typescript
+\`\`\`typescript
 interface RexMarketIntelligenceData {
   analysis_area: string;
   market_opportunities: MarketOpportunity[];
@@ -493,7 +493,7 @@ interface RexMarketIntelligenceData {
     { type: "schedule_analysis", label: "Schedule Deep Dive", style: "secondary" }
   ]
 }
-```
+\`\`\`
 
 ---
 
@@ -502,7 +502,7 @@ interface RexMarketIntelligenceData {
 ### Universal Pre-Prompt Architecture
 Each agent provides exactly **3 contextual pre-prompts** after every response to guide the contractor toward productive next actions.
 
-```typescript
+\`\`\`typescript
 interface PrePromptSystem {
   agent: 'lexi' | 'alex' | 'rex';
   context_aware: boolean;
@@ -581,10 +581,10 @@ const rexPrePrompts = [
     expected_outcome: "Clear business growth metrics and improvement areas"
   }
 ];
-```
+\`\`\`
 
 ### Context-Aware Pre-Prompt Selection
-```typescript
+\`\`\`typescript
 class PrePromptEngine {
   generateContextualPrompts(agent: Agent, conversation_context: ConversationContext): PrePrompt[] {
     const basePrompts = this.getBasePrompts(agent);
@@ -602,6 +602,6 @@ class PrePromptEngine {
     };
   }
 }
-```
+\`\`\`
 
 This comprehensive UI asset system ensures that each agent provides precisely the right visual and interactive components for their specific role while maintaining consistent branding and user experience patterns throughout the platform.

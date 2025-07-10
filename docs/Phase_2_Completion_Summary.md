@@ -66,22 +66,22 @@
 5. **Bidding Interface**: Create job bid views with Alex integration
 
 ### Database Requirements
-```sql
+\`\`\`sql
 -- Core tables needed for Phase 2 completion
 CREATE TABLE contractor_profiles (...)
 CREATE TABLE bids (...)
 CREATE TABLE jobs (...)
 CREATE TABLE diy_guides (...)
-```
+\`\`\`
 
 ### Environment Setup
-```env
+\`\`\`env
 # Required for agent functionality
 DEEPSEEK_API_KEY=...
 NEXT_PUBLIC_SUPABASE_URL=...
 NEXT_PUBLIC_SUPABASE_ANON_KEY=...
 SUPABASE_SERVICE_ROLE_KEY=...
-```
+\`\`\`
 
 ## 🚀 Ready for Phase 3
 

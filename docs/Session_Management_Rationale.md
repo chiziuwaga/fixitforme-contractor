@@ -15,7 +15,7 @@ The FixItForMe Contractor Module implements a dual-session architecture with dif
 - Aligns with contractor workflow patterns
 
 **Implementation**:
-```typescript
+\`\`\`typescript
 // Supabase Auth Configuration
 const supabaseConfig = {
   auth: {
@@ -26,7 +26,7 @@ const supabaseConfig = {
     detectSessionInUrl: true
   }
 }
-```
+\`\`\`
 
 ### 2. Agentic Operation Timeouts (10 Minutes)
 **Purpose**: Prevent hanging AI operations and resource waste  
@@ -38,7 +38,7 @@ const supabaseConfig = {
 - User experience - contractors shouldn't wait indefinitely
 
 **Implementation**:
-```typescript
+\`\`\`typescript
 // Agent Operation Timeout
 const AGENT_OPERATION_TIMEOUT = 10 * 60 * 1000; // 10 minutes in milliseconds
 
@@ -46,7 +46,7 @@ const AGENT_OPERATION_TIMEOUT = 10 * 60 * 1000; // 10 minutes in milliseconds
 const timeoutPromise = new Promise((_, reject) => 
   setTimeout(() => reject(new Error('Operation timeout')), AGENT_OPERATION_TIMEOUT)
 );
-```
+\`\`\`
 
 ## Security Considerations
 
@@ -79,7 +79,7 @@ const timeoutPromise = new Promise((_, reject) =>
 ## Implementation Notes
 
 ### Supabase Configuration
-```typescript
+\`\`\`typescript
 // Client-side configuration
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
@@ -93,10 +93,10 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     debug: process.env.NODE_ENV === 'development'
   }
 });
-```
+\`\`\`
 
 ### Agent Timeout Wrapper
-```typescript
+\`\`\`typescript
 export async function withTimeout<T>(
   promise: Promise<T>, 
   timeoutMs: number = 600000 // 10 minutes default
@@ -107,7 +107,7 @@ export async function withTimeout<T>(
   
   return Promise.race([promise, timeoutPromise]);
 }
-```
+\`\`\`
 
 ## Monitoring & Analytics
 
@@ -139,7 +139,7 @@ export async function withTimeout<T>(
 
 ## Environment Variables Required
 
-```bash
+\`\`\`bash
 # Supabase Configuration
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
@@ -148,12 +148,12 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 # Session Configuration (optional overrides)
 CONTRACTOR_SESSION_TIMEOUT=172800  # 48 hours
 AGENT_OPERATION_TIMEOUT=600000     # 10 minutes
-```
+\`\`\`
 
 ## Error Handling
 
 ### Session Expiry
-```typescript
+\`\`\`typescript
 supabase.auth.onAuthStateChange((event, session) => {
   if (event === 'SIGNED_OUT') {
     // Clear local state
@@ -161,10 +161,10 @@ supabase.auth.onAuthStateChange((event, session) => {
     // Show friendly expiry message
   }
 });
-```
+\`\`\`
 
 ### Operation Timeout
-```typescript
+\`\`\`typescript
 try {
   const result = await withTimeout(agentOperation(), 600000);
   return result;
@@ -176,6 +176,6 @@ try {
   }
   throw error;
 }
-```
+\`\`\`
 
 This dual-session approach provides the best of both worlds: long-lasting convenience for contractors while maintaining tight control over AI operations.

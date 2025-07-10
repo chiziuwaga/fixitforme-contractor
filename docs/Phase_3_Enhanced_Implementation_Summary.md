@@ -28,7 +28,7 @@
 ## 🔍 ENHANCED AGENT ARCHITECTURES
 
 ### **Rex the Retriever - Tool User Chain**
-```typescript
+\`\`\`typescript
 // Specialist design following IndyDev Dan principles
 const rexToolChain = {
   context: "Rich contractor profile + search parameters",
@@ -36,10 +36,10 @@ const rexToolChain = {
   output: "Structured JSON with UI component specs",
   validation: "AgentQL quality control + value thresholds"
 };
-```
+\`\`\`
 
 ### **Alex the Assessor - Analyst Chain**
-```typescript
+\`\`\`typescript
 // Multi-stage analysis following Analyst → Critic → Refinement pattern
 const alexAnalystChain = {
   context: "Project details + market data + contractor expertise",
@@ -47,10 +47,10 @@ const alexAnalystChain = {
   output: "Interactive cost breakdown with timeline and risk factors",
   validation: "Critic chain for accuracy and completeness"
 };
-```
+\`\`\`
 
 ### **Lexi the Liaison - Planner Chain**
-```typescript
+\`\`\`typescript
 // Interactive guidance with milestone tracking
 const lexiPlannerChain = {
   context: "Contractor goals + platform capabilities + market conditions",
@@ -58,7 +58,7 @@ const lexiPlannerChain = {
   output: "Progress tracking with personalized recommendations",
   validation: "Human feedback loop for continuous improvement"
 };
-```
+\`\`\`
 
 ## 📋 TECHNICAL IMPLEMENTATION ROADMAP
 

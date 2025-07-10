@@ -23,7 +23,7 @@
 #### Structured JSON Response Format
 All agents now support rich UI asset generation:
 
-```json
+\`\`\`json
 {
   "message": "Conversational response",
   "ui_assets": {
@@ -43,7 +43,7 @@ All agents now support rich UI asset generation:
     }
   ]
 }
-```
+\`\`\`
 
 #### Alex's Cost Breakdown Assets
 - **Material Lists**: Itemized with quantities and costs

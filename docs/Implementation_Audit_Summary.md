@@ -58,7 +58,7 @@ The FixItForMe Contractor Module has been successfully implemented with all majo
 ## 📊 TECHNICAL SPECIFICATIONS VERIFIED
 
 ### **Package Dependencies (45 packages)**
-```json
+\`\`\`json
 {
   "dependencies": {
     "@ai-sdk/openai": "^1.3.22",
@@ -70,7 +70,7 @@ The FixItForMe Contractor Module has been successfully implemented with all majo
     // ... 39 more verified packages
   }
 }
-```
+\`\`\`
 
 ### **Database Schema (Complete)**
 - **Tables**: 10+ tables with proper RLS policies

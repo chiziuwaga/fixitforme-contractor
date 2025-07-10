@@ -88,7 +88,7 @@ This document provides a comprehensive summary of the completed FixItForMe Contr
 ## 📁 KEY FILES IMPLEMENTED
 
 ### **Core Application Structure**
-```
+\`\`\`
 src/
 ├── app/
 │   ├── page.tsx                           # ✅ Auth-aware home page
@@ -121,10 +121,10 @@ src/
 └── lib/
     ├── supabase.ts                       # ✅ Database utilities
     └── ai.ts                             # ✅ Vercel AI SDK integration
-```
+\`\`\`
 
 ### **Documentation & Planning**
-```
+\`\`\`
 docs/
 ├── Phased_Implementation_Plan.md          # ✅ Master project roadmap
 ├── Alex_Enhanced_AgentQL_Material_Research.md    # ✅ Technical specifications
@@ -132,13 +132,13 @@ docs/
 ├── Comprehensive_UI_Assets_Specification.md      # ✅ UI component library
 ├── Lexi_Enhanced_Supabase_Integration.md         # ✅ Real-time data integration
 └── Recent_Development_Summary.md                 # ✅ Development progress tracking
-```
+\`\`\`
 
 ### **Database & Infrastructure**
-```
+\`\`\`
 scripts/
 └── seed-felix-problems.sql               # ✅ 40-problem reference data
-```
+\`\`\`
 
 ---
 

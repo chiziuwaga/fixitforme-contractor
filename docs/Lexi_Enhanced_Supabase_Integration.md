@@ -7,7 +7,7 @@ Lexi the Liaison is enhanced with comprehensive Supabase database integration to
 
 ### Contractor Intelligence Queries
 
-```typescript
+\`\`\`typescript
 interface LexiSupabaseContext {
   contractor_profile: ContractorProfile;
   platform_analytics: PlatformAnalytics;
@@ -60,11 +60,11 @@ class LexiSupabaseIntelligence {
     };
   }
 }
-```
+\`\`\`
 
 ### Profile Completion Intelligence
 
-```typescript
+\`\`\`typescript
 interface ProfileCompletionAnalysis {
   overall_score: number; // 0-100
   completion_categories: CompletionCategory[];
@@ -117,11 +117,11 @@ class ProfileCompletionEngine {
     return { score, feedback, category: 'service_selection' };
   }
 }
-```
+\`\`\`
 
 ### Peer Benchmarking System
 
-```typescript
+\`\`\`typescript
 interface PeerBenchmarks {
   tier_comparisons: TierComparison;
   geographic_comparisons: GeographicComparison;
@@ -186,11 +186,11 @@ class LexiBenchmarkingEngine {
     return suggestions;
   }
 }
-```
+\`\`\`
 
 ### System Feature Intelligence
 
-```typescript
+\`\`\`typescript
 interface SystemFeatureGuide {
   feature_name: string;
   user_access_level: 'available' | 'locked' | 'partially_available';
@@ -258,11 +258,11 @@ class LexiFeatureIntelligence {
     return quickStartGuides[feature] || [];
   }
 }
-```
+\`\`\`
 
 ### Real-Time Contractor Onboarding
 
-```typescript
+\`\`\`typescript
 class LexiOnboardingIntelligence {
   async generatePersonalizedOnboarding(contractor: ContractorProfile): Promise<OnboardingPlan> {
     const supabase = createClient();
@@ -317,11 +317,11 @@ class LexiOnboardingIntelligence {
     return plan;
   }
 }
-```
+\`\`\`
 
 ### Intelligent System Guidance
 
-```typescript
+\`\`\`typescript
 class LexiSystemGuidance {
   async provideContextualHelp(
     contractor: ContractorProfile, 
@@ -384,11 +384,11 @@ class LexiSystemGuidance {
     return actions.sort((a, b) => this.priorityScore(a.priority) - this.priorityScore(b.priority));
   }
 }
-```
+\`\`\`
 
 ### Enhanced Pre-Prompt System for Lexi
 
-```typescript
+\`\`\`typescript
 const lexiEnhancedPrePrompts = {
   onboarding_phase: [
     {
@@ -453,6 +453,6 @@ const lexiEnhancedPrePrompts = {
     }
   ]
 };
-```
+\`\`\`
 
 This enhanced Lexi agent provides intelligent, data-driven guidance by leveraging comprehensive Supabase integration to understand each contractor's unique situation, compare against peer benchmarks, and provide personalized recommendations for success on the platform.

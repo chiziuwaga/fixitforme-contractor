@@ -11,14 +11,14 @@ Rex now implements a sophisticated lead selection process that ensures contracto
 4. **Top 10 Selection**: Delivers only the most relevant leads to contractors
 
 ### **Relevance Algorithm (Multi-Factor Scoring)**
-```typescript
+\`\`\`typescript
 relevance_score = (
   quality_score * 0.4 +        // 40% - Lead quality indicators
   recency_score * 0.3 +        // 30% - How recently posted
   (estimated_value / 10) * 0.2 + // 20% - Project value (normalized)
   (urgency_indicators.length * 10) * 0.1 // 10% - Urgency keywords
 )
-```
+\`\`\`
 
 ### **Recency Information Enhanced**
 - **Exact Posting Time**: Each lead shows precise posting timestamp
@@ -33,7 +33,7 @@ relevance_score = (
 - **Background Opportunities (12+ hours)**: Larger projects, non-urgent work
 
 ### **Quality Metrics Tracking**
-```typescript
+\`\`\`typescript
 quality_metrics: {
   avg_quality_score: 85.2,
   avg_estimated_value: 425,
@@ -41,10 +41,10 @@ quality_metrics: {
   urgent_leads: 3,              // Leads with urgency indicators
   recent_leads: 5               // NEW: Leads posted within 3 hours
 }
-```
+\`\`\`
 
 ### **Enhanced Search Summary**
-```typescript
+\`\`\`typescript
 search_summary: {
   location: "Oakland, CA",
   categories: ["plumbing", "electrical"],
@@ -52,7 +52,7 @@ search_summary: {
   timestamp: "2025-06-22T...",
   filtering_summary: "Found 15 initial leads, filtered to 12 qualified, selected top 10"
 }
-```
+\`\`\`
 
 ## 🔍 Technical Implementation Details
 
@@ -77,11 +77,11 @@ search_summary: {
 - **Stale (24+ hours)**: Score 10-29
 
 ### **Console Logging Enhanced**
-```
+\`\`\`
 Rex Search: Generated 15 initial leads for filtering
 Rex Search: Filtered 15 → 12 → 10 top leads
 Top lead scores: Emergency plumbing: 91.5, Roof inspection: 88.2, Licensed electrician: 85.7
-```
+\`\`\`
 
 ## 🎯 Business Impact
 

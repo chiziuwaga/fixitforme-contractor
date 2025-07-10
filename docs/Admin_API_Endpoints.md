@@ -19,7 +19,7 @@ All admin endpoints require:
 
 ### **GET** `/api/admin/contractors`
 **Purpose:** List and filter contractors with pagination
-```typescript
+\`\`\`typescript
 Query Parameters:
 - page?: number (default: 1)
 - limit?: number (default: 20, max: 100)
@@ -40,11 +40,11 @@ Response:
   },
   filters_applied: object
 }
-```
+\`\`\`
 
 ### **GET** `/api/admin/contractors/{id}`
 **Purpose:** Get detailed contractor information
-```typescript
+\`\`\`typescript
 Response:
 {
   profile: ContractorProfile,
@@ -59,11 +59,11 @@ Response:
   recent_activity: Activity[],
   documents: Document[]
 }
-```
+\`\`\`
 
 ### **PUT** `/api/admin/contractors/{id}/status`
 **Purpose:** Update contractor status (approve, suspend, activate)
-```typescript
+\`\`\`typescript
 Body:
 {
   status: 'active' | 'pending' | 'suspended',
@@ -77,11 +77,11 @@ Response:
   contractor: ContractorProfile,
   notification_sent: boolean
 }
-```
+\`\`\`
 
 ### **PUT** `/api/admin/contractors/{id}/tier`
 **Purpose:** Manually adjust contractor tier (admin override)
-```typescript
+\`\`\`typescript
 Body:
 {
   new_tier: 'growth' | 'scale',
@@ -97,7 +97,7 @@ Response:
   new_tier: string,
   billing_updated: boolean
 }
-```
+\`\`\`
 
 ---
 
@@ -105,7 +105,7 @@ Response:
 
 ### **GET** `/api/admin/documents/pending`
 **Purpose:** Get documents requiring admin verification
-```typescript
+\`\`\`typescript
 Query Parameters:
 - type?: 'license' | 'insurance' | 'certification'
 - contractor_id?: string
@@ -125,11 +125,11 @@ Response:
   }[],
   count: number
 }
-```
+\`\`\`
 
 ### **PUT** `/api/admin/documents/{id}/verify`
 **Purpose:** Approve or reject contractor documents
-```typescript
+\`\`\`typescript
 Body:
 {
   action: 'approve' | 'reject',
@@ -145,7 +145,7 @@ Response:
   contractor_notified: boolean,
   status_updated: boolean
 }
-```
+\`\`\`
 
 ---
 
@@ -153,7 +153,7 @@ Response:
 
 ### **GET** `/api/admin/payments/overview`
 **Purpose:** Financial dashboard data
-```typescript
+\`\`\`typescript
 Query Parameters:
 - period?: 'day' | 'week' | 'month' | 'quarter' | 'year'
 - start_date?: string
@@ -178,11 +178,11 @@ Response:
     churn_trend: DataPoint[]
   }
 }
-```
+\`\`\`
 
 ### **GET** `/api/admin/payments/transactions`
 **Purpose:** Transaction history with filtering
-```typescript
+\`\`\`typescript
 Query Parameters:
 - contractor_id?: string
 - type?: 'subscription' | 'platform_fee' | 'payout'
@@ -202,11 +202,11 @@ Response:
     avg_amount: number
   }
 }
-```
+\`\`\`
 
 ### **POST** `/api/admin/payments/refund`
 **Purpose:** Process refunds for contractors
-```typescript
+\`\`\`typescript
 Body:
 {
   transaction_id: string,
@@ -222,7 +222,7 @@ Response:
   amount_refunded: number,
   contractor_notified: boolean
 }
-```
+\`\`\`
 
 ---
 
@@ -230,7 +230,7 @@ Response:
 
 ### **GET** `/api/admin/leads/overview`
 **Purpose:** Lead generation analytics
-```typescript
+\`\`\`typescript
 Query Parameters:
 - period?: 'day' | 'week' | 'month'
 - source?: 'craigslist' | 'sams_gov' | 'referral'
@@ -253,11 +253,11 @@ Response:
     top_performing_contractors: ContractorMetric[]
   }
 }
-```
+\`\`\`
 
 ### **GET** `/api/admin/leads/quality-control`
 **Purpose:** Leads flagged for quality review
-```typescript
+\`\`\`typescript
 Query Parameters:
 - flag_type?: 'spam' | 'low_quality' | 'duplicate'
 - severity?: 'high' | 'medium' | 'low'
@@ -277,11 +277,11 @@ Response:
   }[],
   count: number
 }
-```
+\`\`\`
 
 ### **PUT** `/api/admin/leads/{id}/moderate`
 **Purpose:** Moderate flagged leads
-```typescript
+\`\`\`typescript
 Body:
 {
   action: 'approve' | 'remove' | 'edit',
@@ -296,7 +296,7 @@ Response:
   action_taken: string,
   contractors_notified: string[]
 }
-```
+\`\`\`
 
 ---
 
@@ -304,7 +304,7 @@ Response:
 
 ### **GET** `/api/admin/agents/performance`
 **Purpose:** AI agent usage and performance metrics
-```typescript
+\`\`\`typescript
 Query Parameters:
 - agent?: 'lexi' | 'alex' | 'rex'
 - period?: 'day' | 'week' | 'month'
@@ -325,11 +325,11 @@ Response:
   },
   trending_issues: Issue[]
 }
-```
+\`\`\`
 
 ### **GET** `/api/admin/agents/conversations`
 **Purpose:** Access agent conversations for quality review
-```typescript
+\`\`\`typescript
 Query Parameters:
 - agent?: 'lexi' | 'alex' | 'rex'
 - contractor_id?: string
@@ -351,11 +351,11 @@ Response:
   }[],
   pagination: PaginationInfo
 }
-```
+\`\`\`
 
 ### **PUT** `/api/admin/agents/training`
 **Purpose:** Update agent training data and prompts
-```typescript
+\`\`\`typescript
 Body:
 {
   agent: 'lexi' | 'alex' | 'rex',
@@ -372,7 +372,7 @@ Response:
   changes_applied: object,
   test_results?: object
 }
-```
+\`\`\`
 
 ---
 
@@ -380,7 +380,7 @@ Response:
 
 ### **GET** `/api/admin/analytics/dashboard`
 **Purpose:** Main admin dashboard metrics
-```typescript
+\`\`\`typescript
 Query Parameters:
 - period?: 'today' | 'week' | 'month' | 'quarter'
 
@@ -401,11 +401,11 @@ Response:
   alerts: SystemAlert[],
   quick_actions: QuickAction[]
 }
-```
+\`\`\`
 
 ### **POST** `/api/admin/analytics/custom-report`
 **Purpose:** Generate custom reports
-```typescript
+\`\`\`typescript
 Body:
 {
   report_type: 'contractor' | 'financial' | 'agent' | 'lead',
@@ -422,7 +422,7 @@ Response:
   download_url?: string,
   estimated_completion?: string
 }
-```
+\`\`\`
 
 ---
 
@@ -430,7 +430,7 @@ Response:
 
 ### **GET** `/api/admin/notifications/system`
 **Purpose:** System-wide notifications and alerts
-```typescript
+\`\`\`typescript
 Query Parameters:
 - type?: 'error' | 'warning' | 'info' | 'critical'
 - unread?: boolean
@@ -451,11 +451,11 @@ Response:
   }[],
   unread_count: number
 }
-```
+\`\`\`
 
 ### **POST** `/api/admin/notifications/broadcast`
 **Purpose:** Send notifications to contractors
-```typescript
+\`\`\`typescript
 Body:
 {
   target: 'all' | 'tier' | 'specific',
@@ -477,7 +477,7 @@ Response:
   recipients_count: number,
   delivery_status: object
 }
-```
+\`\`\`
 
 ---
 
@@ -485,7 +485,7 @@ Response:
 
 ### **GET** `/api/admin/system/health`
 **Purpose:** System health and performance monitoring
-```typescript
+\`\`\`typescript
 Response:
 {
   status: 'healthy' | 'warning' | 'critical',
@@ -502,11 +502,11 @@ Response:
   },
   alerts: HealthAlert[]
 }
-```
+\`\`\`
 
 ### **POST** `/api/admin/system/maintenance`
 **Purpose:** Schedule or trigger maintenance operations
-```typescript
+\`\`\`typescript
 Body:
 {
   operation: 'cache_clear' | 'db_cleanup' | 'log_rotation',
@@ -522,7 +522,7 @@ Response:
   scheduled_for: string,
   estimated_duration: number
 }
-```
+\`\`\`
 
 ---
 
@@ -530,7 +530,7 @@ Response:
 
 ### **GET** `/api/admin/notifications/{id}/context`
 **Purpose:** Get context for thread-based notifications
-```typescript
+\`\`\`typescript
 Response:
 {
   notification: Notification,
@@ -543,7 +543,7 @@ Response:
   },
   related_items: RelatedItem[]
 }
-```
+\`\`\`
 
 **Frontend Integration:**
 - Clicking notification navigates to specific thread position
@@ -554,7 +554,7 @@ Response:
 
 ## 🔑 Required Environment Variables
 
-```bash
+\`\`\`bash
 # Database
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
@@ -585,7 +585,7 @@ NEXTAUTH_URL=
 # Monitoring
 SENTRY_DSN=
 VERCEL_ANALYTICS_ID=
-```
+\`\`\`
 
 ---
 

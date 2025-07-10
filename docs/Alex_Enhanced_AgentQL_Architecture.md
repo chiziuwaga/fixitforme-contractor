@@ -7,7 +7,7 @@ Alex needs sophisticated AgentQL integration for real-time material research, co
 
 ### 1. Material Research Queries
 
-```typescript
+\`\`\`typescript
 // Dynamic AgentQL queries for material research
 const materialResearchQueries = {
   // Home Depot material lookup
@@ -84,11 +84,11 @@ const materialResearchQueries = {
     context: "Professional contractor pricing and specifications"
   }
 };
-```
+\`\`\`
 
 ### 2. Dynamic Query Generation by Project Type
 
-```typescript
+\`\`\`typescript
 // Felix 40-Problem Mapping to AgentQL Queries
 const felixToAgentQLMapping = {
   "toilet_repair": {
@@ -142,11 +142,11 @@ function generateMaterialQueries(projectType: string, specifications: any): stri
   
   return [...(baseMapping.queries || []), ...dynamicQueries];
 }
-```
+\`\`\`
 
 ### 3. Location-Based Pricing Intelligence
 
-```typescript
+\`\`\`typescript
 // Geographic pricing variations
 const locationPricingQueries = {
   // Regional supplier lookup
@@ -184,11 +184,11 @@ const locationPricingQueries = {
     context: `Research ${trade} labor rates in ${location}`
   })
 };
-```
+\`\`\`
 
 ### 4. Real-Time Market Intelligence
 
-```typescript
+\`\`\`typescript
 // Market trend analysis queries
 const marketIntelligenceQueries = {
   material_trends: {
@@ -223,13 +223,13 @@ const marketIntelligenceQueries = {
     context: `Get permit requirements for ${projectType} in ${location}`
   })
 };
-```
+\`\`\`
 
 ## Enhanced Alex Implementation
 
 ### 1. AgentQL Integration Layer
 
-```typescript
+\`\`\`typescript
 // Enhanced Alex agent with AgentQL material research
 class AlexMaterialResearch {
   async conductMaterialResearch(projectDetails: any, contractorLocation: string) {
@@ -287,11 +287,11 @@ class AlexMaterialResearch {
     }
   }
 }
-```
+\`\`\`
 
 ### 2. Enhanced Material Analysis
 
-```typescript
+\`\`\`typescript
 // Comprehensive material analysis with competitive intelligence
 interface MaterialAnalysis {
   item_name: string;
@@ -337,11 +337,11 @@ function generateEnhancedCostBreakdown(materialResearch: MaterialAnalysis[], pro
     }
   };
 }
-```
+\`\`\`
 
 ### 3. Real-Time Market Alerts
 
-```typescript
+\`\`\`typescript
 // Market condition monitoring
 const marketAlerts = {
   material_shortage: (materials: string[]) => 
@@ -353,7 +353,7 @@ const marketAlerts = {
   seasonal_demand: (category: string, season: string) => 
     `📅 Seasonal insight: ${category} demand typically ${season === 'high' ? 'increases' : 'decreases'} this time of year. Adjust pricing accordingly.`
 };
-```
+\`\`\`
 
 This enhanced Alex implementation provides:
 

@@ -80,7 +80,7 @@ These components maintain their logic as it's appropriate for their purpose:
 
 ## File Structure
 
-```
+\`\`\`
 src/
 ├── hooks/                    # 🧠 All business logic
 │   ├── useAuth.ts
@@ -111,7 +111,7 @@ src/
     │   └── SubscriptionManager.tsx # Uses useSubscription
     └── ui/
         └── AgentComponents.tsx     # Uses useAgentUI
-```
+\`\`\`
 
 ## Quality Assurance
 

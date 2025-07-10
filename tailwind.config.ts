@@ -1,13 +1,15 @@
-import type { Config } from "tailwindcss";
-import tailwindcssAnimate from "tailwindcss-animate";
+import type { Config } from "tailwindcss"
 
-const config: Config = {
-  darkMode: "class",
+const config = {
+  darkMode: ["class"],
   content: [
-    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
+    "*.{js,ts,jsx,tsx,mdx}",
   ],
+  prefix: "",
   theme: {
     container: {
       center: true,
@@ -16,85 +18,58 @@ const config: Config = {
         "2xl": "1400px",
       },
     },
-    screens: {
-      // Desktop breakpoints (10 levels)
-      'xs': '480px',      // Compact tablet
-      'sm': '640px',      // Legacy desktop  
-      'md': '768px',      // Minimum desktop
-      'lg': '1024px',     // Standard laptop
-      'xl': '1280px',     // Medium desktop  
-      '2xl': '1440px',    // Standard desktop
-      '3xl': '1920px',    // Wide desktop
-      '4xl': '2560px',    // Ultra-wide
-      
-      // Tablet-specific (6 levels)
-      'tablet-sm': '600px',   // Android tablet
-      'tablet-md': '768px',   // iPad standard
-      'tablet-lg': '834px',   // iPad Pro 11"
-      'tablet-xl': '1024px',  // iPad Pro 12.9"
-      
-      // Professional focus breakpoints
-      'desktop-min': '992px',    // Minimum professional experience
-      'professional': '1200px',  // Optimal professional layout
-    },
     extend: {
       colors: {
-        border: "oklch(var(--border))",
-        input: "oklch(var(--input))",
-        ring: "oklch(var(--ring))",
-        background: "oklch(var(--background))",
-        foreground: "oklch(var(--foreground))",
+        border: "hsl(var(--border))",
+        input: "hsl(var(--input))",
+        ring: "hsl(var(--ring))",
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "oklch(var(--primary))",
-          foreground: "oklch(var(--primary-foreground))",
+          DEFAULT: "hsl(var(--primary))",
+          foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
-          DEFAULT: "oklch(var(--secondary))",
-          foreground: "oklch(var(--secondary-foreground))",
+          DEFAULT: "hsl(var(--secondary))",
+          foreground: "hsl(var(--secondary-foreground))",
         },
         destructive: {
-          DEFAULT: "oklch(var(--destructive))",
-          foreground: "oklch(var(--destructive-foreground))",
-        },
-        success: {
-          DEFAULT: "oklch(var(--success))",
-          foreground: "oklch(var(--success-foreground))",
-        },
-        warning: {
-          DEFAULT: "oklch(var(--warning))",
-          foreground: "oklch(var(--warning-foreground))",
-        },
-        info: {
-          DEFAULT: "oklch(var(--info))",
-          foreground: "oklch(var(--info-foreground))",
+          DEFAULT: "hsl(var(--destructive))",
+          foreground: "hsl(var(--destructive-foreground))",
         },
         muted: {
-          DEFAULT: "oklch(var(--muted))",
-          foreground: "oklch(var(--muted-foreground))",
+          DEFAULT: "hsl(var(--muted))",
+          foreground: "hsl(var(--muted-foreground))",
         },
         accent: {
-          DEFAULT: "oklch(var(--accent))",
-          foreground: "oklch(var(--accent-foreground))",
+          DEFAULT: "hsl(var(--accent))",
+          foreground: "hsl(var(--accent-foreground))",
         },
         popover: {
-          DEFAULT: "oklch(var(--popover))",
-          foreground: "oklch(var(--popover-foreground))",
+          DEFAULT: "hsl(var(--popover))",
+          foreground: "hsl(var(--popover-foreground))",
         },
         card: {
-          DEFAULT: "oklch(var(--card))",
-          foreground: "oklch(var(--card-foreground))",
+          DEFAULT: "hsl(var(--card))",
+          foreground: "hsl(var(--card-foreground))",
         },
+        // Custom App-Specific Colors
+        "background-light": "hsl(var(--background-light))",
+        "text-light-primary": "hsl(var(--text-light-primary))",
+        "text-light-secondary": "hsl(var(--text-light-secondary))",
+        "ui-border": "hsl(var(--ui-border))",
+        "ui-card": "hsl(var(--ui-card))",
+        "ui-muted": "hsl(var(--ui-muted))",
       },
       borderRadius: {
-        lg: "12px",
-        md: "8px",
-        sm: "4px",
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
-        sans: ["Inter", "system-ui", "sans-serif"],
-        serif: ["Roboto Slab", "Georgia", "serif"],
-        heading: ["Roboto Slab", "Georgia", "serif"],
-        mono: ["JetBrains Mono", "Menlo", "Monaco", "monospace"],
+        sans: ["var(--font-inter)"],
+        serif: ["var(--font-roboto-slab)"],
+        mono: ["var(--font-jetbrains-mono)"],
       },
       keyframes: {
         "accordion-down": {
@@ -105,23 +80,14 @@ const config: Config = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
-        "fade-in": {
-          from: { opacity: "0", transform: "translateY(10px)" },
-          to: { opacity: "1", transform: "translateY(0)" },
-        },
-        "slide-in": {
-          from: { transform: "translateX(-100%)" },
-          to: { transform: "translateX(0)" },
-        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
-        "accordion-up": "accordion-up 0.2s ease-out", 
-        "fade-in": "fade-in 0.3s ease-out",
-        "slide-in": "slide-in 0.3s ease-out",
+        "accordion-up": "accordion-up 0.2s ease-out",
       },
     },
   },
-  plugins: [tailwindcssAnimate],
-};
-export default config;
+  plugins: [require("tailwindcss-animate")],
+} satisfies Config
+
+export default config

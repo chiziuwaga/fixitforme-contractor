@@ -25,7 +25,7 @@ This document outlines the comprehensive notification system for the FixItForMe 
 Real-time status updates during AI agent background operations, similar to ChatGPT's deep research UI.
 
 **Alex the Assessor - Working States:**
-```typescript
+\`\`\`typescript
 interface AlexExecutionState {
   status: 'analyzing' | 'calculating' | 'researching' | 'finalizing'
   progress: number // 0-100
@@ -38,10 +38,10 @@ interface AlexExecutionState {
 // 2. "Researching material costs at Home Depot..." (50%)
 // 3. "Calculating labor estimates..." (75%)
 // 4. "Finalizing cost breakdown..." (100%)
-```
+\`\`\`
 
 **Rex the Retriever - Working States:**
-```typescript
+\`\`\`typescript
 interface RexExecutionState {
   status: 'searching' | 'filtering' | 'analyzing' | 'categorizing'
   progress: number
@@ -56,7 +56,7 @@ interface RexExecutionState {
 // 2. "Filtering spam and low-quality posts..." (40%)
 // 3. "Analyzing lead quality and budget..." (70%)
 // 4. "Categorizing with Felix framework..." (90%)
-```
+\`\`\`
 
 ### 2. **System Notifications**
 Platform-level alerts and status updates.
@@ -80,7 +80,7 @@ Lead alerts, bid status, project updates, payment confirmations.
 ### **AgentWorkingIndicator Component**
 Primary UI for showing AI agent execution state.
 
-```typescript
+\`\`\`typescript
 interface AgentWorkingIndicatorProps {
   agent: 'alex' | 'rex'
   state: AlexExecutionState | RexExecutionState
@@ -95,12 +95,12 @@ interface AgentWorkingIndicatorProps {
 // - Estimated time remaining
 // - Cancel button (if cancellable)
 // - "Deep research" style loading pattern
-```
+\`\`\`
 
 ### **ConcurrentExecutionManager**
 Tracks and limits simultaneous agent operations.
 
-```typescript
+\`\`\`typescript
 interface ExecutionSession {
   id: string
   agent: 'alex' | 'rex'
@@ -115,12 +115,12 @@ interface ExecutionSession {
 // - Queue additional requests with estimated wait time
 // - Automatic timeout after 10 minutes
 // - Clear session on completion or cancellation
-```
+\`\`\`
 
 ### **NotificationCenter Component**
 Central hub for all notification types.
 
-```typescript
+\`\`\`typescript
 interface NotificationCenterProps {
   notifications: Notification[]
   agentic_sessions: ExecutionSession[]
@@ -134,14 +134,14 @@ interface NotificationCenterProps {
 // - Real-time agentic execution updates
 // - Notification history and filtering
 // - Clear all/mark as read functionality
-```
+\`\`\`
 
 ---
 
 ## Design System Integration
 
 ### **Brand Colors & Typography** (from fixitforme.ai)
-```css
+\`\`\`css
 :root {
   /* Primary brand colors */
   --fixitforme-blue: #1e40af;
@@ -159,10 +159,10 @@ interface NotificationCenterProps {
   --font-semibold: 600;
   --font-medium: 500;
 }
-```
+\`\`\`
 
 ### **Agentic Execution Animations**
-```css
+\`\`\`css
 .agent-working {
   animation: pulse-working 2s ease-in-out infinite;
 }
@@ -181,7 +181,7 @@ interface NotificationCenterProps {
   0% { background-position: -200px 0; }
   100% { background-position: 200px 0; }
 }
-```
+\`\`\`
 
 ---
 
@@ -205,7 +205,7 @@ interface NotificationCenterProps {
    - Create notification management endpoints
 
 4. **Database Schema Updates**
-   ```sql
+   \`\`\`sql
    -- Add to existing schema
    CREATE TABLE agent_executions (
      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -221,7 +221,7 @@ interface NotificationCenterProps {
    );
    
    CREATE INDEX idx_agent_executions_user_status ON agent_executions(user_id, status);
-   ```
+   \`\`\`
 
 ### **User Experience Flow**
 

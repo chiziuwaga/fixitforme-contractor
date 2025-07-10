@@ -21,7 +21,7 @@
 
 ### 🧠 Brain/Skin Architecture - READY
 
-```text
+\`\`\`text
 ✅ Custom Hooks (Business Logic)
    ├── useAuth.ts - Authentication & SMS verification
    ├── useUser.ts - Global user state management
@@ -42,11 +42,11 @@
    ├── Components are purely presentational
    ├── No business logic in UI components
    └── Props-driven architecture enforced
-```
+\`\`\`
 
 ### 🤖 AI Agent System - READY
 
-```text
+\`\`\`text
 ✅ Agent Response JSON Assets
    ├── Lexi the Liaison - Onboarding & guidance
    ├── Alex the Assessor - Cost analysis & bidding
@@ -58,11 +58,11 @@
    ├── /api/agents/alex/route.ts - Bidding analysis
    ├── /api/agents/rex/route.ts - Lead generation
    └── Real-time streaming with Vercel AI SDK
-```
+\`\`\`
 
 ### 🎨 Design System - READY
 
-```text
+\`\`\`text
 ✅ Brand Guidelines
    ├── Felix Gold (#D4A574) - Primary brand color
    ├── Forest Green (#1A2E1A) - Secondary/text color
@@ -74,11 +74,11 @@
    ├── Myna UI Kit integration ready
    ├── Design token extraction capabilities
    └── Real-time design-to-code workflow
-```
+\`\`\`
 
 ### 🔧 Configuration Files - READY
 
-```text
+\`\`\`text
 ✅ Development Configuration
    ├── .vscode/mcp.json - Figma MCP server
    ├── .vscode/settings.json - VS Code MCP integration
@@ -91,13 +91,13 @@
    ├── tailwind.config.ts - Design system tokens
    ├── next.config.ts - Next.js configuration
    └── vercel.json - Deployment configuration
-```
+\`\`\`
 
 ## 📦 Deployment Commands
 
 ### Build and Deploy
 
-```bash
+\`\`\`bash
 # Install dependencies
 npm install
 
@@ -109,11 +109,11 @@ npm run start
 
 # Deploy to Vercel
 vercel --prod
-```
+\`\`\`
 
 ### Environment Variables Required
 
-```env
+\`\`\`env
 # Supabase
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
@@ -136,7 +136,7 @@ TWILIO_PHONE_NUMBER=your_twilio_phone_number
 # Application
 NEXTAUTH_URL=your_deployed_url
 NEXTAUTH_SECRET=your_nextauth_secret
-```
+\`\`\`
 
 ## 🔍 Post-Deployment Verification
 

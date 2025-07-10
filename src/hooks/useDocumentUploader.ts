@@ -1,117 +1,103 @@
-'use client';
+"use client"
 
-import { useState } from 'react';
-import { toast } from 'sonner';
+import type React from "react"
 
-export interface Document {
-  id: string;
-  name: string;
-  type: string;
-  status: 'pending' | 'approved' | 'rejected';
-  uploadedAt: string;
-  size: number;
+import { useState, useEffect } from "react"
+import { useUser } from "./useUser"
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
+import { toast } from "sonner"
+
+interface UploadedFile {
+  name: string
+  url: string
 }
 
-export const useDocumentUploader = () => {
-  const [documents, setDocuments] = useState<Document[]>([
-    {
-      id: '1',
-      name: 'Contractor License.pdf',
-      type: 'license',
-      status: 'approved',
-      uploadedAt: '2024-01-15',
-      size: 245760
-    },
-    {
-      id: '2',
-      name: 'Insurance Certificate.pdf',
-      type: 'insurance',
-      status: 'pending',
-      uploadedAt: '2024-01-20',
-      size: 189440
+export function useDocumentUploader() {
+  const { user } = useUser()
+  const supabase = createClientComponentClient()
+  const [files, setFiles] = useState<File[]>([])
+  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([])
+  const [loading, setLoading] = useState(false)
+  const [uploading, setUploading] = useState(false)
+
+  useEffect(() => {
+    const fetchDocuments = async () => {
+      if (!user) return
+      setLoading(true)
+      try {
+        const { data, error } = await supabase.storage.from("contractor_documents").list(user.id, {
+          limit: 100,
+        })
+
+        if (error) throw error
+
+        const publicUrls = data.map((file) => {
+          const { data: publicUrlData } = supabase.storage
+            .from("contractor_documents")
+            .getPublicUrl(`${user.id}/${file.name}`)
+          return { name: file.name, url: publicUrlData.publicUrl }
+        })
+
+        setUploadedFiles(publicUrls)
+      } catch (error) {
+        toast.error("Failed to load documents.", {
+          description: error instanceof Error ? error.message : "Please refresh the page.",
+        })
+      } finally {
+        setLoading(false)
+      }
     }
-  ]);
-  const [uploading, setUploading] = useState(false);
+    fetchDocuments()
+  }, [user, supabase])
 
-  const requiredDocuments = [
-    { type: 'license', label: 'Contractor License', required: true },
-    { type: 'insurance', label: 'General Liability Insurance', required: true },
-    { type: 'bond', label: 'Surety Bond', required: false },
-    { type: 'certifications', label: 'Professional Certifications', required: false }
-  ];
-
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  };
-
-  const getStatusClasses = (status: 'approved' | 'pending' | 'rejected') => {
-    switch (status) {
-      case 'approved': return 'bg-success/10 text-success-foreground border-success/20';
-      case 'pending': return 'bg-warning/10 text-warning-foreground border-warning/20';
-      case 'rejected': return 'bg-destructive/10 text-destructive-foreground border-destructive/20';
-      default: return 'bg-muted text-muted-foreground border-border';
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files) {
+      setFiles(Array.from(event.target.files))
     }
-  };
+  }
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'approved': return 'Check';
-      case 'pending': return 'AlertCircle';
-      case 'rejected': return 'X';
-      default: return null;
-    }
-  };
+  const handleUpload = async () => {
+    if (!user || files.length === 0) return
 
-  const handleFileUpload = async (file: File, docType: string) => {
-    if (!file) return;
-
-    setUploading(true);
+    setUploading(true)
+    const uploadPromises = files.map((file) => {
+      const filePath = `${user.id}/${file.name}`
+      return supabase.storage.from("contractor_documents").upload(filePath, file, {
+        cacheControl: "3600",
+        upsert: true, // Overwrite existing files
+      })
+    })
 
     try {
-      // Simulate upload - in real app, this would upload to Supabase Storage
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      const results = await Promise.all(uploadPromises)
+      const failedUploads = results.filter((result) => result.error)
 
-      const newDocument: Document = {
-        id: Date.now().toString(),
-        name: file.name,
-        type: docType,
-        status: 'pending',
-        uploadedAt: new Date().toISOString().split('T')[0],
-        size: file.size
-      };
+      if (failedUploads.length > 0) {
+        throw new Error(`Failed to upload ${failedUploads.length} file(s).`)
+      }
 
-      setDocuments(prev => [...prev, newDocument]);
-      toast.success('Document uploaded successfully!');
+      toast.success(`${files.length} file(s) uploaded successfully!`)
+      // Refresh the list of uploaded files
+      const { data: publicUrlData } = supabase.storage
+        .from("contractor_documents")
+        .getPublicUrl(`${user.id}/${files[0].name}`)
+      setUploadedFiles((prev) => [...prev, { name: files[0].name, url: publicUrlData.publicUrl }])
+      setFiles([])
     } catch (error) {
-      console.error('Failed to upload document:', error);
-      toast.error('Failed to upload document');
+      toast.error("Upload failed.", {
+        description: error instanceof Error ? error.message : "Please try again.",
+      })
     } finally {
-      setUploading(false);
+      setUploading(false)
     }
-  };
-
-  const handleRemoveDocument = (docId: string) => {
-    setDocuments(prev => prev.filter(doc => doc.id !== docId));
-    toast.success('Document removed');
-  };
-
-  const getUploadedDocument = (docType: string) => {
-    return documents.find(doc => doc.type === docType);
-  };
+  }
 
   return {
-    documents,
+    files,
+    uploadedFiles,
+    loading,
     uploading,
-    requiredDocuments,
-    formatFileSize,
-    getStatusClasses,
-    getStatusIcon,
-    handleFileUpload,
-    handleRemoveDocument,
-    getUploadedDocument
-  };
-};
+    handleFileChange,
+    handleUpload,
+  }
+}

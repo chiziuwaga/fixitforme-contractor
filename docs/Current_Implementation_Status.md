@@ -102,39 +102,39 @@
 ## 📋 **IMMEDIATE NEXT STEPS (Priority Order)**
 
 ### **Step 1: Database Setup & Seeding** 
-```bash
+\`\`\`bash
 # Create Supabase tables and load Felix data
 supabase db push
 supabase db seed
-```
+\`\`\`
 
 ### **Step 2: Authentication Integration**
-```bash
+\`\`\`bash
 # Implement Supabase Auth + Twilio SMS
 # Update login page with working authentication
 # Test 48-hour session management
-```
+\`\`\`
 
 ### **Step 3: Core UI Completion**
-```bash
+\`\`\`bash
 # Build main dashboard layout per ASCII mockup
 # Implement header/navigation
 # Connect lead feed to dashboard
-```
+\`\`\`
 
 ### **Step 4: Agent Integration**
-```bash
+\`\`\`bash
 # Complete Lexi onboarding flow
 # Build Alex bidding interface  
 # Connect Rex to dashboard display
-```
+\`\`\`
 
 ### **Step 5: Contractor APIs**
-```bash
+\`\`\`bash
 # Implement missing contractor endpoints
 # Add document verification tracking
 # Build payment history access
-```
+\`\`\`
 
 ---
 
@@ -159,7 +159,7 @@ supabase db seed
 5. **Document as we go** - update specs when changes are made
 
 ### **Git Strategy:**
-```bash
+\`\`\`bash
 # Current status: Many uncommitted changes
 # Recommendation: Create feature branches for each major component
 
@@ -167,7 +167,7 @@ git checkout -b feature/database-seeding
 git checkout -b feature/authentication  
 git checkout -b feature/ui-layout
 git checkout -b feature/agent-integration
-```
+\`\`\`
 
 ### **Testing Strategy:**
 - Manual testing of each user flow

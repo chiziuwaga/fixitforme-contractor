@@ -27,7 +27,7 @@ IndyDev Dan's approach to AI agent development focuses on three foundational pil
 **Core Principle**: Agents should be **specialists** that execute specific tools rather than generalists trying to do everything.
 
 ### Implementation Pattern:
-```typescript
+\`\`\`typescript
 // 1. Context Setting
 const context = {
   contractor_profile: {},
@@ -49,7 +49,7 @@ const result = await toolUser.execute({
   validation: qualityRules,
   output_format: "structured_json"
 });
-```
+\`\`\`
 
 ## Agent Design Principles
 

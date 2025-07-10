@@ -19,7 +19,7 @@
 
 All business logic resides in these hooks. Each hook manages one domain:
 
-```ascii
+\`\`\`ascii
 ┌─────────────────────────────────────────────────────────────────┐
 │                    BUSINESS LOGIC LAYER (HOOKS)                 │
 ├─────────────────────────────────────────────────────────────────┤
@@ -37,13 +37,13 @@ All business logic resides in these hooks. Each hook manages one domain:
 │  useHomePage.ts      │  Landing page logic, mobile detection  │
 │  useResponsiveChart.ts │ Chart behavior, breakpoints, D3     │
 └─────────────────────────────────────────────────────────────────┘
-```
+\`\`\`
 
 #### The Skin: Presentational Components (`/src/components/`)
 
 Pure UI components that consume hooks via props:
 
-```ascii
+\`\`\`ascii
 ┌─────────────────────────────────────────────────────────────────┐
 │                   PRESENTATION LAYER (COMPONENTS)               │
 ├─────────────────────────────────────────────────────────────────┤
@@ -62,7 +62,7 @@ Pure UI components that consume hooks via props:
 │  ├── ChatManager.tsx         → useChat()                       │
 │  └── AgentComponents.tsx     → useAgentUI()                    │
 └─────────────────────────────────────────────────────────────────┘
-```
+\`\`\`
 
 ### 🤖 AI Agent System JSON Assets
 
@@ -70,7 +70,7 @@ Pure UI components that consume hooks via props:
 
 All agents return structured JSON with UI generation capabilities:
 
-```json
+\`\`\`json
 {
   "message": "Conversational response text",
   "ui_assets": {
@@ -94,7 +94,7 @@ All agents return structured JSON with UI generation capabilities:
     "requires_auth": "boolean"
   }
 }
-```
+\`\`\`
 
 ### 🎨 Design System Integration
 
@@ -102,7 +102,7 @@ All agents return structured JSON with UI generation capabilities:
 
 From `src/lib/brand.ts`:
 
-```typescript
+\`\`\`typescript
 export const BRAND = {
   colors: {
     primary: '#D4A574',      // Felix Gold
@@ -131,7 +131,7 @@ export const BRAND = {
     }
   }
 }
-```
+\`\`\`
 
 #### Figma MCP Integration
 
@@ -139,7 +139,7 @@ Configuration files for design token extraction:
 
 **`.vscode/mcp.json`**
 
-```json
+\`\`\`json
 {
   "servers": {
     "Figma Dev Mode MCP": {
@@ -149,7 +149,7 @@ Configuration files for design token extraction:
     }
   }
 }
-```
+\`\`\`
 
 **Myna UI Kit Integration:**
 
@@ -164,7 +164,7 @@ Configuration files for design token extraction:
 
 #### Breakpoint Strategy
 
-```typescript
+\`\`\`typescript
 breakpoints: {
   mobile: '640px',     // Mobile-first approach
   tablet: '768px',     // Tablet landscape
@@ -172,7 +172,7 @@ breakpoints: {
   wide: '1280px',      // Wide screens
   ultrawide: '1536px', // Ultra-wide displays
 }
-```
+\`\`\`
 
 #### Mobile Behavior
 
@@ -185,7 +185,7 @@ breakpoints: {
 
 #### Global State Providers
 
-```ascii
+\`\`\`ascii
 ┌─────────────────────────────────────────────────────────────────┐
 │                       GLOBAL STATE LAYER                        │
 ├─────────────────────────────────────────────────────────────────┤
@@ -200,11 +200,11 @@ breakpoints: {
 │  ├── Background process coordination                            │
 │  └── Real-time state synchronization                            │
 └─────────────────────────────────────────────────────────────────┘
-```
+\`\`\`
 
 #### Hook Data Flow
 
-```ascii
+\`\`\`ascii
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │   Supabase      │    │   Custom Hook   │    │   Component     │
 │   (Database)    │◄──►│   (Business     │◄──►│   (UI Only)     │
@@ -216,13 +216,13 @@ breakpoints: {
         └─────────────►│   Updates       │◄─────────────┘
                        │   (Subscriptions)│
                        └─────────────────┘
-```
+\`\`\`
 
 ### 🚀 Deployment Configuration
 
 #### Vercel Configuration (`vercel.json`)
 
-```json
+\`\`\`json
 {
   "framework": "nextjs",
   "buildCommand": "npm run build",
@@ -234,7 +234,7 @@ breakpoints: {
     }
   }
 }
-```
+\`\`\`
 
 #### Build Process
 
@@ -246,7 +246,7 @@ breakpoints: {
 
 ### 🗂️ File Structure Summary
 
-```ascii
+\`\`\`ascii
 src/
 ├── app/                          # Next.js 15 App Router
 │   ├── page.tsx                 # Landing page (useHomePage)
@@ -290,7 +290,7 @@ src/
 └── providers/                  # React Context providers
     ├── UserProvider.tsx        # Global user state
     └── ConcurrentExecutionManager.tsx # Agent coordination
-```
+\`\`\`
 
 ## 🎯 Ready for Frontend Transfer
 

@@ -33,40 +33,40 @@ This document tracks the improvements made to the FixItForMe agent system, focus
 #### 2. **Agent Capability Documentation** ✅
 
 **Rex the Retriever - Enhanced Guidance:**
-```
+\`\`\`
 🎯 Lead Performance Analysis: Monthly metrics and conversion tracking
 📍 Geographic & Market Intelligence: Area insights and competition analysis  
 📈 Service Demand Insights: Felix framework trending analysis
 🔍 Search Session Management: Tier-based session tracking
 ⚡ Automated Lead Generation: Background monitoring setup
 🎖️ Quality Scoring: Lead source analysis and optimization
-```
+\`\`\`
 
 **Alex the Assessor - Enhanced Guidance:**
-```
+\`\`\`
 📊 Comprehensive Cost Analysis: Project pricing and competitive analysis
 🏗️ Detailed Material Estimates: Quantity calculations and material lists
 ⏱️ Project Timeline Planning: Realistic scheduling and phase management  
 💰 Strategic Pricing Optimization: Profit margin analysis and bid strategy
 ⚠️ Risk Assessment & Planning: Issue identification and contingency planning
 🎯 Bid Strategy Development: Proposal optimization and differentiation
-```
+\`\`\`
 
 **Lexi the Liaison - Enhanced Guidance:**  
-```
+\`\`\`
 🎯 Profile Setup & Optimization: Complete contractor profile assistance
 🛠️ Service Selection Strategy: Felix framework service optimization
 📚 Platform Features Training: Alex/Rex integration and tier benefits
 📍 Territory & Market Setup: Service area and availability configuration
 💼 Business Strategy Guidance: Payment structure and tier transition planning
 🚀 Getting Started Checklist: Step-by-step onboarding completion
-```
+\`\`\`
 
 #### 3. **JSON Response Format Standardization** ✅
 
 All agents now use consistent structured output for generative UI:
 
-```json
+\`\`\`json
 {
   "message": "Conversational response with clear explanations",
   "ui_assets": {
@@ -86,7 +86,7 @@ All agents now use consistent structured output for generative UI:
     }
   ]
 }
-```
+\`\`\`
 
 ### Technical Implementation Details:
 

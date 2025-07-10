@@ -2,11 +2,11 @@
 ## Based on Comprehensive Research Experience
 
 **Contact Extraction Patterns:**
-```regex
+\`\`\`regex
 phone_pattern = r'\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}'
 email_pattern = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
 craigslist_reply = "reply button available"
-```
+\`\`\`
 
 ---
 
@@ -14,22 +14,22 @@ craigslist_reply = "reply button available"
 
 ### TEMPORAL FILTERING STRATEGY
 
-```python
+\`\`\`python
 def calculate_recency_score(posted_time):
     hours_ago = (datetime.now() - posted_time).total_seconds() / 3600
 
 def prioritize_leads(leads_list):
     return sorted(leads_list, key=lambda x: (x.recency_score, x.estimated_value), reverse=True)
-```
+\`\`\`
 
 ### REFRESH FREQUENCY STRATEGY
 
-```python
+\`\`\`python
 refresh_schedule = {
     "craigslist_gigs": "every_2_hours",      # High turnover
     "facebook_marketplace": "every_4_hours"   # High turnover when accessible
 }
-```
+\`\`\`
 
 ---
 
@@ -37,7 +37,7 @@ refresh_schedule = {
 
 ### LEAD VALIDATION PATTERNS
 
-```sql
+\`\`\`sql
 -- Exclude spam/low-quality postings
 EXCLUDE WHERE:
     title CONTAINS ('$500 bonus', 'same day cash', 'www.rentatech.org')
@@ -51,11 +51,11 @@ PRIORITIZE WHERE:
     AND has_specific_project_details = TRUE
     AND compensation_clearly_stated = TRUE
     AND contact_method IN ('phone', 'email', 'professional_application')
-```
+\`\`\`
 
 ### VALUE THRESHOLD ENFORCEMENT
 
-```python
+\`\`\`python
 value_thresholds = {
     "cleveland_area": {
         "minimum": 3000,
@@ -66,7 +66,7 @@ value_thresholds = {
         "high_value": 25000
     }
 }
-```
+\`\`\`
 
 ---
 
@@ -87,7 +87,7 @@ value_thresholds = {
 ### GOVERNMENT CONTRACT OPTIMIZATION
 
 **SAMs.gov Query Strategy:**
-```python
+\`\`\`python
 naics_codes_priority = {
     "238160": "Roofing Contractors",           # Primary
     "238310": "Drywall and Insulation",       # Primary  
@@ -102,7 +102,7 @@ search_parameters = {
     "place_of_performance": target_states,
     "estimated_value_min": value_thresholds[location]["minimum"]
 }
-```
+\`\`\`
 
 ---
 
@@ -110,7 +110,7 @@ search_parameters = {
 
 ### REAL-TIME ALERT TRIGGERS
 
-```python
+\`\`\`python
 alert_conditions = {
     "urgent_lead": {
         "recency_score": 10,
@@ -127,11 +127,11 @@ alert_conditions = {
         "action": "relationship_notification"
     }
 }
-```
+\`\`\`
 
 ### PERFORMANCE METRICS
 
-```python
+\`\`\`python
 kpis = {
     "lead_freshness": "average_hours_since_posting",
     "contact_success_rate": "successful_contacts / total_attempts", 
@@ -139,7 +139,7 @@ kpis = {
     "geographic_coverage": "cities_covered / total_target_cities",
     "service_distribution": "roofing_drywall_percentage"
 }
-```
+\`\`\`
 
 ---
 
