@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 export async function GET() {
   try {
     // DEMO MODE: Return mock leads
-    if (DEMO_CONFIG.DEMO_MODE || DEMO_CONFIG.SUPABASE_DEMO.enabled) {
+    if (DEMO_CONFIG.DEMO_MODE) {
       console.log('[DEMO] Returning mock leads data');
       
       await createDemoResponse(null, 800); // Simulate API delay

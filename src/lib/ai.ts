@@ -9,10 +9,12 @@ if (!DEEPSEEK_API_KEY) {
 }
 
 // Initialize AI client for Deepseek
-export const deepseek = createOpenAI({
+const deepseekProvider = createOpenAI({
   apiKey: process.env.DEEPSEEK_API_KEY,
   baseURL: "https://api.deepseek.com/v1",
 })
+
+export const deepseek = deepseekProvider("deepseek-chat")
 
 // Helper function for streaming AI responses
 export async function streamAIResponse(prompt: string, systemPrompt?: string) {

@@ -1,7 +1,7 @@
 "use client"
+import { redirect } from "next/navigation"
 
-import  from "../src/components/ChatManager"
-
-export default function SyntheticV0PageForDeployment() {
-  return < />
+// This page handles the initial routing logic.
+export default function Page() {
+  redirect("/login")
 }

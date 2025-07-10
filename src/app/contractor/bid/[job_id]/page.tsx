@@ -7,7 +7,7 @@ import EnhancedChatManager from "@/components/EnhancedChatManager"
 import { JobHeader } from "@/components/job-bid/JobHeader"
 import { JobDetailsCard } from "@/components/job-bid/JobDetailsCard"
 import { JobSidebar } from "@/components/job-bid/JobSidebar"
-import { AgentPrompts } from "@/components/job-bid/AgentPrompts"
+import AgentPrompts from "@/components/job-bid/AgentPrompts"
 
 export default function JobBidPage() {
   const { job, loading, error, getUrgencyColor, getSourceColor, formatBudget } = useJobBid()

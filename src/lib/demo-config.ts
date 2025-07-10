@@ -14,6 +14,30 @@ export const DEMO_CONFIG = {
     enabled: !process.env.TWILIO_ACCOUNT_SID,
     mockCode: "123456", // Fixed demo verification code
   },
+
+  // Demo leads data
+  DEMO_LEADS: [
+    {
+      id: "demo-1",
+      title: "Kitchen Cabinet Installation",
+      description: "Need help installing new kitchen cabinets",
+      location: "Downtown Seattle",
+      category: "carpentry",
+      estimated_value: 2500,
+      urgency: "high",
+      created_at: new Date().toISOString(),
+    },
+    {
+      id: "demo-2", 
+      title: "Bathroom Tile Repair",
+      description: "Several loose tiles in bathroom need fixing",
+      location: "Capitol Hill",
+      category: "flooring",
+      estimated_value: 800,
+      urgency: "medium",
+      created_at: new Date().toISOString(),
+    }
+  ],
 }
 
 // Demo response helpers
