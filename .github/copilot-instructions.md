@@ -173,6 +173,33 @@
 
 This workspace represents a **production-ready, scalable contractor management platform** with a clean architectural foundation that separates business logic from presentation, enabling rapid feature development and easy maintenance.
 
+## 🎨 Design System & MCP Integration
+
+### Figma MCP Configuration
+- **Figma Dev Mode MCP Server:** Configured at `http://127.0.0.1:3845/sse` for real-time design token extraction
+- **Workspace Configuration:** `.vscode/figma_mcp.json` with agent capabilities for `figma.devMode`
+- **Global Configuration:** VS Code settings with MCP discovery enabled and chat agent mode
+- **Myna UI Kit:** Premium TailwindCSS + shadcn/ui components at `https://www.figma.com/design/f5khzL71UIi807ND15eHcg/Myna-UI---TailwindCSS---shadcn-ui---Radix-Premium-UI-Kit--Community-?node-id=605-1271&m=dev`
+
+### MCP Tools Available
+- **`get_variable_defs`** - Extract design tokens (colors, spacing, typography) from Figma selections
+- **`get_code`** - Generate React + TailwindCSS code from Figma components
+- **`get_code_connect_map`** - Map Figma components to existing codebase components
+- **`get_image`** - Extract component screenshots for layout reference
+
+### Design Token Integration Workflow
+1. **Select Figma Component:** Choose specific UI element in Figma desktop app
+2. **Extract Variables:** Use MCP to get design tokens and component specifications
+3. **Map to Brand:** Align extracted tokens with FixItForMe brand guidelines
+4. **Update Components:** Apply new design system to existing shadcn/ui components
+5. **Maintain Architecture:** Preserve brain/skin separation during UI updates
+
+### Re-skinning Strategy
+- **Component-First Approach:** Update individual UI components using Figma MCP data
+- **Token-Driven Design:** Extract and apply consistent design tokens across all components
+- **Responsive Integration:** Ensure Myna UI responsive patterns work with existing layouts
+- **Brand Alignment:** Maintain FixItForMe brand identity while adopting Myna UI patterns
+
 ## File Structure Conventions
 - `/src/hooks/*` - Custom React hooks containing all business logic
 - `/src/app/contractor/*` - Contractor-facing pages (presentational only)

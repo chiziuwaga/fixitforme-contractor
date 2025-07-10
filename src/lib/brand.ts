@@ -24,7 +24,7 @@ export const BRAND = {
     agents: {
       lexi: '#D4A574',       // Felix Gold - Liaison/Guide
       alex: '#28A745',       // Success Green - Assessor/Analysis  
-      rex: '#FFC107',        // Warning Orange - Retriever/Search
+      rex: '#4A6FA5',        // Steel Blue - Retriever/Search (changed from warning orange)
       felix: '#1A2E1A',      // Forest Green - Diagnostic Agent
     },
     
@@ -58,6 +58,7 @@ export const BRAND = {
   typography: {
     fontFamily: {
       sans: ['Inter', 'system-ui', 'sans-serif'],
+      serif: ['Roboto Slab', 'Georgia', 'serif'],  // Added for headlines per brand guidelines
       mono: ['JetBrains Mono', 'Consolas', 'monospace'],
     },
     
@@ -125,7 +126,7 @@ export const BRAND = {
     },
     rex: {
       name: 'Rex the Retriever',
-      color: '#6B7280', 
+      color: '#4A6FA5',  // Updated to steel blue
       avatar: '🔍',
       description: 'Lead Generation & Market Intelligence',
       personality: 'Methodical, data-driven, and efficient'
@@ -161,6 +162,7 @@ export const CSS_VARIABLES = `
     --color-text-accent: ${BRAND.colors.text.accent};
     
     --font-family-sans: ${BRAND.typography.fontFamily.sans.join(', ')};
+    --font-family-serif: ${BRAND.typography.fontFamily.serif.join(', ')};
     --font-family-mono: ${BRAND.typography.fontFamily.mono.join(', ')};
     
     --spacing-xs: ${BRAND.spacing.xs};

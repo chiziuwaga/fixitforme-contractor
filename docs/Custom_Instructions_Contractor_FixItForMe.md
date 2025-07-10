@@ -46,7 +46,21 @@ When working with agent-related code, maintain these distinct personas:
 ## Environment Setup
 - **`.env.local`:** Populate keys for Supabase, Deepseek/LLM, Stripe (Test Keys), and Twilio.
 
-## Development Workflow & Key Tasks
+## 🎯 Development Workflow
+
+### Contextual Awareness
+- **Analyze Previous Turns:** Before responding, review the last 2-4 turns of the conversation to maintain context and avoid redundancy.
+
+### Hook-First Development Process
+1. **Define business requirements** → Create custom hook with TypeScript interfaces
+2. **Implement backend logic** → Vercel function with Python
+3. **Develop frontend components** → React components with Tailwind CSS
+4. **Integrate AI agents** → Connect with Vercel AI SDK
+5. **Set up payments** → Stripe integration for contractor tiers
+6. **Test thoroughly** → Unit, integration, and end-to-end tests
+7. **Deploy on Vercel** → Preview deployment for review, then production
+
+### Key Tasks
 1.  **Implement Payment Logic (`/api/payments/`):**
     -   Create the Stripe webhook handler (`webhook_handler.py`).
     -   Implement the payout logic differentiating between `tier` ('free' vs 'premium').
