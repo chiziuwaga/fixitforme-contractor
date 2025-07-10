@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import { useUser } from "@/providers/UserProvider"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { toast } from "sonner"
 
@@ -26,8 +25,29 @@ export interface Lead {
   quality_score: number
 }
 
+interface ContractorProfile {
+  id: string
+  user_id: string
+  tier: string
+  rex_search_usage: number
+  current_bids_this_month: number
+}
+
+interface DatabaseLead {
+  id: string
+  title: string
+  description: string
+  budget_min: number
+  budget_max: number
+  location: string
+  posted_at: string
+  urgency_level: "low" | "medium" | "high"
+  source: "felix_referral" | "rex_discovery" | "direct_inquiry"
+  viewed: boolean
+  relevance_score: number
+}
+
 export function useDashboard() {
-  const { user } = useUser()
   const supabase = createClientComponentClient()
   const [loading, setLoading] = useState(true)
   const [stats, setStats] = useState<DashboardStats>({
@@ -39,52 +59,90 @@ export function useDashboard() {
   const [leads, setLeads] = useState<Lead[]>([])
 
   const fetchData = useCallback(async () => {
-    if (!user) return
-
     setLoading(true)
     try {
-      // In a real app, these would be parallel API calls or a single RPC call to a db function
-      // For now, we'll use mock data fetching
+      // Get authenticated user
+      const { data: { user }, error: authError } = await supabase.auth.getUser()
+      if (authError || !user) {
+        throw new Error("User not authenticated")
+      }
+
+      // Real Supabase integration - Connect to sophisticated backend algorithms
       const fetchStats = async () => {
-        await new Promise((res) => setTimeout(res, 500)) // simulate network delay
+        // Get contractor profile and current tier
+        const { data: profile } = await supabase
+          .from("contractor_profiles")
+          .select("id, tier, rex_search_usage, current_bids_this_month")
+          .eq("user_id", user.id)
+          .single()
+
+        if (!profile) {
+          return {
+            totalRevenue: 0,
+            activeJobs: 0,
+            jobsCompleted: 0,
+            conversionRate: 0,
+          }
+        }
+
+        // Calculate stats from real data
+        const { data: jobs } = await supabase
+          .from("jobs")
+          .select("status, total_amount")
+          .eq("contractor_id", profile.id)
+
+        const { data: bids } = await supabase
+          .from("bids")
+          .select("status, amount")
+          .eq("contractor_id", profile.id)
+
+        const activeJobs = jobs?.filter(j => j.status === 'active').length || 0
+        const completedJobs = jobs?.filter(j => j.status === 'completed').length || 0
+        const totalRevenue = jobs?.reduce((sum, j) => sum + (j.total_amount || 0), 0) || 0
+        const submittedBids = bids?.length || 0
+        const wonBids = jobs?.length || 0
+        const conversionRate = submittedBids > 0 ? Math.round((wonBids / submittedBids) * 100) : 0
+
         return {
-          totalRevenue: 12450,
-          activeJobs: 8,
-          jobsCompleted: 23,
-          conversionRate: 68,
+          totalRevenue,
+          activeJobs,
+          jobsCompleted: completedJobs,
+          conversionRate,
         }
       }
 
       const fetchLeads = async () => {
-        await new Promise((res) => setTimeout(res, 800)) // simulate network delay
-        return [
-          {
-            id: "1",
-            title: "Kitchen Cabinet Installation",
-            description: "Looking for an experienced contractor to install new kitchen cabinets and countertops.",
-            budget_min: 2500,
-            budget_max: 4000,
-            location: "Oakland, CA",
-            posted_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
-            urgency: "medium",
-            source: "rex_discovery",
-            viewed: false,
-            quality_score: 8.5,
-          },
-          {
-            id: "2",
-            title: "Emergency Plumbing Leak Repair",
-            description: "Have a major leak under the bathroom sink that needs immediate attention.",
-            budget_min: 300,
-            budget_max: 600,
-            location: "Berkeley, CA",
-            posted_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
-            urgency: "high",
-            source: "felix_referral",
-            viewed: true,
-            quality_score: 9.2,
-          },
-        ] as Lead[]
+        // Get contractor profile first
+        const { data: profile } = await supabase
+          .from("contractor_profiles")
+          .select("id")
+          .eq("user_id", user.id)
+          .single()
+
+        if (!profile) return []
+
+        // Connect to Rex's sophisticated lead generation results
+        const { data: leads } = await supabase
+          .from("contractor_leads")
+          .select("*")
+          .eq("contractor_id", profile.id)
+          .order("relevance_score", { ascending: false })
+          .order("posted_at", { ascending: false })
+          .limit(10)
+
+        return leads?.map((lead: DatabaseLead) => ({
+          id: lead.id,
+          title: lead.title,
+          description: lead.description,
+          budget_min: lead.budget_min,
+          budget_max: lead.budget_max,
+          location: lead.location,
+          posted_at: lead.posted_at,
+          urgency: lead.urgency_level,
+          source: lead.source,
+          viewed: lead.viewed,
+          quality_score: lead.relevance_score,
+        })) as Lead[] || []
       }
 
       const [statsData, leadsData] = await Promise.all([fetchStats(), fetchLeads()])
@@ -98,7 +156,7 @@ export function useDashboard() {
     } finally {
       setLoading(false)
     }
-  }, [user, supabase])
+  }, [supabase])
 
   useEffect(() => {
     fetchData()
