@@ -1,17 +1,9 @@
-'use client';
+"use client"
 
-import { ReactNode } from 'react';
-import { SessionContextProvider } from '@supabase/auth-helpers-react';
-import { supabase } from '@/lib/supabase';
+import type { ReactNode } from "react"
+import { SessionContextProvider } from "@supabase/auth-helpers-react"
+import { supabase } from "@/lib/supabase"
 
-interface SupabaseProviderProps {
-  children: ReactNode;
+export const SupabaseProvider = ({ children }: { children: ReactNode }) => {
+  return <SessionContextProvider supabaseClient={supabase}>{children}</SessionContextProvider>
 }
-
-export const SupabaseProvider = ({ children }: SupabaseProviderProps) => {
-  return (
-    <SessionContextProvider supabaseClient={supabase}>
-      {children}
-    </SessionContextProvider>
-  );
-};

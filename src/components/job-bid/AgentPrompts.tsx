@@ -1,32 +1,52 @@
 "use client"
 
+import type React from "react"
+import { useFormik } from "formik"
+import * as yup from "yup"
+import { useJobBidContext } from "@/contexts/JobBidContext"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { User } from "lucide-react"
 
-export function AgentPrompts() {
+interface AgentPromptsProps {
+  onNext: () => void
+}
+
+const validationSchema = yup.object({
+  agent_introduction: yup.string().required("Agent Introduction is required"),
+  reason_to_hire: yup.string().required("Reason to Hire is required"),
+  relevant_experience: yup.string().required("Relevant Experience is required"),
+})
+
+const AgentPrompts: React.FC<AgentPromptsProps> = ({ onNext }) => {
+  const { jobBid, updateJobBid } = useJobBidContext()
+
+  const formik = useFormik({
+    initialValues: {
+      agent_introduction: jobBid?.agent_introduction || "",
+      reason_to_hire: jobBid?.reason_to_hire || "",
+      relevant_experience: jobBid?.relevant_experience || "",
+    },
+    validationSchema: validationSchema,
+    onSubmit: (values) => {
+      updateJobBid({
+        ...jobBid,
+        agent_introduction: values.agent_introduction,
+        reason_to_hire: values.reason_to_hire,
+        relevant_experience: values.relevant_experience,
+      })
+      onNext()
+    },
+  })
+
   return (
-    <Card className="shadow-lg border-0 bg-gradient-to-br from-blue-50 to-indigo-50">
-      <CardHeader className="border-b border-info/20">
-        <CardTitle className="text-xl font-semibold flex items-center gap-2 text-info-foreground">
-          <User className="h-5 w-5 text-info" />
-          Alex Analysis
-        </CardTitle>
+    <Card>
+      <CardHeader>
+        <CardTitle>Agent Prompts</CardTitle>
       </CardHeader>
-      <CardContent className="pt-6 text-center">
-        <p className="text-info-foreground/70 mb-6">
-          Ask @alex to analyze this job for competitive pricing and timeline estimates
-        </p>
-        <Button
-          variant="outline"
-          className="w-full border-info/30 text-info-foreground hover:bg-info/10 bg-transparent"
-          onClick={() => {
-            // TODO: Implement Alex analysis trigger
-          }}
-        >
-          Get Alex&apos;s Analysis
-        </Button>
+      <CardContent>
+        <p>Agent prompts for bidding will be here.</p>
       </CardContent>
     </Card>
   )
 }
+
+export default AgentPrompts

@@ -8,7 +8,6 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { ArrowRight, MapPin, Clock, DollarSign } from "lucide-react"
 import type { Lead } from "@/hooks/useDashboard"
 import { cn } from "@/lib/utils"
-import { lt } from "lodash"
 
 interface LeadFeedProps {
   leads: Lead[]
@@ -20,11 +19,11 @@ const formatTimeAgo = (dateString: string) => {
   const posted = new Date(dateString)
   const diffInSeconds = Math.floor((now.getTime() - posted.getTime()) / 1000)
 
-  if (lt(diffInSeconds, 60)) return "Just now"
+  if (diffInSeconds < 60) return "Just now"
   const diffInMinutes = Math.floor(diffInSeconds / 60)
-  if (lt(diffInMinutes, 60)) return `${diffInMinutes}m ago`
+  if (diffInMinutes < 60) return `${diffInMinutes}m ago`
   const diffInHours = Math.floor(diffInMinutes / 60)
-  if (lt(diffInHours, 24)) return `${diffInHours}h ago`
+  if (diffInHours < 24) return `${diffInHours}h ago`
   const diffInDays = Math.floor(diffInHours / 24)
   return `${diffInDays}d ago`
 }
@@ -45,7 +44,7 @@ export function LeadFeed({ leads, loading }: LeadFeedProps) {
     return (
       <div className="space-y-4">
         {[...Array(3)].map((_, i) => (
-          <Skeleton key={i} className="h-32 w-full" />
+          <Skeleton key={i} className="h-32 w-full rounded-lg" />
         ))}
       </div>
     )
@@ -53,10 +52,12 @@ export function LeadFeed({ leads, loading }: LeadFeedProps) {
 
   if (leads.length === 0) {
     return (
-      <div className="text-center py-12">
-        <h3 className="text-lg font-medium">No new leads right now.</h3>
-        <p className="text-muted-foreground mt-1">Check back later or ask @rex to find more opportunities.</p>
-      </div>
+      <Card className="flex items-center justify-center py-12 text-center">
+        <div>
+          <h3 className="text-lg font-medium">No new leads right now.</h3>
+          <p className="text-muted-foreground mt-1">Check back later or ask @rex to find more opportunities.</p>
+        </div>
+      </Card>
     )
   }
 
@@ -71,7 +72,7 @@ export function LeadFeed({ leads, loading }: LeadFeedProps) {
                 {lead.urgency} Urgency
               </Badge>
             </div>
-            <div className="flex items-center gap-4 text-sm text-muted-foreground pt-1">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground pt-1">
               <div className="flex items-center gap-1.5">
                 <DollarSign className="h-4 w-4" />
                 <span>
@@ -88,11 +89,13 @@ export function LeadFeed({ leads, loading }: LeadFeedProps) {
               </div>
             </div>
           </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground mb-4 line-clamp-2">{lead.description}</p>
-            <Link href={`/contractor/bid/${lead.id}`}>
-              <Button>
-                View Details & Bid <ArrowRight className="ml-2 h-4 w-4" />
+          <CardContent className="flex items-center justify-between">
+            <p className="text-muted-foreground text-sm line-clamp-2 max-w-prose">{lead.description}</p>
+            <Link href={`/contractor/bid/${lead.id}`} passHref>
+              <Button asChild>
+                <a>
+                  View Details <ArrowRight className="ml-2 h-4 w-4" />
+                </a>
               </Button>
             </Link>
           </CardContent>

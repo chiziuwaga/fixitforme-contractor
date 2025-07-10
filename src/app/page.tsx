@@ -1,29 +1,19 @@
 "use client"
+import { redirect } from "next/navigation"
+import type { ColumnDef } from "@tanstack/react-table"
 
-import { useEffect } from "react"
-import { useRouter } from "next/navigation"
-import { useUser } from "@/providers/UserProvider"
-import { Loader2 } from "lucide-react"
+interface DataTableProps<TData, TValue> {
+  columns: ColumnDef<TData, TValue>[]
+  data: TData[]
+}
 
-export default function HomePage() {
-  const { loading, user, isOnboarded } = useUser()
-  const router = useRouter()
+// This page handles the initial routing logic.
+export default function Page() {
+  redirect("/login")
+}
 
-  useEffect(() => {
-    if (!loading) {
-      if (!user) {
-        router.push("/login")
-      } else if (!isOnboarded) {
-        router.push("/contractor/onboarding")
-      } else {
-        router.push("/contractor/dashboard")
-      }
-    }
-  }, [loading, user, isOnboarded, router])
-
-  return (
-    <div className="flex h-screen w-full items-center justify-center bg-background">
-      <Loader2 className="h-8 w-8 animate-spin text-primary" />
-    </div>
-  )
+export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
+  // For now, the root page will just show the login form.
+  // This can be replaced with a landing page later.
+  return null
 }

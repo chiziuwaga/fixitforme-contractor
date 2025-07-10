@@ -6,12 +6,7 @@ import { MultiSelect } from "@/components/ui/multi-select"
 import { SPACING } from "@/lib/design-system"
 import type { OnboardingStepProps } from "./types"
 
-export function OnboardingStep2({
-  formData,
-  handleMultiSelectChange,
-  serviceOptions,
-  areaOptions,
-}: OnboardingStepProps) {
+export function OnboardingStep2({ formData, handleChange, serviceOptions, areaOptions }: OnboardingStepProps) {
   return (
     <div className={SPACING.component.md}>
       <CardTitle>Your Services</CardTitle>
@@ -22,7 +17,7 @@ export function OnboardingStep2({
           <MultiSelect
             options={serviceOptions}
             value={formData.services}
-            onValueChange={(value) => handleMultiSelectChange("services", value)}
+            onValueChange={(value) => handleChange("services", value)}
             placeholder="Select services..."
           />
         </div>
@@ -31,7 +26,7 @@ export function OnboardingStep2({
           <MultiSelect
             options={areaOptions}
             value={formData.serviceAreas}
-            onValueChange={(value) => handleMultiSelectChange("serviceAreas", value)}
+            onValueChange={(value) => handleChange("serviceAreas", value)}
             placeholder="Select areas..."
           />
         </div>

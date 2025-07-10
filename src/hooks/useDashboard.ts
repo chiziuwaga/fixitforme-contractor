@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import { useUser } from "./useUser"
+import { useUser } from "@/providers/UserProvider"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { toast } from "sonner"
 
@@ -22,6 +22,8 @@ export interface Lead {
   posted_at: string
   urgency: "low" | "medium" | "high"
   source: "felix_referral" | "rex_discovery" | "direct_inquiry"
+  viewed: boolean
+  quality_score: number
 }
 
 export function useDashboard() {
@@ -66,6 +68,8 @@ export function useDashboard() {
             posted_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
             urgency: "medium",
             source: "rex_discovery",
+            viewed: false,
+            quality_score: 8.5,
           },
           {
             id: "2",
@@ -77,19 +81,10 @@ export function useDashboard() {
             posted_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
             urgency: "high",
             source: "felix_referral",
+            viewed: true,
+            quality_score: 9.2,
           },
-          {
-            id: "3",
-            title: "Full Interior Painting (3-Bed House)",
-            description: "Need the entire interior of a 1500 sq ft house painted, including trim and ceilings.",
-            budget_min: 5000,
-            budget_max: 7500,
-            location: "San Francisco, CA",
-            posted_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days ago
-            urgency: "low",
-            source: "direct_inquiry",
-          },
-        ]
+        ] as Lead[]
       }
 
       const [statsData, leadsData] = await Promise.all([fetchStats(), fetchLeads()])

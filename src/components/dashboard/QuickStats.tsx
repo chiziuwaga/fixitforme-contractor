@@ -67,15 +67,8 @@ const iconMap: { [key: string]: React.ReactNode } = {
   conversionRate: <Percent className="h-6 w-6 text-muted-foreground" />,
 }
 
-const statItems: { key: keyof DashboardStats; label: string }[] = [
-  { key: "totalRevenue", label: "Total Revenue" },
-  { key: "activeJobs", label: "Active Jobs" },
-  { key: "jobsCompleted", label: "Jobs Completed" },
-  { key: "conversionRate", label: "Conversion Rate" },
-]
-
-const updatedStatItems: {
-  key: keyof QuickStatsProps["stats"]
+const statItems: {
+  key: keyof DashboardStats
   label: string
   icon: React.ElementType
   prefix?: string
@@ -206,11 +199,11 @@ export function QuickStats({ className, metrics, stats, loading }: QuickStatsPro
           </motion.div>
         ))}
       </motion.div>
-      {updatedStatItems.map((item) => (
-        <Card key={item.key} className="bg-card shadow-sm hover:shadow-md transition-shadow">
+      {statItems.map((item) => (
+        <Card key={item.key} className="shadow-sm hover:shadow-md transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">{item.label}</CardTitle>
-            {item.icon}
+            <item.icon className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             {loading ? (
@@ -225,7 +218,7 @@ export function QuickStats({ className, metrics, stats, loading }: QuickStatsPro
           </CardContent>
         </Card>
       ))}
-      {quickStats.map((stat) => renderStatCard(stat))}
+      {/* {quickStats.map((stat) => renderStatCard(stat))} */}
     </div>
   )
 }

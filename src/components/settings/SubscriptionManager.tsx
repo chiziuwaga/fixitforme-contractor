@@ -1,42 +1,112 @@
 "use client"
 
-import { useSubscription } from "@/hooks/useSubscription"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Loader2 } from "lucide-react"
-import { SPACING } from "@/lib/design-system"
+import { useState, useEffect } from "react"
+import { Box, Typography, Button, CircularProgress, Alert } from "@mui/material"
+import { useAuth } from "../../contexts/AuthContext"
+import { getSubscriptionStatus, cancelSubscription } from "../../api/subscriptionApi"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
-export default function SubscriptionManager() {
-  const { loading, subscription, handleManageSubscription } = useSubscription()
+const SubscriptionManager = () => {
+  const { currentUser } = useAuth()
+  const [subscriptionStatus, setSubscriptionStatus] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [cancelLoading, setCancelLoading] = useState(false)
+  const [error, setError] = useState("")
+  const [successMessage, setSuccessMessage] = useState("")
+
+  useEffect(() => {
+    const fetchSubscriptionStatus = async () => {
+      setLoading(true)
+      try {
+        if (currentUser) {
+          const status = await getSubscriptionStatus(currentUser.uid)
+          setSubscriptionStatus(status)
+        }
+      } catch (err) {
+        setError("Failed to fetch subscription status.")
+        console.error(err)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchSubscriptionStatus()
+  }, [currentUser])
+
+  const handleCancelSubscription = async () => {
+    setCancelLoading(true)
+    setError("")
+    setSuccessMessage("")
+
+    try {
+      if (currentUser && subscriptionStatus?.subscriptionId) {
+        await cancelSubscription(currentUser.uid, subscriptionStatus.subscriptionId)
+        setSubscriptionStatus({ ...subscriptionStatus, status: "canceled" })
+        setSuccessMessage("Subscription successfully canceled.")
+      } else {
+        setError("No active subscription found to cancel.")
+      }
+    } catch (err) {
+      setError("Failed to cancel subscription.")
+      console.error(err)
+    } finally {
+      setCancelLoading(false)
+    }
+  }
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Subscription & Billing</CardTitle>
-        <CardDescription>Manage your current plan and view billing history.</CardDescription>
+        <CardTitle>Subscription Manager</CardTitle>
       </CardHeader>
-      <CardContent className={SPACING.component.md}>
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between rounded-lg border p-4 gap-4">
-          <div>
-            <h3 className="text-lg font-semibold">
-              Current Plan: <span className="text-primary">{subscription.plan}</span>
-            </h3>
-            <p className="text-sm text-muted-foreground">
-              {subscription.status === "active" && subscription.billing_period_end
-                ? `Renews on ${subscription.billing_period_end.toLocaleDateString()}`
-                : "Your subscription is inactive."}
-            </p>
-          </div>
-          <Badge variant={subscription.status === "active" ? "success" : "destructive"} className="capitalize">
-            {subscription.status}
-          </Badge>
-        </div>
-        <Button onClick={handleManageSubscription} disabled={loading}>
-          {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Manage Subscription & Billing
-        </Button>
+      <CardContent>
+        <Box sx={{ padding: 3 }}>
+          {error && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {error}
+            </Alert>
+          )}
+
+          {successMessage && (
+            <Alert severity="success" sx={{ mb: 2 }}>
+              {successMessage}
+            </Alert>
+          )}
+
+          {loading ? (
+            <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
+              <CircularProgress />
+            </Box>
+          ) : (
+            <>
+              {subscriptionStatus ? (
+                <>
+                  <Typography>Status: {subscriptionStatus.status || "Inactive"}</Typography>
+                  <Typography>Subscription ID: {subscriptionStatus.subscriptionId || "N/A"}</Typography>
+                  {subscriptionStatus.status === "active" && (
+                    <Button
+                      variant="contained"
+                      color="error"
+                      onClick={handleCancelSubscription}
+                      disabled={cancelLoading}
+                      sx={{ mt: 2 }}
+                    >
+                      {cancelLoading ? <CircularProgress size={24} color="inherit" /> : "Cancel Subscription"}
+                    </Button>
+                  )}
+                  {subscriptionStatus.status === "canceled" && (
+                    <Typography mt={2}>Your subscription has been canceled.</Typography>
+                  )}
+                </>
+              ) : (
+                <Typography>No subscription found.</Typography>
+              )}
+            </>
+          )}
+        </Box>
       </CardContent>
     </Card>
   )
 }
+
+export default SubscriptionManager

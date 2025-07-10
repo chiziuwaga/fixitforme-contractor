@@ -14,8 +14,9 @@ export const BRAND = {
 
   colors: {
     // Core Palette from Design Images
-    primary: "#D4A574", // Felix Gold: For primary actions, highlights, and accents.
-    secondary: "#1A2E1A", // Forest Green: For primary text, dark backgrounds, and key elements.
+    primary: "hsl(var(--primary))", // Felix Gold: For primary actions, highlights, and accents.
+    secondary: "hsl(var(--secondary))", // Forest Green: For primary text, dark backgrounds, and key elements.
+    accent: "hsl(var(--accent))", // Darker gold for emphasis.
 
     // Backgrounds
     background: {
@@ -85,4 +86,4 @@ export const BRAND = {
     md: "0 4px 8px 0 rgba(0, 0, 0, 0.04)",
     lg: "0 10px 20px 0 rgba(0, 0, 0, 0.05)",
   },
-}
+} as const

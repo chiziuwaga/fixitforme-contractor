@@ -2,11 +2,11 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { useUser } from "./useUser"
+import { useUser } from "@/hooks/useUser"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { toast } from "sonner"
 
-interface OnboardingFormData {
+export interface OnboardingFormData {
   companyName: string
   contactName: string
   services: string[]
@@ -82,11 +82,7 @@ export function useOnboarding() {
     }
   }
 
-  const handleChange = (field: keyof OnboardingFormData, value: string | number) => {
-    setFormData((prev) => ({ ...prev, [field]: value }))
-  }
-
-  const handleMultiSelectChange = (field: "services" | "serviceAreas", value: string[]) => {
+  const handleChange = (field: keyof OnboardingFormData, value: string | number | string[]) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
@@ -141,6 +137,6 @@ export function useOnboarding() {
     nextStep,
     prevStep,
     handleChange,
-    handleMultiSelectChange,
+    finishOnboarding,
   }
 }

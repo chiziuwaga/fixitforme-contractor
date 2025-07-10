@@ -1,16 +1,14 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { supabase } from "@/lib/supabase"
-
-type AuthStep = "phone" | "otp"
+import { toast } from "sonner"
 
 export function useAuth() {
   const router = useRouter()
-  const [step, setStep] = useState<AuthStep>("phone")
+  const [step, setStep] = useState<"phone" | "otp">("phone")
   const [phoneNumber, setPhoneNumber] = useState("")
   const [otp, setOtp] = useState("")
   const [loading, setLoading] = useState(false)
@@ -21,17 +19,16 @@ export function useAuth() {
     setLoading(true)
     setError(null)
 
-    const formattedPhoneNumber = `+1${phoneNumber.replace(/\D/g, "")}`
-
     const { error } = await supabase.auth.signInWithOtp({
-      phone: formattedPhoneNumber,
+      phone: `+1${phoneNumber.replace(/\D/g, "")}`,
     })
 
     if (error) {
       setError(error.message)
-      console.error("SMS send error:", error)
+      toast.error("Failed to send code", { description: error.message })
     } else {
       setStep("otp")
+      toast.success("Verification code sent!")
     }
     setLoading(false)
   }
@@ -41,22 +38,21 @@ export function useAuth() {
     setLoading(true)
     setError(null)
 
-    const formattedPhoneNumber = `+1${phoneNumber.replace(/\D/g, "")}`
-
     const {
       data: { session },
       error,
     } = await supabase.auth.verifyOtp({
-      phone: formattedPhoneNumber,
+      phone: `+1${phoneNumber.replace(/\D/g, "")}`,
       token: otp,
       type: "sms",
     })
 
     if (error) {
       setError(error.message)
-      console.error("OTP verification error:", error)
+      toast.error("Invalid verification code", { description: error.message })
     } else if (session) {
-      router.push("/")
+      toast.success("Successfully logged in!")
+      router.push("/contractor/dashboard")
     }
     setLoading(false)
   }

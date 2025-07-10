@@ -1,69 +1,66 @@
+"use client"
+
+import type React from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { User, Calendar, Search } from "lucide-react"
-import type { JobDetails } from "./types"
+import { useTranslation } from "react-i18next"
+import type { Job } from "../../models/Job"
+import { format } from "date-fns"
 
-export function JobSidebar({ job }: { job: JobDetails }) {
+interface JobSidebarProps {
+  job: Job
+  onBidNow: () => void
+}
+
+export const JobSidebar: React.FC<JobSidebarProps> = ({ job, onBidNow }) => {
+  const { t } = useTranslation()
+
+  const formatDate = (dateString: string): string => {
+    try {
+      const date = new Date(dateString)
+      return format(date, "MMM dd, yyyy")
+    } catch (error) {
+      console.error("Error formatting date:", error)
+      return "Invalid Date"
+    }
+  }
+
   return (
-    <div className="space-y-6">
-      {job.source === "felix_referral" && job.homeowner_name && (
-        <Card className="shadow-lg border-0 bg-card/90 backdrop-blur-sm">
-          <CardHeader className="border-b bg-gradient-to-r from-success/10 to-transparent">
-            <CardTitle className="text-lg font-semibold flex items-center gap-2 text-success">
-              <User className="h-5 w-5 text-success" />
-              Homeowner Details
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-6 space-y-3">
-            <div className="text-sm">
-              <span className="font-semibold text-muted-foreground">Name:</span>
-              <span className="ml-2 text-foreground">{job.homeowner_name}</span>
-            </div>
-            {job.homeowner_phone && (
-              <div className="text-sm">
-                <span className="font-semibold text-muted-foreground">Phone:</span>
-                <span className="ml-2 text-foreground">{job.homeowner_phone}</span>
-              </div>
-            )}
-            <div className="text-sm">
-              <span className="font-semibold text-muted-foreground">Timeline:</span>
-              <span className="ml-2 text-foreground">{job.timeline_preference || "Flexible"}</span>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+    <Card>
+      <CardHeader>
+        <CardTitle>Job Sidebar</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <p>Sidebar content will be here.</p>
+        {/* <Typography variant="h6" component="div" gutterBottom>
+          {t("jobDetails")}
+        </Typography>
 
-      <Card className="shadow-lg border-0 bg-card/90 backdrop-blur-sm">
-        <CardHeader className="border-b bg-gradient-to-r from-primary/5 to-transparent">
-          <CardTitle className="text-lg font-semibold flex items-center gap-2">
-            <Calendar className="h-5 w-5 text-primary" />
-            Quick Actions
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="pt-6 space-y-3">
-          <Button variant="outline" className="w-full hover:bg-brand-primary/5 bg-transparent">
-            Save for Later
-          </Button>
-          <Button variant="outline" className="w-full hover:bg-brand-primary/5 bg-transparent">
-            Request More Info
-          </Button>
-          <Button variant="outline" className="w-full hover:bg-brand-primary/5 bg-transparent">
-            Schedule Site Visit
-          </Button>
-        </CardContent>
-      </Card>
+        <Typography variant="subtitle1" color="text.secondary">
+          {t("client")}: {job.clientName}
+        </Typography>
 
-      <Card className="shadow-lg border-0 bg-gradient-to-br from-brand-secondary/10 to-transparent">
-        <CardHeader className="border-b border-brand-secondary/20">
-          <CardTitle className="text-lg font-semibold flex items-center gap-2 text-brand-secondary">
-            <Search className="h-5 w-5" />
-            Similar Jobs
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="pt-6 text-center">
-          <p className="text-brand-secondary/70 text-sm">Rex will find similar opportunities</p>
-        </CardContent>
-      </Card>
-    </div>
+        <Typography variant="subtitle1" color="text.secondary">
+          {t("location")}: {job.location}
+        </Typography>
+
+        <Typography variant="subtitle1" color="text.secondary">
+          {t("jobType")}: {job.jobType}
+        </Typography>
+
+        <Typography variant="subtitle1" color="text.secondary">
+          {t("postedDate")}: {formatDate(job.postedDate)}
+        </Typography>
+
+        <Typography variant="subtitle1" color="text.secondary">
+          {t("budget")}: ${job.budget}
+        </Typography>
+
+        <div style={{ marginTop: "16px" }}>
+          <button style={{ width: "100%", backgroundColor: "#1976d2", color: "white", padding: "8px", borderRadius: "4px" }} onClick={onBidNow}>
+            {t("bidNow")}
+          </button>
+        </div> */}
+      </CardContent>
+    </Card>
   )
 }

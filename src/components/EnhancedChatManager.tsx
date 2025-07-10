@@ -13,7 +13,7 @@ import { toast } from "sonner"
 import { motion } from "framer-motion"
 import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
-import { isAgentExecuting } from "@/utils/agentUtils" // Declare or import the variable here
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 interface ChatState {
   isOpen: boolean
@@ -23,14 +23,13 @@ interface ChatState {
 
 type ChatStates = Record<AgentType, ChatState>
 
-export function EnhancedChatManager() {
+export default function EnhancedChatManager() {
   const { profile } = useUser()
   const { activeSessions, startExecution, endExecution, canStartNew } = useConcurrentExecutionManager()
   const { addNotification, removeNotification } = useNotifications()
   const router = useRouter()
 
   const isScaleTier = profile?.subscription_tier === "scale"
-  const chatThreadLimit = isScaleTier ? 30 : 10
   const messagesPerChatLimit = isScaleTier ? 200 : 50
 
   const [chatStates, setChatStates] = useState<ChatStates>({
@@ -56,13 +55,11 @@ export function EnhancedChatManager() {
         [agent]: { ...prev[agent], messages: [...prev[agent].messages, newMessage] },
       }))
 
-      // Rex lead generation notification
       if (agent === "rex" && parsed.ui_assets?.type === "lead_dashboard") {
         addNotification({
           type: "success",
           title: "Rex found new leads!",
           message: "Your new leads have been added to your dashboard.",
-          autoClose: false,
           action: {
             label: "View Dashboard",
             onClick: () => router.push("/contractor/dashboard"),
@@ -94,9 +91,9 @@ export function EnhancedChatManager() {
   const rexChat = useChat({ api: "/api/agents/rex", id: "rex", onFinish: (msg) => onFinish("rex", msg) })
 
   const getChatInstance = (agentType: AgentType) => {
-    if (agentType === "lexi") return lexiChat
     if (agentType === "alex") return alexChat
-    return rexChat
+    if (agentType === "rex") return rexChat
+    return lexiChat
   }
 
   const handleSendMessage = async (message: string, agentType: AgentType) => {
@@ -140,13 +137,9 @@ export function EnhancedChatManager() {
     chatInstance.append({ role: "user", content: message })
   }
 
-  // Remove "working" notification when agent finishes
   useEffect(() => {
-    const finishedAgents = ["lexi", "alex", "rex"].filter(
-      (agent) => !activeSessions.some((s) => s.agent === agent && s.status === "running"),
-    )
     activeSessions.forEach((session) => {
-      if (session.status === "finished") {
+      if (session.status === "finished" || session.status === "failed") {
         removeNotification(session.id)
       }
     })
@@ -184,84 +177,69 @@ export function EnhancedChatManager() {
     }))
   }, [])
 
-  return (
-    <>
-      <div className="fixed bottom-0 right-0 z-50 p-4 space-y-3">
-        {(Object.keys(chatStates) as AgentType[]).map((agentType) => {
-          if (!chatStates[agentType].isOpen) return null
-          const isExecuting = getChatInstance(agentType).isLoading || isAgentExecuting(agentType)
-          return (
-            <ChatWindow
-              key={agentType}
-              agentType={agentType}
-              messages={chatStates[agentType].messages}
-              onSendMessage={handleSendMessage}
-              onClose={() => toggleChat(agentType)}
-              onMinimize={() => minimizeChat(agentType)}
-              isMinimized={chatStates[agentType].isMinimized}
-              isTyping={isExecuting}
-            />
-          )
-        })}
-      </div>
+  const isAgentExecuting = (agentType: AgentType): boolean => {
+    const chatInstance = getChatInstance(agentType)
+    const hasActiveSession = activeSessions.some((s) => s.agent === agentType && s.status === "running")
+    return chatInstance.isLoading || hasActiveSession
+  }
 
-      <div className="fixed bottom-6 right-6 z-40 flex flex-col gap-3">
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.1 }}>
-                <Button
-                  onClick={() => toggleChat("lexi")}
-                  className="h-14 w-14 rounded-full bg-primary text-white shadow-lg"
-                >
-                  <MessageCircle className="h-6 w-6" />
-                </Button>
-              </motion.div>
-            </TooltipTrigger>
-            <TooltipContent side="left">
-              <p>Chat with Lexi</p>
-            </TooltipContent>
-          </Tooltip>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.2 }}>
-                <Button
-                  onClick={() => toggleChat("alex")}
-                  className={cn(
-                    "h-14 w-14 rounded-full bg-green-600 text-white shadow-lg",
-                    !isScaleTier && "bg-muted cursor-not-allowed",
-                  )}
-                  disabled={!isScaleTier}
-                >
-                  {isScaleTier ? <Calculator className="h-6 w-6" /> : <Lock className="h-5 w-5" />}
-                </Button>
-              </motion.div>
-            </TooltipTrigger>
-            <TooltipContent side="left">
-              <p>{isScaleTier ? "Chat with Alex" : "Upgrade to use Alex"}</p>
-            </TooltipContent>
-          </Tooltip>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.3 }}>
-                <Button
-                  onClick={() => toggleChat("rex")}
-                  className={cn(
-                    "h-14 w-14 rounded-full bg-blue-600 text-white shadow-lg",
-                    !isScaleTier && "bg-muted cursor-not-allowed",
-                  )}
-                  disabled={!isScaleTier}
-                >
-                  {isScaleTier ? <Search className="h-6 w-6" /> : <Lock className="h-5 w-5" />}
-                </Button>
-              </motion.div>
-            </TooltipTrigger>
-            <TooltipContent side="left">
-              <p>{isScaleTier ? "Chat with Rex" : "Upgrade to use Rex"}</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      </div>
-    </>
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Enhanced Chat Manager</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="fixed bottom-20 right-4 z-50 space-y-3">
+          {(Object.keys(chatStates) as AgentType[]).map((agentType) => {
+            if (!chatStates[agentType].isOpen) return null
+            return (
+              <ChatWindow
+                key={agentType}
+                agentType={agentType}
+                messages={chatStates[agentType].messages}
+                onSendMessage={handleSendMessage}
+                onClose={() => toggleChat(agentType)}
+                onMinimize={() => minimizeChat(agentType)}
+                isMinimized={chatStates[agentType].isMinimized}
+                isTyping={isAgentExecuting(agentType)}
+              />
+            )
+          })}
+        </div>
+
+        <div className="fixed bottom-4 right-4 z-40 flex flex-col gap-3">
+          <TooltipProvider>
+            {(["lexi", "alex", "rex"] as AgentType[]).map((agent, index) => {
+              const isPremium = agent !== "lexi"
+              const isDisabled = isPremium && !isScaleTier
+              const Icon = agent === "lexi" ? MessageCircle : agent === "alex" ? Calculator : Search
+              const color = agent === "lexi" ? "bg-primary" : agent === "alex" ? "bg-green-600" : "bg-blue-600"
+
+              return (
+                <Tooltip key={agent}>
+                  <TooltipTrigger asChild>
+                    <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.1 * (index + 1) }}>
+                      <Button
+                        onClick={() => toggleChat(agent)}
+                        className={cn(
+                          "h-14 w-14 rounded-full text-white shadow-lg",
+                          isDisabled ? "bg-muted cursor-not-allowed" : color,
+                        )}
+                        disabled={isDisabled}
+                      >
+                        {isDisabled ? <Lock className="h-5 w-5" /> : <Icon className="h-6 w-6" />}
+                      </Button>
+                    </motion.div>
+                  </TooltipTrigger>
+                  <TooltipContent side="left">
+                    <p>{isDisabled ? `Upgrade to use @${agent}` : `Chat with @${agent}`}</p>
+                  </TooltipContent>
+                </Tooltip>
+              )
+            })}
+          </TooltipProvider>
+        </div>
+      </CardContent>
+    </Card>
   )
 }
