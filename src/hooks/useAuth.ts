@@ -3,65 +3,67 @@
 import type React from "react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { supabase } from "@/lib/supabase"
+import { createBrowserClient } from "@/lib/supabaseClient"
+import type { SupabaseClient } from "@supabase/supabase-js"
 import { toast } from "sonner"
 
 export function useAuth() {
-  const router = useRouter()
-  const [step, setStep] = useState<"phone" | "otp">("phone")
-  const [phoneNumber, setPhoneNumber] = useState("")
-  const [otp, setOtp] = useState("")
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const router = useRouter();
+  const [step, setStep] = useState<"phone" | "otp">("phone");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [otp, setOtp] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const supabase = createBrowserClient() as SupabaseClient;
 
   const handlePhoneSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setLoading(true)
-    setError(null)
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
 
-    const { error } = await supabase.auth.signInWithOtp({
+    const { error } = await (supabase.auth as any).signInWithOtp({
       phone: `+1${phoneNumber.replace(/\D/g, "")}`,
-    })
+    });
 
     if (error) {
-      setError(error.message)
-      toast.error("Failed to send code", { description: error.message })
+      setError(error.message);
+      toast.error("Failed to send code", { description: error.message });
     } else {
-      setStep("otp")
-      toast.success("Verification code sent!")
+      setStep("otp");
+      toast.success("Verification code sent!");
     }
-    setLoading(false)
-  }
+    setLoading(false);
+  };
 
   const handleOtpSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setLoading(true)
-    setError(null)
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
 
     const {
       data: { session },
       error,
-    } = await supabase.auth.verifyOtp({
+    } = await (supabase.auth as any).verifyOtp({
       phone: `+1${phoneNumber.replace(/\D/g, "")}`,
       token: otp,
       type: "sms",
-    })
+    });
 
     if (error) {
-      setError(error.message)
-      toast.error("Invalid verification code", { description: error.message })
+      setError(error.message);
+      toast.error("Invalid verification code", { description: error.message });
     } else if (session) {
-      toast.success("Successfully logged in!")
-      router.push("/contractor/dashboard")
+      toast.success("Successfully logged in!");
+      router.push("/contractor/dashboard");
     }
-    setLoading(false)
-  }
+    setLoading(false);
+  };
 
   const goBack = () => {
-    setStep("phone")
-    setError(null)
-    setOtp("")
-  }
+    setStep("phone");
+    setError(null);
+    setOtp("");
+  };
 
   return {
     step,
@@ -74,5 +76,5 @@ export function useAuth() {
     handlePhoneSubmit,
     handleOtpSubmit,
     goBack,
-  }
+  };
 }
