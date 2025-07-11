@@ -1,11 +1,23 @@
-import { cookies } from 'next/headers';
+import { cookies as nextCookies } from 'next/headers';
 import { createServerClient } from '@supabase/ssr';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
 export function createClient() {
-  return createServerClient(supabaseUrl, supabaseAnonKey, {
-    cookies, // pass the function, not the result
-  });
+  // Provide a CookieMethodsServer implementation for SSR
+  const cookies = {
+    get: async (name: string) => {
+      const cookieStore = await nextCookies();
+      const c = await cookieStore.get(name);
+      return c?.value;
+    },
+    getAll: async () => {
+      const cookieStore = await nextCookies();
+      return (await cookieStore.getAll()).map(c => ({ name: c.name, value: c.value }));
+    },
+    set: async () => {},
+    delete: async () => {},
+  };
+  return createServerClient(supabaseUrl, supabaseAnonKey, { cookies });
 }

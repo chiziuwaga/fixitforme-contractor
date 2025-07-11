@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/lib/supabaseServer';
 
 // Lazy initialization function
 function getStripe() {
@@ -16,6 +16,7 @@ export async function POST(request: NextRequest) {
   try {
     const stripe = getStripe(); // Initialize Stripe client
     const { tier, contractor_id } = await request.json();
+    const supabase = createClient();
     
     if (tier !== 'scale') {
       return NextResponse.json({ error: 'Invalid tier' }, { status: 400 });

@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/lib/supabaseServer';
 
 export async function POST(request: NextRequest) {
   try {
+    const supabase = createClient();
     const {
       company_name,
       contact_name,
@@ -23,8 +24,6 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-
-    // Use imported supabase directly
 
     // For now, we'll create a placeholder contractor record
     // In a full implementation, this would be tied to the authenticated user

@@ -1,15 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/lib/supabaseServer';
 
 export async function POST(request: NextRequest) {
   try {
+    const supabase = createClient();
     const { phone, token } = await request.json();
     
     if (!phone || !token) {
       return NextResponse.json({ error: 'Phone number and verification code are required' }, { status: 400 });
     }
-
-    // Use imported supabase directly
 
     // Verify the SMS token
     const { data, error } = await supabase.auth.verifyOtp({

@@ -1,8 +1,9 @@
+
 'use client'
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { supabase } from '@/lib/supabase'
+import { createBrowserClient } from '@/lib/supabaseClient'
 import type { User } from '@supabase/supabase-js'
 
 export function useHomePage() {
@@ -10,16 +11,15 @@ export function useHomePage() {
   const [loading, setLoading] = useState(true)
   const [isMobile, setIsMobile] = useState(false)
   const router = useRouter()
+  const supabase = createBrowserClient();
 
   // Mobile detection
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768)
     }
-    
     checkMobile()
     window.addEventListener('resize', checkMobile)
-    
     return () => window.removeEventListener('resize', checkMobile)
   }, [])
 
@@ -39,9 +39,7 @@ export function useHomePage() {
         setLoading(false)
       }
     }
-
     checkAuth()
-
     // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
@@ -54,9 +52,8 @@ export function useHomePage() {
         setLoading(false)
       }
     )
-
     return () => subscription.unsubscribe()
-  }, [router])
+  }, [router, supabase.auth])
 
   // Navigation handlers
   const navigateToLogin = () => {
@@ -84,7 +81,6 @@ export function useHomePage() {
           url: window.location.origin + '/login',
         }),
       })
-
       if (response.ok) {
         // Show success message
         alert('Link sent! Check your email.')
@@ -102,7 +98,6 @@ export function useHomePage() {
     user,
     loading,
     isMobile,
-    
     // Actions
     navigateToLogin,
     navigateToOnboarding,

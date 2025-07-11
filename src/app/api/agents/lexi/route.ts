@@ -1,11 +1,13 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { streamText } from "ai"
-import { supabase } from "@/lib/supabase"
+import { createClient } from "@/lib/supabaseServer"
 import { deepseek } from "@/lib/ai"
 
 export async function POST(request: NextRequest) {
   try {
     const { messages } = await request.json()
+
+    const supabase = createClient();
 
     // Verify contractor authentication
     const {

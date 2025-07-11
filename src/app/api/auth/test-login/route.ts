@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/lib/supabaseServer';
 
 /**
  * Test Authentication Endpoint
@@ -15,6 +15,7 @@ import { supabase } from '@/lib/supabase';
  */
 export async function POST(request: NextRequest) {
   try {
+    const supabase = createClient();
     const { phone } = await request.json();
     
     if (!phone) {
@@ -28,8 +29,6 @@ export async function POST(request: NextRequest) {
         error: 'Invalid test phone number. Use +1234567890, +1234567891, or +1234567892' 
       }, { status: 400 });
     }
-
-    // Use imported supabase directly
 
     // Create a test user session
     const testUserId = `test-${phone.replace(/\+/g, '')}`;

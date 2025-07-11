@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/lib/supabaseServer';
 import { DEMO_CONFIG, createDemoResponse } from '@/lib/demo-config';
 
 export async function POST(request: NextRequest) {
   try {
+    const supabase = createClient();
     const { phone } = await request.json();
     
     if (!phone) {
@@ -29,8 +30,6 @@ export async function POST(request: NextRequest) {
         hint: `Use code: ${DEMO_CONFIG.SMS_DEMO.mockCode}` // Only for demo!
       });
     }
-
-    // Use imported supabase directly
 
     // Send SMS with 6-digit code using Supabase Auth
     const { data, error } = await supabase.auth.signInWithOtp({

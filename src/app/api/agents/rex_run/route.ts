@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase, withTimeout, supabaseAdmin } from '@/lib/supabase';
+import { createClient } from '@/lib/supabaseServer';
+import { createAdminClient } from '@/lib/supabaseAdmin';
+import { withTimeout } from '@/lib/withTimeout';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 // Felix's 40-problem framework search categories
 const FELIX_SEARCH_CATEGORIES = {
@@ -91,8 +94,11 @@ interface LeadData {
 
 export async function POST(request: NextRequest) {
   try {
+    // Instantiate clients
+    const supabase = createClient();
+    const supabaseAdmin = createAdminClient();
     // Wrap the entire operation in timeout
-    return await withTimeout(performRexSearch(request), 600000); // 10 minutes
+    return await withTimeout(performRexSearch(request, supabase, supabaseAdmin), 600000); // 10 minutes
   } catch (error: unknown) {
     if (error instanceof Error && error.message === 'Operation timeout') {
       return NextResponse.json({
@@ -121,7 +127,11 @@ export async function POST(request: NextRequest) {
   }
 }
 
-async function performRexSearch(request: NextRequest) {
+async function performRexSearch(
+  request: NextRequest,
+  supabase: SupabaseClient,
+  supabaseAdmin: SupabaseClient
+) {
   try {
     const body: SearchRequest = await request.json();
     const { location = 'Oakland, CA', categories = ['plumbing', 'electrical'], maxResults = 10, execution_id } = body;
