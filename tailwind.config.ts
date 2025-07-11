@@ -19,9 +19,7 @@ const config: Config = {
     extend: {
       colors: {
         // Semantic tokens with fallback for border
-        border: {
-          DEFAULT: "hsl(var(--border, 220 13% 91%))", // fallback to light gray
-        },
+        border: "hsl(var(--border, 220 13% 91%))", // fallback to light gray
         input: "hsl(var(--input, 220 13% 91%))",
         ring: "hsl(var(--ring, 35 65% 55%))",
         background: "hsl(var(--background, 0 0% 100%))",
