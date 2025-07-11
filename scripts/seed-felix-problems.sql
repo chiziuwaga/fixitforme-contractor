@@ -1,5 +1,9 @@
 -- Felix 40-Problem Reference Data Seeding
 -- This script populates the felix_problems table with the complete problem framework
+-- Run this after the felix_categories are already seeded
+
+-- Clear existing data (if any)
+TRUNCATE felix_problems RESTART IDENTITY CASCADE;
 
 INSERT INTO felix_problems (id, category, title, description, typical_cost_min, typical_cost_max, typical_time_hours, difficulty_level, required_skills, common_materials, seasonal_factor, emergency_priority) VALUES
 

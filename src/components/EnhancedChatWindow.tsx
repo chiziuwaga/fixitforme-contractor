@@ -59,13 +59,19 @@ function GenerativeUIRenderer({ ui_assets }: { ui_assets: Message["ui_assets"] }
 
   switch (ui_assets.type) {
     case "alex_cost_breakdown":
-      return <AlexCostBreakdown data={ui_assets.data} />
+      return <AlexCostBreakdown data={ui_assets.data as any} />
+    case "alex_timeline_chart":
+      return <AlexCostBreakdown data={ui_assets.data as any} />
+    case "alex_material_calculator":
+      return <AlexCostBreakdown data={ui_assets.data as any} />
+    case "alex_competitive_analysis":
+      return <AlexCostBreakdown data={ui_assets.data as any} />
     case "rex_lead_dashboard":
-      return <RexLeadDashboard data={ui_assets.data} />
+      return <RexLeadDashboard data={ui_assets.data as any} />
     case "lexi_onboarding":
-      return <LexiOnboarding data={ui_assets.data} />
+      return <LexiOnboarding data={ui_assets.data as any} />
     case "upgrade_prompt":
-      return <UpgradePrompt data={ui_assets.data} />
+      return <UpgradePrompt data={ui_assets.data as any} />
     case "system_message":
       return <SystemMessage message={ui_assets.data.message as string} />
     default:

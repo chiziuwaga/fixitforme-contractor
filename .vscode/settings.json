@@ -1,26 +1,48 @@
 {
-    "DockerRun.DisableDockerrc": true,
-    "DockerRun.Containers": [
-        "98d8fc919ea5"
-    ],
-    "chat.mcp.discovery.enabled": true,
-    "mcp": {
-        "servers": {
-            "Figma Dev Mode MCP": {
-                "type": "sse",
-                "url": "http://127.0.0.1:3845/sse"
-            }
-        }
-    },
-    "chat.agent.enabled": true,
-    "chat.agent": {
-        "default": {
-            "name": "Figma Dev Mode Agent",
-            "description": "An agent that can assist with Figma Dev Mode tasks.",
-            "mcpServer": "Figma Dev Mode MCP",
-            "capabilities": [
-                "figma.devMode"
-            ]
-        }
+  "DockerRun.Containers": [
+    "98d8fc919ea5"
+  ],
+  "DockerRun.DisableDockerrc": true,
+  "[typescript]": {
+    "editor.defaultFormatter": "denoland.vscode-deno"
+  },
+  "chat.agent": {
+    "default": {
+      "capabilities": [
+        "figma.devMode"
+      ],
+      "description": "An agent that can assist with Figma Dev Mode tasks.",
+      "mcpServer": "Figma Dev Mode MCP",
+      "name": "Figma Dev Mode Agent"
     }
+  },
+  "chat.agent.enabled": true,
+  "chat.mcp.discovery.enabled": true,
+  "deno.enablePaths": [
+    "supabase/functions"
+  ],
+  "deno.lint": true,
+  "deno.unstable": [
+    "bare-node-builtins",
+    "byonm",
+    "sloppy-imports",
+    "unsafe-proto",
+    "webgpu",
+    "broadcast-channel",
+    "worker-options",
+    "cron",
+    "kv",
+    "ffi",
+    "fs",
+    "http",
+    "net"
+  ],
+  "mcp": {
+    "servers": {
+      "Figma Dev Mode MCP": {
+        "type": "sse",
+        "url": "http://127.0.0.1:3845/sse"
+      }
+    }
+  }
 }

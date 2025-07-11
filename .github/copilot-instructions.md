@@ -173,6 +173,58 @@
 
 This workspace represents a **production-ready, scalable contractor management platform** with a clean architectural foundation that separates business logic from presentation, enabling rapid feature development and easy maintenance.
 
+## 🚨 CRITICAL: LATEST UI PRESERVATION PROTOCOL
+
+### MANDATORY: Always Preserve Latest UI Work
+**NEVER delete or modify sophisticated UI components without explicit user confirmation.**
+
+#### Latest UI Status Verification Process
+1. **Always search conversation history** for latest UI implementations before making changes
+2. **Identify most recent/sophisticated versions** of components, especially those marked as "enhanced", "sophisticated", or "fromv0"
+3. **Confirm with user before ANY deletion** of UI components that may contain advanced features
+4. **Bias toward LATEST implementations** - newer sophisticated UI takes precedence over basic placeholders
+
+#### UI Component Priority Hierarchy (HIGHEST TO LOWEST)
+1. **🥇 Enhanced/Sophisticated Components**: D3.js charts, advanced agent UI, professional contractor branding
+2. **🥈 Recent Implementations**: Components with Felix Gold/Forest Green branding, agent asset systems
+3. **🥉 Basic/Placeholder Components**: Simple implementations without advanced features
+
+#### Critical Files Requiring Extra Caution
+- **`/src/components/ui/Charts.tsx`** - Contains sophisticated D3.js chart components with animations
+- **`/src/components/EnhancedChatWindow.tsx`** - Advanced agent UI asset generation system  
+- **`/src/components/agent-ui/*`** - Agent-specific UI components (AlexCostBreakdown, RexLeadDashboard, LexiOnboarding)
+- **`/src/app/globals.css`** - Enhanced branding with Felix Gold (#D4A574) and Forest Green (#1A2E1A)
+- **`/src/hooks/*`** - Business logic hooks containing sophisticated algorithms
+
+#### Recovery Prevention Checklist
+✅ **Before ANY file deletion/modification:**
+1. Search conversation history with: `semantic_search("latest sophisticated UI fromv0 enhanced")`
+2. Ask user: "I found [specific components]. Should I preserve the sophisticated version or replace with basic implementation?"
+3. Wait for explicit user confirmation before proceeding
+4. Document what sophisticated features would be lost in deletion
+
+✅ **When finding conflicting implementations:**
+1. Compare sophistication levels (D3.js charts > basic charts, enhanced branding > default colors)
+2. Default to preserving the MORE sophisticated version
+3. Ask user which implementation they prefer if unclear
+
+✅ **Emergency Recovery Protocol:**
+1. If sophisticated UI is accidentally deleted, immediately search conversation history
+2. Identify lost components and features from documentation
+3. Present comprehensive recovery plan to user
+4. Implement step-by-step restoration with user approval
+
+#### UI Sophistication Indicators to Preserve
+- **D3.js interactive charts** with animations and tooltips
+- **Agent UI asset generation** from JSON responses  
+- **Felix Gold/Forest Green branding** with semantic CSS variables
+- **Professional contractor dashboard** layouts
+- **Enhanced chat management** with streaming responses
+- **Responsive chart components** with breakpoint management
+- **Advanced TypeScript interfaces** with comprehensive type safety
+
+**Remember: The user has invested significant time developing sophisticated UI components. When in doubt, PRESERVE and ASK rather than DELETE and rebuild.**
+
 ## 🎨 Design System & MCP Integration
 
 ### Figma MCP Configuration

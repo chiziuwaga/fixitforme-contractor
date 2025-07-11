@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { toast } from "sonner"
 import { useParams } from "next/navigation"
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 
 interface JobDetails {
   id: string
@@ -24,6 +25,7 @@ interface JobDetails {
 export function useJobBid() {
   const params = useParams()
   const jobId = params?.job_id as string
+  const supabase = createClientComponentClient()
   
   const [job, setJob] = useState<JobDetails | null>(null)
   const [loading, setLoading] = useState(true)
@@ -32,37 +34,75 @@ export function useJobBid() {
   const [coverLetter, setCoverLetter] = useState("")
   const [isLoading, setIsLoading] = useState(false)
 
-  // Mock job data for development
+  // Real database integration - Load job/lead details from contractor_leads table
   useEffect(() => {
     const fetchJob = async () => {
       setLoading(true)
       setError(null)
       
       try {
-        // Simulate API call delay
-        await new Promise(resolve => setTimeout(resolve, 500))
-        
-        // Mock job data
-        const mockJob: JobDetails = {
-          id: jobId || "job_123",
-          title: "Kitchen Remodel - Oakland Hills",
-          description: "Complete kitchen renovation needed. Looking for experienced contractor to handle cabinets, countertops, and flooring.",
-          budget_min: 8000,
-          budget_max: 15000,
-          location: "Oakland Hills, CA",
-          posted_at: new Date().toISOString(),
-          urgency: "medium",
-          felix_category: "Kitchen remodel",
-          source: "felix_referral",
-          homeowner_name: "Sarah Johnson",
-          homeowner_phone: "(510) 555-0123",
-          requirements: ["Licensed contractor", "Insurance required", "References needed"],
-          timeline_preference: "Start within 2 weeks"
+        if (!jobId) {
+          throw new Error("No job ID provided")
         }
-        
-        setJob(mockJob)
+
+        // Fetch job details from contractor_leads table (Rex algorithm results)
+        const { data: leadData, error: leadError } = await supabase
+          .from('contractor_leads')
+          .select(`
+            *,
+            felix_categories(category_name)
+          `)
+          .eq('id', jobId)
+          .single()
+
+        if (leadError) {
+          // If not found in contractor_leads, try the jobs table
+          const { data: jobData, error: jobError } = await supabase
+            .from('jobs')
+            .select('*')
+            .eq('id', jobId)
+            .single()
+
+          if (jobError) {
+            throw new Error("Job not found")
+          }
+
+          // Convert job data to JobDetails format
+          const jobDetails: JobDetails = {
+            id: jobData.id,
+            title: jobData.title,
+            description: jobData.description,
+            budget_min: jobData.budget_min || 0,
+            budget_max: jobData.budget_max || 0,
+            location: jobData.location || "Location not specified",
+            posted_at: jobData.created_at || new Date().toISOString(),
+            urgency: jobData.urgency_level || "medium",
+            felix_category: "General",
+            source: "direct_inquiry",
+            requirements: jobData.requirements || [],
+            timeline_preference: jobData.timeline_preference || "Flexible"
+          }
+          setJob(jobDetails)
+        } else {
+          // Convert lead data to JobDetails format (Rex-generated leads)
+          const jobDetails: JobDetails = {
+            id: leadData.id,
+            title: leadData.title,
+            description: leadData.description,
+            budget_min: leadData.estimated_value ? Math.floor(leadData.estimated_value * 0.8) : 0,
+            budget_max: leadData.estimated_value || 0,
+            location: `${leadData.location_city}, ${leadData.location_state}`,
+            posted_at: leadData.posted_at || new Date().toISOString(),
+            urgency: leadData.urgency_indicators?.includes('urgent') ? "high" : "medium",
+            felix_category: leadData.felix_categories?.category_name || "General",
+            source: "rex_discovery",
+            requirements: ["Valid contractor license", "Insurance coverage required"],
+            timeline_preference: leadData.urgency_indicators?.includes('urgent') ? "ASAP" : "Flexible"
+          }
+          setJob(jobDetails)
+        }
       } catch (err) {
-        setError("Failed to load job details")
+        setError(err instanceof Error ? err.message : "Failed to load job details")
         console.error("Error fetching job:", err)
       } finally {
         setLoading(false)
@@ -72,7 +112,7 @@ export function useJobBid() {
     if (jobId) {
       fetchJob()
     }
-  }, [jobId])
+  }, [jobId, supabase])
 
   const submitBid = async () => {
     setIsLoading(true)

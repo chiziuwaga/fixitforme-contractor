@@ -271,6 +271,62 @@ CREATE POLICY "DIY guides are publicly readable" ON diy_guides
     FOR SELECT USING (true);
 
 -- ================================
+-- CONTRACTOR SERVICE REGIONS (Geographic Coverage Areas)
+-- ================================
+CREATE TABLE contractor_service_regions (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    contractor_id UUID REFERENCES contractor_profiles(id) ON DELETE CASCADE,
+    region_name VARCHAR(100) NOT NULL, -- "San Francisco Bay Area", "Greater Austin", etc.
+    center_coordinates POINT NOT NULL, -- Contractor's base location or region center
+    service_radius_miles INTEGER DEFAULT 25, -- How far they're willing to travel
+    region_type VARCHAR(50) CHECK (region_type IN ('city', 'metro_area', 'county', 'multi_county', 'custom')) DEFAULT 'metro_area',
+    state_code VARCHAR(2) NOT NULL,
+    active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Common service areas lookup (for onboarding suggestions)
+CREATE TABLE common_service_areas (
+    id SERIAL PRIMARY KEY,
+    area_name VARCHAR(100) NOT NULL,
+    area_type VARCHAR(50) CHECK (area_type IN ('metro_area', 'city', 'county', 'region')) DEFAULT 'metro_area',
+    state_code VARCHAR(2) NOT NULL,
+    center_coordinates POINT NOT NULL,
+    typical_radius_miles INTEGER DEFAULT 25,
+    population_estimate INTEGER,
+    active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Indexes for contractor service regions
+CREATE INDEX idx_contractor_regions_contractor ON contractor_service_regions(contractor_id);
+CREATE INDEX idx_contractor_regions_state ON contractor_service_regions(state_code);
+CREATE INDEX idx_contractor_regions_coordinates ON contractor_service_regions USING GIST(center_coordinates);
+CREATE INDEX idx_contractor_regions_active ON contractor_service_regions(active);
+
+-- Indexes for common service areas
+CREATE INDEX idx_common_areas_state ON common_service_areas(state_code);
+CREATE INDEX idx_common_areas_type ON common_service_areas(area_type);
+CREATE INDEX idx_common_areas_coordinates ON common_service_areas USING GIST(center_coordinates);
+
+-- RLS Policies for contractor service regions
+ALTER TABLE contractor_service_regions ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Contractors can manage own service regions" ON contractor_service_regions
+    FOR ALL USING (
+        contractor_id IN (
+            SELECT id FROM contractor_profiles WHERE user_id = auth.uid()
+        )
+    );
+
+-- RLS Policies for common service areas (public read access)
+ALTER TABLE common_service_areas ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Common service areas are publicly readable" ON common_service_areas
+    FOR SELECT USING (active = true);
+
+-- ================================
 -- PAYMENTS & SUBSCRIPTIONS
 -- ================================
 CREATE TABLE payments (
@@ -339,6 +395,52 @@ CREATE TRIGGER update_contractor_profiles_updated_at
 CREATE TRIGGER update_bids_updated_at
     BEFORE UPDATE ON bids
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- ================================
+-- FELIX FRAMEWORK TABLES (40-PROBLEM REFERENCE SYSTEM)
+-- ================================
+
+-- Felix Problems: Core 40-problem framework that drives all categorization
+CREATE TABLE felix_problems (
+    id INTEGER PRIMARY KEY,
+    category VARCHAR(100) NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    typical_cost_min DECIMAL(8,2),
+    typical_cost_max DECIMAL(8,2),
+    typical_time_hours DECIMAL(4,2),
+    difficulty_level VARCHAR(20) CHECK (difficulty_level IN ('beginner', 'intermediate', 'advanced')),
+    required_skills TEXT[],
+    common_materials TEXT[],
+    seasonal_factor DECIMAL(3,2) DEFAULT 1.0,
+    emergency_priority VARCHAR(20) CHECK (emergency_priority IN ('low', 'medium', 'high')),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Felix Categories: Service categories derived from the 40 problems
+CREATE TABLE felix_categories (
+    id SERIAL PRIMARY KEY,
+    category_name VARCHAR(100) UNIQUE NOT NULL,
+    search_terms TEXT[],
+    value_threshold INTEGER DEFAULT 150,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Indexes for Felix framework tables
+CREATE INDEX idx_felix_problems_category ON felix_problems(category);
+CREATE INDEX idx_felix_problems_difficulty ON felix_problems(difficulty_level);
+CREATE INDEX idx_felix_problems_emergency ON felix_problems(emergency_priority);
+CREATE INDEX idx_felix_categories_name ON felix_categories(category_name);
+
+-- RLS Policies for Felix framework (public read access)
+ALTER TABLE felix_problems ENABLE ROW LEVEL SECURITY;
+ALTER TABLE felix_categories ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Felix problems are publicly readable" ON felix_problems
+    FOR SELECT USING (true);
+
+CREATE POLICY "Felix categories are publicly readable" ON felix_categories
+    FOR SELECT USING (true);
 
 -- ================================
 -- SAMPLE DATA INSERTION

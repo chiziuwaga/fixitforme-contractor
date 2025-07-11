@@ -361,6 +361,63 @@ INSERT INTO contractor_leads (
 );
 
 -- ================================
+-- FELIX FRAMEWORK TABLES (40-PROBLEM REFERENCE SYSTEM)
+-- ================================
+
+-- Felix Problems: Core 40-problem framework that drives all categorization
+CREATE TABLE felix_problems (
+    id INTEGER PRIMARY KEY,
+    category VARCHAR(100) NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    typical_cost_min DECIMAL(8,2),
+    typical_cost_max DECIMAL(8,2),
+    typical_time_hours DECIMAL(4,2),
+    difficulty_level VARCHAR(20) CHECK (difficulty_level IN ('beginner', 'intermediate', 'advanced')),
+    required_skills TEXT[],
+    common_materials TEXT[],
+    seasonal_factor DECIMAL(3,2) DEFAULT 1.0,
+    emergency_priority VARCHAR(20) CHECK (emergency_priority IN ('low', 'medium', 'high')),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Felix Categories: Service categories derived from the 40 problems
+CREATE TABLE felix_categories (
+    id SERIAL PRIMARY KEY,
+    category_name VARCHAR(100) UNIQUE NOT NULL,
+    search_terms TEXT[],
+    value_threshold INTEGER DEFAULT 150,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Indexes for Felix framework tables
+CREATE INDEX idx_felix_problems_category ON felix_problems(category);
+CREATE INDEX idx_felix_problems_difficulty ON felix_problems(difficulty_level);
+CREATE INDEX idx_felix_problems_emergency ON felix_problems(emergency_priority);
+CREATE INDEX idx_felix_categories_name ON felix_categories(category_name);
+
+-- RLS Policies for Felix framework (public read access)
+ALTER TABLE felix_problems ENABLE ROW LEVEL SECURITY;
+ALTER TABLE felix_categories ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Felix problems are publicly readable" ON felix_problems
+    FOR SELECT USING (true);
+
+CREATE POLICY "Felix categories are publicly readable" ON felix_categories
+    FOR SELECT USING (true);
+
+-- Seed Felix Categories with service categories and search terms
+INSERT INTO felix_categories (category_name, search_terms, value_threshold) VALUES
+('plumbing', ARRAY['running toilet repair', 'leaky faucet fix', 'clogged drain', 'toilet flush mechanism', 'water heater repair', 'pipe leak', 'sump pump', 'garbage disposal', 'shower head replacement'], 150),
+('electrical', ARRAY['light fixture replacement', 'electrical outlet', 'circuit breaker', 'ceiling fan installation', 'panel upgrade', 'GFCI outlet', 'electrical inspection', 'generator installation', 'smart switch'], 200),
+('hvac', ARRAY['thermostat installation', 'heating repair', 'AC repair', 'ventilation', 'ductwork cleaning', 'heat pump service', 'furnace repair', 'air quality improvement'], 300),
+('carpentry', ARRAY['cabinet repair', 'deck repair', 'handrail fix', 'door lock replacement', 'trim work', 'shelving installation', 'furniture repair', 'molding installation'], 175),
+('roofing', ARRAY['roof leak repair', 'shingle replacement', 'gutter cleaning', 'emergency roof repair', 'roof inspection', 'skylight installation', 'chimney repair'], 500),
+('drywall', ARRAY['drywall patching', 'hole in wall', 'crack repair', 'texture matching', 'ceiling repair', 'paint prep', 'wall installation'], 125),
+('flooring', ARRAY['tile repair', 'hardwood refinishing', 'grout resealing', 'floor leveling', 'carpet repair', 'vinyl installation', 'subfloor repair'], 200),
+('exterior', ARRAY['siding repair', 'deck staining', 'pressure washing', 'window screen repair', 'door replacement', 'weatherproofing', 'fence repair'], 250);
+
+-- ================================
 -- COMPLETED SCHEMA DEPLOYMENT
 -- ================================
 -- Your database is now ready for the FixItForMe Contractor Module!
@@ -368,3 +425,4 @@ INSERT INTO contractor_leads (
 -- 1. Enable Phone auth provider in Supabase Auth settings
 -- 2. Create the storage buckets mentioned above
 -- 3. Deploy your application with the environment variables
+-- 4. Run seed scripts to populate Felix 40-problem data

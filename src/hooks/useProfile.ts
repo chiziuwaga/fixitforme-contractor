@@ -7,23 +7,19 @@ import { useUser } from "./useUser"
 import { toast } from "sonner"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 
-// Mock data for select options
-const MOCK_SERVICE_OPTIONS = [
-  { value: "plumbing", label: "Plumbing" },
-  { value: "electrical", label: "Electrical" },
-  { value: "hvac", label: "HVAC" },
-  { value: "roofing", label: "Roofing" },
-  { value: "painting", label: "Painting" },
-  { value: "landscaping", label: "Landscaping" },
-]
+// Real database integration for Felix's 40-problem framework
+// Service options now loaded from felix_categories table
+interface ServiceOption {
+  value: string;
+  label: string;
+  felix_id?: number;
+}
 
-const MOCK_AREA_OPTIONS = [
-  { value: "san_francisco", label: "San Francisco" },
-  { value: "san_mateo", label: "San Mateo" },
-  { value: "palo_alto", label: "Palo Alto" },
-  { value: "oakland", label: "Oakland" },
-  { value: "berkeley", label: "Berkeley" },
-]
+interface AreaOption {
+  value: string;
+  label: string;
+  region?: string;
+}
 
 interface ProfileData {
   companyName: string
@@ -53,6 +49,8 @@ export function useProfile() {
   const { user } = useUser()
   const supabase = createClientComponentClient()
   const [loading, setLoading] = useState(true)
+  const [serviceOptions, setServiceOptions] = useState<ServiceOption[]>([])
+  const [areaOptions, setAreaOptions] = useState<AreaOption[]>([])
   const [formData, setFormData] = useState<ProfileData>({
     companyName: "",
     contactName: "",
@@ -77,13 +75,52 @@ export function useProfile() {
     avatarUrl: "",
   })
 
-  // Fetch initial profile data
+  // Fetch initial profile data and Felix framework service options
   useEffect(() => {
-    const fetchProfile = async () => {
+    const fetchData = async () => {
       if (!user) return
 
       setLoading(true)
       try {
+        // Load Felix framework service categories from database
+        const { data: felixCategories, error: felixError } = await supabase
+          .from('felix_categories')
+          .select('id, category_name')
+          .order('category_name')
+
+        if (!felixError && felixCategories) {
+          const services = felixCategories.map(cat => ({
+            value: cat.category_name.toLowerCase().replace(/\s+/g, '_'),
+            label: cat.category_name,
+            felix_id: cat.id
+          }))
+          setServiceOptions(services)
+        } else {
+          // Fallback to basic service options if Felix categories aren't available
+          setServiceOptions([
+            { value: "plumbing", label: "Plumbing" },
+            { value: "electrical", label: "Electrical" },
+            { value: "hvac", label: "HVAC" },
+            { value: "roofing", label: "Roofing" },
+            { value: "painting", label: "Painting" },
+            { value: "flooring", label: "Flooring" },
+            { value: "drywall", label: "Drywall" },
+            { value: "kitchen_remodeling", label: "Kitchen Remodeling" },
+          ])
+        }
+
+        // Load common service areas (this could be from a service_areas table in the future)
+        setAreaOptions([
+          { value: "san_francisco", label: "San Francisco", region: "bay_area" },
+          { value: "san_mateo", label: "San Mateo", region: "bay_area" },
+          { value: "palo_alto", label: "Palo Alto", region: "bay_area" },
+          { value: "oakland", label: "Oakland", region: "bay_area" },
+          { value: "berkeley", label: "Berkeley", region: "bay_area" },
+          { value: "fremont", label: "Fremont", region: "bay_area" },
+          { value: "san_jose", label: "San Jose", region: "bay_area" },
+        ])
+
+        // Load contractor profile
         const { data, error } = await supabase.from("contractor_profiles").select("*").eq("user_id", user.id).single()
 
         if (error && error.code !== "PGRST116") {
@@ -111,7 +148,7 @@ export function useProfile() {
       }
     }
 
-    fetchProfile()
+    fetchData()
   }, [user, supabase])
 
   const handleChange = (field: keyof ProfileData, value: string | number) => {
@@ -223,8 +260,8 @@ export function useProfile() {
     profile: formData,
     formData,
     loading,
-    serviceOptions: MOCK_SERVICE_OPTIONS,
-    areaOptions: MOCK_AREA_OPTIONS,
+    serviceOptions,
+    areaOptions,
     handleSubmit,
     handleChange,
     handleMultiSelectChange,
