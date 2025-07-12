@@ -92,6 +92,82 @@ export function useDocumentUploader() {
     }
   }
 
+  // Enhanced error handling with retry logic
+  const handleUploadWithRetry = async (retryCount = 0) => {
+    if (!user || files.length === 0) return
+
+    setUploading(true)
+    
+    try {
+      const MAX_RETRIES = 2
+      const uploadPromises = files.map(async (file) => {
+        const filePath = `${user.id}/${file.name}`
+        
+        // NEW: Handle file type validation
+        const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf', 'application/msword']
+        if (!allowedTypes.includes(file.type)) {
+          throw new Error(`File type ${file.type} not supported`)
+        }
+        
+        // NEW: Handle file size validation  
+        const maxSize = 20 * 1024 * 1024 // 20MB
+        if (file.size > maxSize) {
+          throw new Error(`File "${file.name}" exceeds 20MB limit`)
+        }
+        
+        return supabase.storage.from("contractor_documents").upload(filePath, file, {
+          cacheControl: "3600",
+          upsert: true,
+        })
+      })
+
+      const results = await Promise.all(uploadPromises)
+      const failedUploads = results.filter((result) => result.error)
+
+      // NEW: Retry logic for failed uploads
+      if (failedUploads.length > 0 && retryCount < MAX_RETRIES) {
+        toast.warning(`${failedUploads.length} files failed. Retrying...`)
+        await new Promise(resolve => setTimeout(resolve, 1000)) // Wait 1 second
+        return handleUploadWithRetry(retryCount + 1)
+      }
+
+      if (failedUploads.length > 0) {
+        throw new Error(`Failed to upload ${failedUploads.length} file(s) after ${MAX_RETRIES} retries.`)
+      }
+
+      toast.success(`${files.length} file(s) uploaded successfully!`)
+      // Refresh the list of uploaded files
+      const { data: publicUrlData } = supabase.storage
+        .from("contractor_documents")
+        .getPublicUrl(`${user.id}/${files[0].name}`)
+      setUploadedFiles((prev) => [...prev, { name: files[0].name, url: publicUrlData.publicUrl }])
+      setFiles([])
+    } catch (error) {
+      // NEW: Enhanced error categorization
+      if (error instanceof Error) {
+        if (error.message.includes('not supported')) {
+          toast.error("File Type Error", {
+            description: error.message + ". Supported: PDF, DOC, DOCX, JPG, PNG",
+          })
+        } else if (error.message.includes('exceeds')) {
+          toast.error("File Size Error", {
+            description: error.message,
+          })
+        } else if (error.message.includes('Failed to upload')) {
+          toast.error("Upload Failed", {
+            description: error.message + " Please try again.",
+          })
+        } else {
+          toast.error("Upload Error", {
+            description: "An unexpected error occurred. Please try again.",
+          })
+        }
+      }
+    } finally {
+      setUploading(false)
+    }
+  }
+
   return {
     files,
     uploadedFiles,

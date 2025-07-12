@@ -107,9 +107,51 @@ export function ChatWindow({
     onSendMessage(prompt, agentType)
   }
 
+  // Handle window resize and overflow
+  useEffect(() => {
+    const handleResize = () => {
+      const isMobile = window.innerWidth < 768
+      const isTablet = window.innerWidth >= 768 && window.innerWidth < 1024
+      
+      // Auto-minimize on mobile when multiple chats open
+      if (isMobile && !isMinimized) {
+        const openChats = document.querySelectorAll('[data-chat-window]').length
+        if (openChats > 1) {
+          onMinimize()
+        }
+      }
+      
+      // Adjust height on tablet to prevent overflow
+      if (isTablet && viewport.current) {
+        const maxHeight = window.innerHeight * 0.7
+        viewport.current.style.maxHeight = `${maxHeight}px`
+      }
+    }
+
+    window.addEventListener('resize', handleResize)
+    handleResize() // Initial check
+    
+    return () => window.removeEventListener('resize', handleResize)
+  }, [isMinimized, onMinimize])
+
+  // Auto-scroll with better handling for UI assets
   useEffect(() => {
     if (viewport.current) {
-      viewport.current.scrollTo({ top: viewport.current.scrollHeight, behavior: "smooth" })
+      const scrollToBottom = () => {
+        // Check if user is near bottom before auto-scrolling
+        const { scrollTop, scrollHeight, clientHeight } = viewport.current!
+        const isNearBottom = scrollTop + clientHeight >= scrollHeight - 100
+        
+        if (isNearBottom) {
+          viewport.current!.scrollTo({ 
+            top: scrollHeight, 
+            behavior: "smooth" 
+          })
+        }
+      }
+      
+      // Delay for UI asset rendering
+      setTimeout(scrollToBottom, 100)
     }
   }, [messages])
 

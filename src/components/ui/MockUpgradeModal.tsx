@@ -73,8 +73,8 @@ export function MockUpgradeModal({ isOpen, onClose, onSuccess }: MockUpgradeModa
           </DialogTitle>
           <DialogDescription>
             {step === "phone" 
-              ? "Enter your phone number to begin the demo upgrade process."
-              : "Enter the demo upgrade password to complete the upgrade."
+              ? "Join FixItForMe Scale tier to unlock advanced contractor features and reduced platform fees."
+              : "Complete your upgrade with the demo password."
             }
           </DialogDescription>
         </DialogHeader>
@@ -139,7 +139,7 @@ export function MockUpgradeModal({ isOpen, onClose, onSuccess }: MockUpgradeModa
                 />
                 <div className="text-xs text-muted-foreground">
                   <Lock className="h-3 w-3 inline mr-1" />
-                  Demo password must end with "-felixscale"
+                  Try: "demo-felixscale"
                 </div>
               </div>
               <div className="flex gap-2">
@@ -157,7 +157,7 @@ export function MockUpgradeModal({ isOpen, onClose, onSuccess }: MockUpgradeModa
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
             <div className="flex items-center gap-2 text-sm text-blue-800">
               <Badge variant="outline" className="text-blue-600 border-blue-300">DEMO</Badge>
-              <span>This is a demo upgrade flow. No real payment required.</span>
+              <span>This is a demo upgrade. Use password: "demo-felixscale"</span>
             </div>
           </div>
         </div>

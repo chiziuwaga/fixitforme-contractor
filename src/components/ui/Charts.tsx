@@ -1,9 +1,11 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState, useMemo, useCallback } from 'react'
 import * as d3 from 'd3'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useResponsiveChart } from '../../hooks/useResponsiveChart'
+import { useMediaQuery } from '../../hooks/useMediaQuery'
+import { cn } from '../../lib/utils'
 
 // Get CSS custom property value utility
 function getCSSCustomProperty(property: string): string {
@@ -558,178 +560,379 @@ export function TimelineChart({ phases, animated = true, interactive = true }: T
   return <svg ref={svgRef}></svg>
 }
 
-// Wrapper components with BaseCard - Design System Integration
-export function CostBreakdownCard({ 
-  data, 
-  totalEstimate, 
-  title = "Cost Breakdown Analysis",
-  animated = true,
-  interactive = true 
-}: CostBreakdownChartProps & { title?: string }) {
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="flex flex-col items-center">
-        <CostBreakdownChart 
-          data={data} 
-          totalEstimate={totalEstimate} 
-          animated={animated}
-          interactive={interactive}
-        />
-        <div className="mt-4 grid grid-cols-2 gap-4 w-full text-sm">
-          {Object.entries(data).map(([key, value]) => (
-            <div key={key} className="flex justify-between">
-              <span className="capitalize font-medium">{key}:</span>
-              <span className="font-semibold text-success-foreground">${value.toLocaleString()}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-      </CardContent>
-    </Card>
-  )
+// Types for agent chart configurations
+interface AgentChartData {
+  label: string;
+  value: number;
+  quality?: number;
+  market_avg?: number;
+  benchmark?: number;
+  timestamp?: string;
 }
 
-export function LeadDistributionCard({ 
-  data, 
-  title = "Lead Distribution by Area",
-  animated = true,
-  interactive = true
-}: LeadDistributionChartProps & { title?: string }) {
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="flex flex-col items-center">
-        <LeadDistributionChart 
-          data={data} 
-          animated={animated}
-          interactive={interactive}
-        />
-        <div className="mt-4 grid grid-cols-1 gap-2 w-full text-xs">
-          {data.map((item) => (
-            <div key={item.area} className="flex justify-between items-center p-2 bg-muted rounded">
-              <span className="font-medium">{item.area}</span>
-              <div className="flex items-center gap-2">
-                <span className="font-semibold">{item.count} leads</span>
-                <span className={`px-2 py-1 rounded text-xs font-medium ${
-                  item.competition === 'high' ? 'bg-destructive/10 text-destructive-foreground' :
-                  item.competition === 'medium' ? 'bg-warning/10 text-warning-foreground' :
-                  'bg-success/10 text-success-foreground'
-                }`}>
-                  {item.competition}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-      </CardContent>
-    </Card>
-  )
+interface AgentChartConfig {
+  colorScheme: string[];
+  metrics: string[];
+  chartType?: string;
+  animations?: {
+    duration: number;
+    easing: string;
+  };
 }
 
-export function TimelineCard({ 
-  phases, 
-  title = "Project Timeline",
-  animated = true,
-  interactive = true
-}: TimelineChartProps & { title?: string }) {
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="flex flex-col items-center">
-        <TimelineChart 
-          phases={phases} 
-          animated={animated}
-          interactive={interactive}
-        />
-      </div>
-      </CardContent>
-    </Card>
-  )
+interface AgentOptimizedChartProps {
+  agent: 'lexi' | 'alex' | 'rex';
+  chartType?: string;
+  data: AgentChartData[];
+  interactive?: boolean;
+  realTime?: boolean;
+  className?: string;
 }
 
-// Quick Metrics Chart for dashboards
-interface QuickMetricsProps {
-  metrics: Array<{
-    label: string
-    value: number
-    format: 'currency' | 'percentage' | 'number'
-    trend?: 'up' | 'down' | 'neutral'
-    color?: string
-  }>
-}
-
-export function QuickMetricsChart({ metrics }: QuickMetricsProps) {
-  const svgRef = useRef<SVGSVGElement>(null)
-
-  useEffect(() => {
-    if (!svgRef.current) return
-
-    const svg = d3.select(svgRef.current)
-    svg.selectAll("*").remove()
-
-    const width = 400
-    const height = 120
-    const margin = { top: 20, right: 20, bottom: 20, left: 20 }
-
-    svg.attr('width', width).attr('height', height)
-
-    const cardWidth = (width - margin.left - margin.right) / metrics.length
+// Agent-specific chart configurations and data processing
+const agentChartConfigs: Record<string, Record<string, AgentChartConfig>> = {
+  lexi: {
+    // Onboarding progress and completion metrics
+    progressChart: {
+      colorScheme: ['#8B5CF6', '#A78BFA', '#C4B5FD'],
+      metrics: ['profile_completion', 'setup_steps', 'first_lead_interaction'],
+      animations: {
+        duration: 800,
+        easing: 'easeInOutCubic'
+      }
+    },
     
-    const metricGroups = svg.selectAll('.metric-group')
-      .data(metrics)
-      .enter()
-      .append('g')
-      .attr('class', 'metric-group')
-      .attr('transform', (d, i) => `translate(${margin.left + i * cardWidth}, ${margin.top})`)
+    // Contractor comparison and benchmarking
+    benchmarkChart: {
+      colorScheme: ['#10B981', '#34D399', '#6EE7B7'],
+      metrics: ['conversion_rate', 'response_time', 'customer_satisfaction'],
+      chartType: 'radar'
+    }
+  },
 
-    // Background cards
-    metricGroups.append('rect')
-      .attr('width', cardWidth - 10)
-      .attr('height', height - margin.top - margin.bottom)
-      .attr('fill', `hsl(var(--background))`)
-      .attr('stroke', `hsl(var(--border))`)
-      .attr('rx', 6)
+  alex: {
+    // Material cost analysis and trends
+    costAnalysisChart: {
+      colorScheme: ['#059669', '#10B981', '#34D399'],
+      metrics: ['material_costs', 'labor_rates', 'profit_margins', 'market_trends'],
+      animations: {
+        duration: 1000,
+        easing: 'easeOutBounce'
+      }
+    },
+    
+    // Bidding performance and win rates
+    biddingChart: {
+      colorScheme: ['#F59E0B', '#FBBF24', '#FCD34D'],
+      metrics: ['bid_accuracy', 'win_rate', 'profit_realization'],
+      chartType: 'line_with_area'
+    },
 
-    // Value text
-    metricGroups.append('text')
-      .attr('x', (cardWidth - 10) / 2)
-      .attr('y', 30)
-      .attr('text-anchor', 'middle')
-      .attr('font-size', '18px')
-      .attr('font-weight', 'bold')
-      .attr('fill', d => d.color || `hsl(var(--foreground))`)
-      .text(d => {
-        switch (d.format) {
-          case 'currency':
-            return d3.format('$,.0f')(d.value)
-          case 'percentage':
-            return d3.format('.1%')(d.value)
-          default:
-            return d3.format(',.0f')(d.value)
-        }
+    // Project timeline analysis
+    timelineChart: {
+      colorScheme: ['#8B5CF6', '#A78BFA', '#C4B5FD'],
+      metrics: ['planned_duration', 'actual_duration', 'efficiency_score'],
+      chartType: 'gantt_style'
+    }
+  },
+
+  rex: {
+    // Lead generation performance
+    leadPerformanceChart: {
+      colorScheme: ['#3B82F6', '#60A5FA', '#93C5FD'],
+      metrics: ['leads_found', 'quality_score', 'conversion_potential'],
+      animations: {
+        duration: 600,
+        easing: 'easeInOutQuad'
+      }
+    },
+    
+    // Market intelligence and opportunities
+    marketChart: {
+      colorScheme: ['#EF4444', '#F87171', '#FCA5A5'],
+      metrics: ['market_density', 'competition_level', 'opportunity_score'],
+      chartType: 'heatmap'
+    },
+
+    // Geographic lead distribution
+    geoChart: {
+      colorScheme: ['#06B6D4', '#22D3EE', '#67E8F9'],
+      metrics: ['lead_density', 'travel_time', 'service_area_coverage'],
+      chartType: 'choropleth'
+    }
+  }
+};
+
+// Enhanced chart component with agent-specific optimizations
+export const AgentOptimizedChart = React.forwardRef<
+  HTMLDivElement,
+  AgentOptimizedChartProps
+>(({ agent, chartType = 'progressChart', data, interactive = true, realTime = false, className, ...props }, ref) => {
+  const [chartData, setChartData] = useState(data);
+  const svgRef = useRef<SVGSVGElement>(null);
+  
+  // Use media query hooks directly instead of useResponsiveChart for responsive behavior
+  const isMobile = useMediaQuery('(max-width: 768px)');
+  const isTablet = useMediaQuery('(min-width: 768px) and (max-width: 1024px)');
+  const isDesktop = useMediaQuery('(min-width: 1024px)');
+  
+  // Get agent-specific configuration with fallback
+  const configKey = chartType || 'progressChart';
+  const agentConfig = agentChartConfigs[agent];
+  const config = agentConfig?.[configKey] || agentConfig?.progressChart || agentChartConfigs.lexi.progressChart;
+  
+  // Responsive dimensions
+  const dimensions = useMemo(() => {
+    if (isMobile) return { width: 300, height: 200, margin: { top: 20, right: 20, bottom: 40, left: 40 } };
+    if (isTablet) return { width: 500, height: 300, margin: { top: 30, right: 30, bottom: 50, left: 50 } };
+    return { width: 700, height: 400, margin: { top: 40, right: 40, bottom: 60, left: 60 } };
+  }, [isMobile, isTablet]);
+
+  // Real-time data updates for Rex lead generation
+  useEffect(() => {
+    if (!realTime || agent !== 'rex') return;
+
+    const interval = setInterval(() => {
+      // Simulate real-time lead updates
+      setChartData((prevData: AgentChartData[]) => 
+        prevData.map((item: AgentChartData) => ({
+          ...item,
+          value: item.value + (Math.random() - 0.5) * 0.1,
+          timestamp: new Date().toISOString()
+        }))
+      );
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [realTime, agent]);
+
+  // Chart rendering functions for different types
+  const renderRadarChart = (g: d3.Selection<SVGGElement, unknown, null, undefined>, data: AgentChartData[], width: number, height: number, config: AgentChartConfig) => {
+    const radius = Math.min(width, height) / 2;
+    const angleSlice = (Math.PI * 2) / data.length;
+    
+    // Create scales
+    const radiusScale = d3.scaleLinear()
+      .domain([0, d3.max(data, d => d.value) || 1])
+      .range([0, radius]);
+
+    // Draw radar grid
+    const gridLevels = 5;
+    for (let level = 1; level <= gridLevels; level++) {
+      g.append('circle')
+        .attr('cx', width / 2)
+        .attr('cy', height / 2)
+        .attr('r', (radius / gridLevels) * level)
+        .attr('fill', 'none')
+        .attr('stroke', '#e5e7eb')
+        .attr('stroke-width', 1);
+    }
+
+    // Draw radar lines
+    data.forEach((d, i) => {
+      const angle = angleSlice * i - Math.PI / 2;
+      g.append('line')
+        .attr('x1', width / 2)
+        .attr('y1', height / 2)
+        .attr('x2', width / 2 + Math.cos(angle) * radius)
+        .attr('y2', height / 2 + Math.sin(angle) * radius)
+        .attr('stroke', '#e5e7eb')
+        .attr('stroke-width', 1);
+    });
+
+    // Draw data area
+    const lineGenerator = d3.line<AgentChartData>()
+      .x((d, i) => {
+        const angle = angleSlice * i - Math.PI / 2;
+        return width / 2 + Math.cos(angle) * radiusScale(d.value);
       })
+      .y((d, i) => {
+        const angle = angleSlice * i - Math.PI / 2;
+        return height / 2 + Math.sin(angle) * radiusScale(d.value);
+      })
+      .curve(d3.curveLinearClosed);
 
-    // Label text
-    metricGroups.append('text')
-      .attr('x', (cardWidth - 10) / 2)
-      .attr('y', 55)
-      .attr('text-anchor', 'middle')
-      .attr('font-size', '11px')
-      .attr('fill', `hsl(var(--muted-foreground))`)
-      .text(d => d.label)
+    g.append('path')
+      .datum(data)
+      .attr('d', lineGenerator)
+      .attr('fill', config.colorScheme[0])
+      .attr('fill-opacity', 0.3)
+      .attr('stroke', config.colorScheme[0])
+      .attr('stroke-width', 2);
 
-  }, [metrics])
+    // Add data points
+    data.forEach((d, i) => {
+      const angle = angleSlice * i - Math.PI / 2;
+      const x = width / 2 + Math.cos(angle) * radiusScale(d.value);
+      const y = height / 2 + Math.sin(angle) * radiusScale(d.value);
+      
+      g.append('circle')
+        .attr('cx', x)
+        .attr('cy', y)
+        .attr('r', 4)
+        .attr('fill', config.colorScheme[1])
+        .attr('stroke', 'white')
+        .attr('stroke-width', 2);
 
-  return <svg ref={svgRef}></svg>
-}
+      // Add labels
+      const labelX = width / 2 + Math.cos(angle) * (radius + 20);
+      const labelY = height / 2 + Math.sin(angle) * (radius + 20);
+      
+      g.append('text')
+        .attr('x', labelX)
+        .attr('y', labelY)
+        .attr('text-anchor', 'middle')
+        .attr('dominant-baseline', 'middle')
+        .attr('font-size', '12px')
+        .attr('fill', '#6b7280')
+        .text(d.label);
+    });
+  };
+
+  const renderDefaultChart = (g: d3.Selection<SVGGElement, unknown, null, undefined>, data: AgentChartData[], width: number, height: number, config: AgentChartConfig) => {
+    // Default bar chart implementation
+    const xScale = d3.scaleBand()
+      .domain(data.map(d => d.label))
+      .range([0, width])
+      .padding(0.1);
+
+    const yScale = d3.scaleLinear()
+      .domain([0, d3.max(data, d => d.value) || 1])
+      .range([height, 0]);
+
+    // Add bars
+    g.selectAll('.bar')
+      .data(data)
+      .enter()
+      .append('rect')
+      .attr('class', 'bar data-element')
+      .attr('x', d => xScale(d.label) || 0)
+      .attr('y', d => yScale(d.value))
+      .attr('width', xScale.bandwidth())
+      .attr('height', d => height - yScale(d.value))
+      .attr('fill', (d, i) => config.colorScheme[i % config.colorScheme.length]);
+
+    // Add axes
+    g.append('g')
+      .attr('transform', `translate(0,${height})`)
+      .call(d3.axisBottom(xScale));
+
+    g.append('g')
+      .call(d3.axisLeft(yScale));
+  };
+
+  // Agent-specific chart rendering logic
+  const renderChart = useCallback(() => {
+    if (!svgRef.current || !chartData.length) return;
+
+    const svg = d3.select(svgRef.current);
+    svg.selectAll("*").remove();
+
+    const { width, height, margin } = dimensions;
+    const innerWidth = width - margin.left - margin.right;
+    const innerHeight = height - margin.top - margin.bottom;
+
+    const g = svg
+      .attr('width', width)
+      .attr('height', height)
+      .append('g')
+      .attr('transform', `translate(${margin.left},${margin.top})`);
+
+    switch (config.chartType) {
+      case 'radar':
+        renderRadarChart(g, chartData, innerWidth, innerHeight, config);
+        break;
+      case 'line_with_area':
+      case 'heatmap':
+      case 'choropleth':
+      case 'gantt_style':
+        // Fallback to default chart for unimplemented types
+        renderDefaultChart(g, chartData, innerWidth, innerHeight, config);
+        break;
+      default:
+        renderDefaultChart(g, chartData, innerWidth, innerHeight, config);
+    }
+
+    // Add agent-specific interactions
+    if (interactive) {
+      addAgentSpecificInteractions(svg, agent, chartData);
+    }
+  }, [chartData, dimensions, config, interactive, agent]);
+
+  const addAgentSpecificInteractions = (svg: d3.Selection<SVGSVGElement, unknown, null, undefined>, agent: string, data: AgentChartData[]) => {
+    // Agent-specific tooltip content
+    const getTooltipContent = (d: AgentChartData) => {
+      switch (agent) {
+        case 'alex':
+          return `
+            <div class="p-2 bg-white border rounded shadow-lg">
+              <div class="font-semibold">${d.label}</div>
+              <div class="text-sm text-gray-600">Cost: $${d.value?.toLocaleString()}</div>
+              <div class="text-xs text-gray-500">Market avg: $${d.market_avg?.toLocaleString()}</div>
+            </div>
+          `;
+        case 'rex':
+          return `
+            <div class="p-2 bg-white border rounded shadow-lg">
+              <div class="font-semibold">${d.label}</div>
+              <div class="text-sm text-gray-600">Leads: ${d.value}</div>
+              <div class="text-xs text-gray-500">Quality: ${((d.quality || 0) * 100).toFixed(0)}%</div>
+            </div>
+          `;
+        case 'lexi':
+          return `
+            <div class="p-2 bg-white border rounded shadow-lg">
+              <div class="font-semibold">${d.label}</div>
+              <div class="text-sm text-gray-600">Progress: ${(d.value * 100).toFixed(0)}%</div>
+              <div class="text-xs text-gray-500">Benchmark: ${d.benchmark?.toFixed(1)}</div>
+            </div>
+          `;
+        default:
+          return `<div class="p-2 bg-white border rounded shadow-lg">${d.label}: ${d.value}</div>`;
+      }
+    };
+
+    // Add hover interactions
+    svg.selectAll('circle, rect.data-element, path.data-element')
+      .on('mouseover', function(event: MouseEvent, d: unknown) {
+        d3.select(this as Element)
+          .transition()
+          .duration(200)
+          .attr('opacity', 0.8)
+          .attr('stroke-width', 3);
+
+        // Show tooltip (implement tooltip logic here)
+      })
+      .on('mouseout', function() {
+        d3.select(this as Element)
+          .transition()
+          .duration(200)
+          .attr('opacity', 1)
+          .attr('stroke-width', 1);
+      });
+  };
+
+  // Initialize chart
+  useEffect(() => {
+    renderChart();
+  }, [renderChart]);
+
+  return (
+    <div ref={ref} className={cn("w-full", `agent-chart-${agent}`, className)} {...props}>
+      <svg ref={svgRef} className="w-full h-auto" />
+      
+      {/* Agent-specific legend */}
+      <div className="mt-4 flex flex-wrap gap-2 justify-center">
+        {config.metrics.map((metric: string, index: number) => (
+          <div key={metric} className="flex items-center gap-1 text-xs">
+            <div 
+              className={`w-3 h-3 rounded-full`}
+              data-color={config.colorScheme[index % config.colorScheme.length]}
+            />
+            <span className="capitalize">{metric.replace('_', ' ')}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+});

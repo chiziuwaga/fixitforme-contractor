@@ -5,6 +5,7 @@ import { SettingsIcon, User, FileText, CreditCard, type LucideIcon } from "lucid
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import ProfileEditor from "@/components/settings/ProfileEditor"
 import DocumentUploader from "@/components/settings/DocumentUploader"
+import { DocumentViewer } from "@/components/settings/DocumentViewer"
 import SubscriptionManager from "@/components/settings/SubscriptionManager"
 import { TYPOGRAPHY, SPACING } from "@/lib/design-system"
 
@@ -61,7 +62,10 @@ export default function SettingsPage() {
 
         {settingsTabs.map((tab) => (
           <TabsContent key={tab.value} value={tab.value} className="mt-6">
-            <tab.component />
+            <div className="space-y-6">
+              <tab.component />
+              {tab.value === "documents" && <DocumentViewer />}
+            </div>
           </TabsContent>
         ))}
       </Tabs>
