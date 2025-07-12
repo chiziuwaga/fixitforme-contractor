@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "build": "next build",
+    "deploy": "vercel --prod",
     "deploy-check": "npm run lint && npm run build",
     "dev": "next dev --turbopack",
     "improve-ui": "tsx scripts/v0-ui-improvement.ts",

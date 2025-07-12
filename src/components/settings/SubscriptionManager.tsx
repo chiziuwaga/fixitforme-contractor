@@ -21,6 +21,7 @@ import {
 } from "lucide-react"
 import { TYPOGRAPHY, SPACING } from "@/lib/design-system"
 import { cn } from "@/lib/utils"
+import { MockUpgradeModal } from "@/components/ui/MockUpgradeModal"
 
 export default function SubscriptionManager() {
   const { 
@@ -33,8 +34,15 @@ export default function SubscriptionManager() {
   } = useSubscription()
   
   const [isUpgrading, setIsUpgrading] = useState(false)
+  const [showMockUpgrade, setShowMockUpgrade] = useState(false)
 
   const handleUpgradeClick = async () => {
+    // Check if in demo mode or development
+    if (process.env.NODE_ENV === 'development' || !process.env.STRIPE_PUBLISHABLE_KEY) {
+      setShowMockUpgrade(true)
+      return
+    }
+    
     setIsUpgrading(true)
     try {
       await handleUpgrade()
@@ -44,6 +52,12 @@ export default function SubscriptionManager() {
     } finally {
       setIsUpgrading(false)
     }
+  }
+
+  const handleMockUpgradeSuccess = () => {
+    // Simulate successful upgrade by updating local state
+    toast.success("Demo upgrade completed! Refresh to see changes.")
+    // In a real app, this would trigger a state refresh
   }
 
   if (loading || fetchingSubscription) {
@@ -354,6 +368,13 @@ export default function SubscriptionManager() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Mock Upgrade Modal */}
+      <MockUpgradeModal 
+        isOpen={showMockUpgrade}
+        onClose={() => setShowMockUpgrade(false)}
+        onSuccess={handleMockUpgradeSuccess}
+      />
     </div>
   )
 }
