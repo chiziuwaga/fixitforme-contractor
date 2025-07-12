@@ -14,14 +14,15 @@ export function ContractorAuth() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <Card className="w-full max-w-sm">
-        <CardHeader>
+        <CardHeader className="flex flex-col items-center">
+          <img src="/logo.png" alt="FixItForMe Logo" className="w-20 h-20 mb-2 rounded-full shadow-sm" />
           {step === "otp" && (
             <Button variant="ghost" size="sm" className="absolute left-4 top-4" onClick={goBack}>
               <ArrowLeft className="h-4 w-4" />
             </Button>
           )}
-          <CardTitle className="text-2xl">{step === "phone" ? "Contractor Login" : "Enter Code"}</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-2xl text-center">{step === "phone" ? "Contractor Login" : "Enter Code"}</CardTitle>
+          <CardDescription className="text-center">
             {step === "phone"
               ? "Enter your phone number to receive a login code."
               : `We sent a code to +1 ${phoneNumber}.`}
