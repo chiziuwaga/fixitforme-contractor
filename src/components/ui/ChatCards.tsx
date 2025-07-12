@@ -73,11 +73,11 @@ export function LeadCard({ lead, onContactLead, onSaveLead, onAnalyzeLead }: Lea
   const getPlatformStyle = (platform: string) => {
     switch (platform) {
       case 'craigslist':
-        return { bg: 'bg-blue-100', text: 'text-blue-700', icon: '🏢' };
+        return { bg: 'bg-muted/30', text: 'text-foreground', icon: '🏢' };
       case 'sams_gov':
         return { bg: 'bg-green-100', text: 'text-green-700', icon: '🏛️' };
       case 'municipal':
-        return { bg: 'bg-purple-100', text: 'text-purple-700', icon: '🏛️' };
+        return { bg: 'bg-secondary/10', text: 'text-secondary', icon: '🏛️' };
       default:
         return { bg: 'bg-gray-100', text: 'text-gray-700', icon: '🌐' };
     }
@@ -166,7 +166,7 @@ export function LeadCard({ lead, onContactLead, onSaveLead, onAnalyzeLead }: Lea
               variant="ghost"
               size="sm"
               onClick={() => setIsExpanded(!isExpanded)}
-              className="mt-2 p-0 h-auto text-blue-600 hover:text-blue-800"
+              className="mt-2 p-0 h-auto text-primary hover:text-primary/80"
             >
               {isExpanded ? 'Show less' : 'Show more'}
             </Button>
@@ -186,9 +186,9 @@ export function LeadCard({ lead, onContactLead, onSaveLead, onAnalyzeLead }: Lea
           <div className="bg-white rounded-lg p-3 border border-gray-200">
             <div className="flex items-center space-x-2 mb-1">
               {lead.contact_method.includes('Phone') ? (
-                <Phone className="h-4 w-4 text-blue-600" />
+                <Phone className="h-4 w-4 text-secondary" />
               ) : (
-                <Mail className="h-4 w-4 text-blue-600" />
+                <Mail className="h-4 w-4 text-secondary" />
               )}
               <span className="text-sm font-medium text-gray-700">Contact</span>
             </div>
@@ -201,7 +201,7 @@ export function LeadCard({ lead, onContactLead, onSaveLead, onAnalyzeLead }: Lea
           <div className="flex items-center space-x-2">
             <Button
               onClick={() => onContactLead?.(lead.post_id)}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
+              className="bg-primary hover:bg-primary/90 text-white"
               size="sm"
             >
               <MessageSquare className="h-4 w-4 mr-2" />
@@ -223,7 +223,7 @@ export function LeadCard({ lead, onContactLead, onSaveLead, onAnalyzeLead }: Lea
               variant="ghost"
               size="sm"
               onClick={() => onAnalyzeLead?.(lead.post_id)}
-              className="text-purple-600 hover:text-purple-800"
+              className="text-primary hover:text-primary/80"
             >
               <Target className="h-4 w-4" />
             </Button>
@@ -297,7 +297,7 @@ export function MaterialCard({
       case 'home_depot':
         return { bg: 'bg-orange-100', text: 'text-orange-700', name: 'Home Depot', icon: '🏠' };
       case 'lowes':
-        return { bg: 'bg-blue-100', text: 'text-blue-700', name: "Lowe's", icon: '🔧' };
+        return { bg: 'bg-muted/50', text: 'text-foreground', name: "Lowe's", icon: '🔧' };
       case 'local_supplier':
         return { bg: 'bg-green-100', text: 'text-green-700', name: 'Local Supplier', icon: '🏪' };
       default:
@@ -420,7 +420,7 @@ export function MaterialCard({
                 variant="ghost"
                 size="sm"
                 onClick={() => setIsExpanded(!isExpanded)}
-                className="mt-2 p-0 h-auto text-blue-600 hover:text-blue-800"
+                className="mt-2 p-0 h-auto text-primary hover:text-primary/80"
               >
                 {isExpanded ? 'Show less' : 'Show more details'}
               </Button>
@@ -430,15 +430,15 @@ export function MaterialCard({
 
         {/* Price comparison */}
         {showComparison && competitorPrices && competitorPrices.length > 0 && (
-          <div className="mb-4 bg-blue-50 border border-blue-200 rounded-lg p-3">
-            <h4 className="text-sm font-medium text-blue-900 mb-2 flex items-center">
+          <div className="mb-4 bg-primary/5 border border-primary/20 rounded-lg p-3">
+            <h4 className="text-sm font-medium text-primary mb-2 flex items-center">
               <TrendingUp className="h-4 w-4 mr-2" />
               Price Comparison
             </h4>
             <div className="space-y-2">
               {competitorPrices.map((comp, index) => (
                 <div key={index} className="flex justify-between items-center text-sm">
-                  <span className="text-blue-700">{comp.supplier}</span>
+                  <span className="text-primary/80">{comp.supplier}</span>
                   <div className="flex items-center space-x-2">
                     <span className="font-medium">${comp.price.toFixed(2)}</span>
                     <Badge variant="outline" className="text-xs">
@@ -481,7 +481,7 @@ export function MaterialCard({
               variant="ghost"
               size="sm"
               onClick={() => onContactSupplier?.(material.item_name)}
-              className="text-blue-600 hover:text-blue-800"
+              className="text-secondary hover:text-secondary/80"
             >
               <Phone className="h-4 w-4" />
             </Button>

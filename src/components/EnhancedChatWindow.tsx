@@ -51,7 +51,7 @@ export interface ChatWindowProps {
 const AGENT_CONFIG = {
   lexi: { name: "Lexi", color: "bg-primary", avatar: <Bot /> },
   alex: { name: "Alex", color: "bg-green-600", avatar: <Bot /> },
-  rex: { name: "Rex", color: "bg-blue-600", avatar: <Bot /> },
+  rex: { name: "Rex", color: "bg-secondary", avatar: <Bot /> },
 }
 
 function GenerativeUIRenderer({ ui_assets }: { ui_assets: Message["ui_assets"] }) {

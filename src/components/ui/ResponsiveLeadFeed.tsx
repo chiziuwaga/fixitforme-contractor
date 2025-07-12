@@ -141,9 +141,9 @@ export function ResponsiveLeadFeed({ leads, onLeadSelect, onBookmarkToggle, clas
   const getSourceBadgeColor = (source: Lead['source']) => {
     const colors = {
       craigslist: 'bg-orange-100 text-orange-800',
-      facebook: 'bg-blue-100 text-blue-800',
+      facebook: 'bg-muted/50 text-foreground',
       nextdoor: 'bg-green-100 text-green-800',
-      government: 'bg-purple-100 text-purple-800',
+      government: 'bg-secondary/10 text-secondary',
       felix_referral: 'bg-amber-100 text-amber-800'
     };
     return colors[source] || 'bg-gray-100 text-gray-800';

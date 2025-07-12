@@ -59,11 +59,11 @@ export function ContractorAuth() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-950 via-slate-950 to-purple-950 p-4">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-secondary via-slate-950 to-primary/20 p-4">
       {/* Floating Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-48 h-48 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-primary/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-48 h-48 bg-secondary/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
       </div>
       
       <div className="relative w-full max-w-sm">
@@ -82,18 +82,18 @@ export function ContractorAuth() {
         <Card className="backdrop-blur-sm bg-white/95 border-0 shadow-2xl">
           <CardHeader className="flex flex-col items-center relative overflow-hidden">
             {/* Animated background pattern */}
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-purple-50 opacity-50"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-secondary/5 opacity-50"></div>
             
             <div className="relative z-10 flex flex-col items-center">
               <div className="relative">
                 <img 
                   src="/logo.png" 
                   alt="FixItForMe Logo" 
-                  className="w-20 h-20 mb-4 rounded-full shadow-lg ring-4 ring-white/50 hover:ring-blue-200 transition-all duration-300 hover:scale-105" 
+                  className="w-20 h-20 mb-4 rounded-full shadow-lg ring-4 ring-white/50 hover:ring-primary/20 transition-all duration-300 hover:scale-105" 
                 />
                 {/* Animated rings */}
-                <div className="absolute inset-0 rounded-full border-2 border-blue-300/30 animate-ping"></div>
-                <div className="absolute inset-0 rounded-full border border-purple-300/20 animate-pulse delay-500"></div>
+                <div className="absolute inset-0 rounded-full border-2 border-primary/30 animate-ping"></div>
+                <div className="absolute inset-0 rounded-full border border-secondary/20 animate-pulse delay-500"></div>
               </div>
               
               {step === "otp" && (
@@ -102,7 +102,7 @@ export function ContractorAuth() {
                 </Button>
               )}
               
-              <CardTitle className="text-2xl text-center bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <CardTitle className="text-2xl text-center bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                 {step === "phone" ? "Contractor Login" : "Enter Code"}
               </CardTitle>
               <CardDescription className="text-center text-slate-600">
@@ -125,13 +125,13 @@ export function ContractorAuth() {
                   onChange={(e) => setPhoneNumber(e.target.value)}
                   required
                   disabled={loading}
-                  className="transition-all duration-200 focus:ring-2 focus:ring-blue-500/20"
+                  className="transition-all duration-200 focus:ring-2 focus:ring-primary/20"
                 />
               </div>
               <div className="flex flex-col gap-2">
                 <Button 
                   type="submit" 
-                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-[1.02]" 
+                  className="w-full bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 transition-all duration-200 transform hover:scale-[1.02]" 
                   loading={loading}
                 >
                   Send SMS Code
@@ -168,7 +168,7 @@ export function ContractorAuth() {
                 </div>
               </div>
               {waMsg && (
-                <div className="text-xs text-center mt-2 p-2 rounded bg-blue-50 text-blue-600 border border-blue-200">
+                <div className="text-xs text-center mt-2 p-2 rounded bg-primary/5 text-primary border border-primary/20">
                   {waMsg}
                 </div>
               )}
@@ -186,12 +186,12 @@ export function ContractorAuth() {
                   onChange={(e) => setOtp(e.target.value)}
                   required
                   disabled={loading}
-                  className="text-center text-lg tracking-widest transition-all duration-200 focus:ring-2 focus:ring-blue-500/20"
+                  className="text-center text-lg tracking-widest transition-all duration-200 focus:ring-2 focus:ring-primary/20"
                 />
               </div>
               <Button 
                 type="submit" 
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-[1.02]" 
+                className="w-full bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 transition-all duration-200 transform hover:scale-[1.02]" 
                 loading={loading}
               >
                 Verify & Login
@@ -209,9 +209,9 @@ export function ContractorAuth() {
       {/* Decorative icons */}
       <div className="absolute bottom-8 left-8 opacity-20">
         <div className="flex items-center gap-2 text-white">
-          <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
-          <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse delay-300"></div>
-          <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse delay-700"></div>
+          <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+          <div className="w-2 h-2 bg-secondary rounded-full animate-pulse delay-300"></div>
+          <div className="w-2 h-2 bg-primary rounded-full animate-pulse delay-700"></div>
         </div>
       </div>
       </div>

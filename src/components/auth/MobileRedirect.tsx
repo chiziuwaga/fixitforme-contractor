@@ -16,7 +16,7 @@ export function MobileRedirect({ onContinueAnyway }: MobileRedirectProps) {
   
   const features = [
     {
-      icon: <Zap className="h-8 w-8 text-blue-500" />,
+      icon: <Zap className="h-8 w-8 text-primary" />,
       title: "AI-Powered Tools",
       description: "Access Alex's cost analysis and Rex's lead generation on a bigger screen"
     },
@@ -40,7 +40,7 @@ export function MobileRedirect({ onContinueAnyway }: MobileRedirectProps) {
   }, [features.length])
   
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-950 via-slate-950 to-purple-950 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-secondary via-slate-950 to-secondary/80 flex items-center justify-center p-4">
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -65,7 +65,7 @@ export function MobileRedirect({ onContinueAnyway }: MobileRedirectProps) {
             
             {/* Main Message */}
             <div className="space-y-3">
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                 Better on Desktop
               </h1>
               <p className="text-slate-600 leading-relaxed">
@@ -119,7 +119,7 @@ export function MobileRedirect({ onContinueAnyway }: MobileRedirectProps) {
                 <div
                   key={index}
                   className={`w-2 h-2 rounded-full transition-colors ${
-                    index === currentFeature ? "bg-blue-500" : "bg-slate-300"
+                    index === currentFeature ? "bg-primary" : "bg-slate-300"
                   }`}
                 />
               ))}
@@ -147,7 +147,7 @@ export function MobileRedirect({ onContinueAnyway }: MobileRedirectProps) {
                 Visit{" "}
                 <a
                   href="https://fixitforme.ai"
-                  className="text-blue-500 hover:underline"
+                  className="text-primary hover:underline"
                   target="_blank"
                   rel="noopener noreferrer"
                 >

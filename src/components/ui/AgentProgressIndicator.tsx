@@ -71,8 +71,8 @@ export function AgentProgressIndicator({ state, className }: AgentProgressIndica
           <div className={cn(
             "p-2 rounded-lg",
             state.agent === 'alex' && "bg-green-500/10 text-green-600",
-            state.agent === 'rex' && "bg-blue-500/10 text-blue-600", 
-            state.agent === 'lexi' && "bg-purple-500/10 text-purple-600"
+            state.agent === 'rex' && "bg-secondary/10 text-secondary", 
+            state.agent === 'lexi' && "bg-primary/10 text-primary"
           )}>
             <IconComponent className="w-5 h-5" />
           </div>
@@ -101,8 +101,8 @@ export function AgentProgressIndicator({ state, className }: AgentProgressIndica
             className={cn(
               "h-2",
               state.agent === 'alex' && "[&>div]:bg-green-500",
-              state.agent === 'rex' && "[&>div]:bg-blue-500",
-              state.agent === 'lexi' && "[&>div]:bg-purple-500"
+              state.agent === 'rex' && "[&>div]:bg-secondary",
+              state.agent === 'lexi' && "[&>div]:bg-primary"
             )}
           />
         </div>
@@ -134,13 +134,13 @@ export function AgentProgressIndicator({ state, className }: AgentProgressIndica
               <div className="text-xs text-muted-foreground">Relevance</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">
+              <div className="text-2xl font-bold text-secondary">
                 {state.quality_metrics.data_points}
               </div>
               <div className="text-xs text-muted-foreground">Data Points</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-purple-600">
+              <div className="text-2xl font-bold text-primary">
                 {Math.round(state.quality_metrics.confidence_level * 100)}%
               </div>
               <div className="text-xs text-muted-foreground">Confidence</div>
@@ -161,7 +161,7 @@ export function AgentProgressIndicator({ state, className }: AgentProgressIndica
                 className={cn(
                   "flex items-start gap-3 p-3 rounded-lg border transition-all",
                   step.status === 'complete' && "bg-green-50 border-green-200",
-                  step.status === 'active' && "bg-blue-50 border-blue-200",
+                  step.status === 'active' && "bg-primary/5 border-primary/20",
                   step.status === 'error' && "bg-red-50 border-red-200",
                   step.status === 'pending' && "bg-muted/30 border-border"
                 )}
@@ -171,7 +171,7 @@ export function AgentProgressIndicator({ state, className }: AgentProgressIndica
                     <CheckCircle className="w-4 h-4 text-green-600" />
                   )}
                   {step.status === 'active' && (
-                    <Loader2 className="w-4 h-4 text-blue-600 animate-spin" />
+                    <Loader2 className="w-4 h-4 text-primary animate-spin" />
                   )}
                   {step.status === 'error' && (
                     <AlertCircle className="w-4 h-4 text-red-600" />
@@ -271,8 +271,8 @@ export function CompactAgentProgressIndicator({ state, className }: AgentProgres
         <div className={cn(
           "p-1.5 rounded",
           state.agent === 'alex' && "bg-green-500/10 text-green-600",
-          state.agent === 'rex' && "bg-blue-500/10 text-blue-600",
-          state.agent === 'lexi' && "bg-purple-500/10 text-purple-600"
+          state.agent === 'rex' && "bg-secondary/10 text-secondary",
+          state.agent === 'lexi' && "bg-primary/10 text-primary"
         )}>
           <IconComponent className="w-4 h-4" />
         </div>
@@ -291,8 +291,8 @@ export function CompactAgentProgressIndicator({ state, className }: AgentProgres
         className={cn(
           "h-1.5 mb-3",
           state.agent === 'alex' && "[&>div]:bg-green-500",
-          state.agent === 'rex' && "[&>div]:bg-blue-500", 
-          state.agent === 'lexi' && "[&>div]:bg-purple-500"
+          state.agent === 'rex' && "[&>div]:bg-secondary", 
+          state.agent === 'lexi' && "[&>div]:bg-primary"
         )}
       />
 

@@ -18,7 +18,7 @@ export const EnhancedCard = React.forwardRef<
   const agentColors = {
     lexi: 'shadow-primary/5 border-primary/10 hover:shadow-primary/15',
     alex: 'shadow-green-500/5 border-green-500/10 hover:shadow-green-500/15', 
-    rex: 'shadow-blue-500/5 border-blue-500/10 hover:shadow-blue-500/15'
+    rex: 'shadow-secondary/5 border-secondary/10 hover:shadow-secondary/15'
   }
 
   // Filter out event handlers that conflict with framer-motion
@@ -63,7 +63,7 @@ export const EnhancedButton = React.forwardRef<
   const agentStyles = {
     lexi: 'bg-primary/10 text-primary hover:bg-primary/20 border-primary/20',
     alex: 'bg-green-500/10 text-green-600 hover:bg-green-500/20 border-green-500/20',
-    rex: 'bg-blue-500/10 text-blue-600 hover:bg-blue-500/20 border-blue-500/20'
+    rex: 'bg-secondary/10 text-secondary hover:bg-secondary/20 border-secondary/20'
   }
 
   // Filter out event handlers that conflict with framer-motion
@@ -112,7 +112,7 @@ export const EnhancedInput = React.forwardRef<
   const agentFocus = {
     lexi: 'focus:border-primary/50 focus:ring-primary/20',
     alex: 'focus:border-green-500/50 focus:ring-green-500/20',
-    rex: 'focus:border-blue-500/50 focus:ring-blue-500/20'
+    rex: 'focus:border-secondary/50 focus:ring-secondary/20'
   }
 
   return (
@@ -148,7 +148,7 @@ export const EnhancedBadge = React.forwardRef<
   const agentStyles = {
     lexi: 'bg-primary/15 text-primary border-primary/30',
     alex: 'bg-green-500/15 text-green-700 border-green-500/30',
-    rex: 'bg-blue-500/15 text-blue-700 border-blue-500/30'
+    rex: 'bg-secondary/15 text-secondary border-secondary/30'
   }
 
   return (

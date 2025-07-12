@@ -218,7 +218,7 @@ export default function EnhancedChatManager() {
               const isPremium = agent !== "lexi"
               const isDisabled = isPremium && !isScaleTier
               const Icon = agent === "lexi" ? MessageCircle : agent === "alex" ? Calculator : Search
-              const color = agent === "lexi" ? "bg-primary" : agent === "alex" ? "bg-green-600" : "bg-blue-600"
+              const color = agent === "lexi" ? "bg-primary" : agent === "alex" ? "bg-green-600" : "bg-secondary"
 
               return (
                 <Tooltip key={agent}>

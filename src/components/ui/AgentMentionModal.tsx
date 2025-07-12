@@ -18,8 +18,8 @@ const AGENTS = [
     role: 'Onboarding Guide & Orchestrator',
     description: 'Friendly onboarding specialist and intelligent agent coordinator',
     icon: User,
-    color: 'bg-blue-500',
-    textColor: 'text-blue-600',
+    color: 'bg-primary',
+    textColor: 'text-primary',
     specialties: ['Onboarding', 'System Navigation', 'Agent Routing', 'General Support'],
     tier: 'all'
   },
@@ -40,8 +40,8 @@ const AGENTS = [
     role: 'Lead Generation Specialist',
     description: 'Silent lead hunter with multi-platform web scraping expertise',
     icon: Target,
-    color: 'bg-purple-500',
-    textColor: 'text-purple-600',
+    color: 'bg-secondary',
+    textColor: 'text-secondary',
     specialties: ['Lead Generation', 'Market Research', 'Opportunity Discovery', 'Competition Analysis'],
     tier: 'scale'
   }
@@ -148,7 +148,7 @@ export function AgentMentionModal({
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search agents by name or specialty..."
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
             />
           </div>
         </div>
@@ -172,7 +172,7 @@ export function AgentMentionModal({
                     onClick={() => isAvailable && handleAgentSelect(agent.id)}
                     className={cn(
                       'relative p-4 rounded-lg cursor-pointer transition-all duration-200 mb-2',
-                      isSelected && isAvailable && 'bg-blue-50 border-2 border-blue-200',
+                      isSelected && isAvailable && 'bg-primary/5 border-2 border-primary/20',
                       !isSelected && isAvailable && 'bg-white border border-gray-200 hover:bg-gray-50',
                       !isAvailable && 'bg-gray-50 border border-gray-200 cursor-not-allowed opacity-60'
                     )}
@@ -255,7 +255,7 @@ export function AgentMentionModal({
                     {/* Selection indicator */}
                     {isSelected && isAvailable && (
                       <div className="absolute top-1/2 right-4 transform -translate-y-1/2">
-                        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                        <div className="w-2 h-2 bg-primary rounded-full"></div>
                       </div>
                     )}
                   </div>

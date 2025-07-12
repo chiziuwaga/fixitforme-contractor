@@ -52,7 +52,7 @@ function FeatureBlockedOverlay({
           <div className="space-y-3">
             <Button 
               onClick={onUpgrade}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+              className="w-full bg-primary hover:bg-primary/90 text-white"
             >
               <ArrowRight className="h-4 w-4 mr-2" />
               Continue Onboarding
@@ -85,7 +85,7 @@ function OnboardingProgress({
     <Card className="w-80 h-fit">
       <CardHeader>
         <CardTitle className="flex items-center space-x-2">
-          <Users className="h-5 w-5 text-blue-600" />
+          <Users className="h-5 w-5 text-primary" />
           <span>Getting Started</span>
         </CardTitle>
         
@@ -115,7 +115,7 @@ function OnboardingProgress({
                 className={cn(
                   'p-4 border-l-4 cursor-pointer transition-all',
                   isCompleted && 'bg-green-50 border-green-500',
-                  isCurrent && !isCompleted && 'bg-blue-50 border-blue-500',
+                  isCurrent && !isCompleted && 'bg-primary/10 border-primary',
                   !isCompleted && !isCurrent && 'bg-gray-50 border-gray-200',
                   !isAccessible && 'opacity-50 cursor-not-allowed'
                 )}
@@ -124,7 +124,7 @@ function OnboardingProgress({
                   <div className={cn(
                     'flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center mt-0.5',
                     isCompleted && 'bg-green-500 text-white',
-                    isCurrent && !isCompleted && 'bg-blue-500 text-white',
+                    isCurrent && !isCompleted && 'bg-primary text-white',
                     !isCompleted && !isCurrent && 'bg-gray-300 text-gray-600'
                   )}>
                     {isCompleted ? (
@@ -138,7 +138,7 @@ function OnboardingProgress({
                     <h4 className={cn(
                       'text-sm font-medium',
                       isCompleted && 'text-green-900',
-                      isCurrent && !isCompleted && 'text-blue-900',
+                      isCurrent && !isCompleted && 'text-primary',
                       !isCompleted && !isCurrent && 'text-gray-700'
                     )}>
                       {step.title}
@@ -147,7 +147,7 @@ function OnboardingProgress({
                     <p className={cn(
                       'text-xs mt-1',
                       isCompleted && 'text-green-700',
-                      isCurrent && !isCompleted && 'text-blue-700',
+                      isCurrent && !isCompleted && 'text-primary/80',
                       !isCompleted && !isCurrent && 'text-gray-500'
                     )}>
                       {step.description}
@@ -187,7 +187,7 @@ export function OnboardingLayout({ children, className }: OnboardingLayoutProps)
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <Card className="max-w-md mx-4">
           <CardContent className="p-8 text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
             <p className="text-gray-600">Loading your onboarding status...</p>
           </CardContent>
         </Card>
@@ -227,7 +227,7 @@ export function OnboardingLayout({ children, className }: OnboardingLayoutProps)
             <div className="flex items-center space-x-4">
               <div className="text-xl font-bold text-gray-900">FixItForMe</div>
               <div className="hidden md:block">
-                <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
                   <Users className="h-3 w-3 mr-1" />
                   Getting Started
                 </Badge>
@@ -245,7 +245,7 @@ export function OnboardingLayout({ children, className }: OnboardingLayoutProps)
                 <Button 
                   onClick={handleContinueOnboarding}
                   size="sm"
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                  className="bg-primary hover:bg-primary/90 text-white"
                 >
                   Continue Setup
                 </Button>
@@ -271,23 +271,23 @@ export function OnboardingLayout({ children, className }: OnboardingLayoutProps)
           <div className="flex-1 relative">
             {/* Welcome message for new users */}
             {status.currentStep === 0 && (
-              <Card className="mb-8 border-blue-200 bg-blue-50">
+              <Card className="mb-8 border-primary/20 bg-primary/5">
                 <CardContent className="p-6">
                   <div className="flex items-start space-x-4">
                     <div className="flex-shrink-0">
-                      <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center">
+                      <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center">
                         <Star className="h-6 w-6 text-white" />
                       </div>
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold text-blue-900 mb-2">
+                      <h3 className="text-lg font-semibold text-primary mb-2">
                         Welcome to FixItForMe! 👋
                       </h3>
-                      <p className="text-blue-800 mb-4">
+                      <p className="text-primary/80 mb-4">
                         Let's get your contractor business set up for success. This quick setup will 
                         help our AI agents provide you with personalized leads and cost analysis.
                       </p>
-                      <div className="flex items-center space-x-2 text-sm text-blue-700">
+                      <div className="flex items-center space-x-2 text-sm text-primary/70">
                         <Clock className="h-4 w-4" />
                         <span>Estimated time: {steps.reduce((acc, step) => acc + (step.estimatedMinutes || 0), 0)} minutes</span>
                       </div>
@@ -341,7 +341,7 @@ export function OnboardingLayout({ children, className }: OnboardingLayoutProps)
 
       {/* Chat is always accessible */}
       <div className="fixed bottom-4 right-4 z-50">
-        <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-full p-4 shadow-lg">
+        <Button className="bg-primary hover:bg-primary/90 text-white rounded-full p-4 shadow-lg">
           <MessageSquare className="h-6 w-6" />
         </Button>
       </div>

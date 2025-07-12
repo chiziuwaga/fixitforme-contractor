@@ -137,7 +137,7 @@ export function useJobBid() {
   const getSourceColor = (source: string) => {
     switch (source) {
       case "felix_referral": return "text-primary"
-      case "rex_discovery": return "text-blue-600"
+      case "rex_discovery": return "text-secondary"
       case "direct_inquiry": return "text-green-600"
       default: return "text-muted-foreground"
     }

@@ -11,6 +11,10 @@ const inter = Inter({ subsets: ["latin"] })
 export const metadata: Metadata = {
   title: "FixItForMe Contractor",
   description: "Lead generation and management for contractors.",
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/logo.png',
+  },
 }
 
 export default function RootLayout({
@@ -19,10 +23,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className="dark" style={{ colorScheme: "dark" }}>
-      <head>
-        <link rel="icon" href="/logo.png" type="image/png" />
-      </head>
+    <html lang="en" className="dark">
       <body className={inter.className}>
         <SupabaseProvider>
           <UserProvider>
