@@ -13,38 +13,6 @@ export function useAuth() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handlePhoneSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-
-    try {
-      const phone = `+1${phoneNumber.replace(/\D/g, "")}`;
-      
-      const response = await fetch('/api/auth/send-sms', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone })
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to send verification code');
-      }
-
-      setStep("otp");
-      toast.success("Verification code sent!", { 
-        description: data.demo ? `Demo code: ${data.hint?.split(': ')[1]}` : "Check your phone for the 6-digit code"
-      });
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to send code';
-      setError(errorMessage);
-      toast.error("Failed to send code", { description: errorMessage });
-    }
-    setLoading(false);
-  };
-
   const handleOtpSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
@@ -147,7 +115,6 @@ export function useAuth() {
     setOtp,
     loading,
     error,
-    handlePhoneSubmit,
     handleOtpSubmit,
     handleWhatsAppSend,
     goBack,
