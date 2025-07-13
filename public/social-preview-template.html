@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FixItForMe Contractor Beta - Social Preview</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            width: 1200px;
+            height: 630px;
+            background: linear-gradient(135deg, #F5F1E8 0%, #E8DCC0 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .left-section {
+            flex: 1;
+            padding: 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .house-icon {
+            width: 200px;
+            height: 200px;
+            border: 8px solid #1A2E1A;
+            border-radius: 20px;
+            position: relative;
+            margin-bottom: 40px;
+            background: transparent;
+        }
+
+        .house-roof {
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 60px solid transparent;
+            border-right: 60px solid transparent;
+            border-bottom: 50px solid #1A2E1A;
+        }
+
+        .house-chimney {
+            position: absolute;
+            top: 15px;
+            right: 30px;
+            width: 20px;
+            height: 35px;
+            background: #1A2E1A;
+        }
+
+        .tools-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .wrench {
+            width: 60px;
+            height: 60px;
+            background: #1A2E1A;
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .wrench::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            width: 30px;
+            height: 30px;
+            background: #F5F1E8;
+            border-radius: 50%;
+        }
+
+        .gear {
+            width: 50px;
+            height: 50px;
+            background: #D4A574;
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .gear::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            width: 20px;
+            height: 20px;
+            background: #F5F1E8;
+            border-radius: 50%;
+        }
+
+        .bottom-tools {
+            display: flex;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .tool-wrench {
+            width: 40px;
+            height: 40px;
+            background: #1A2E1A;
+            border-radius: 20px;
+        }
+
+        .tool-hammer {
+            width: 40px;
+            height: 40px;
+            background: #D4A574;
+            border-radius: 5px;
+        }
+
+        .tool-shield {
+            width: 40px;
+            height: 40px;
+            background: #1A2E1A;
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            position: relative;
+        }
+
+        .tool-shield::before {
+            content: '$';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #F5F1E8;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .right-section {
+            flex: 1.2;
+            padding: 60px;
+        }
+
+        .title {
+            font-size: 72px;
+            font-weight: 800;
+            color: #1A2E1A;
+            line-height: 0.9;
+            margin-bottom: 30px;
+        }
+
+        .subtitle {
+            font-size: 32px;
+            font-weight: 600;
+            color: #1A2E1A;
+            margin-bottom: 20px;
+        }
+
+        .features {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .features li {
+            font-size: 24px;
+            color: #D4A574;
+            margin-bottom: 8px;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .features li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: #D4A574;
+            font-weight: bold;
+        }
+
+        .green-accent {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 300px;
+            height: 200px;
+            background: linear-gradient(135deg, #1A2E1A 0%, #2A4E2A 100%);
+            border-radius: 300px 0 0 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="left-section">
+        <div class="house-icon">
+            <div class="house-roof"></div>
+            <div class="house-chimney"></div>
+            <div class="tools-container">
+                <div class="wrench"></div>
+                <div class="gear"></div>
+            </div>
+        </div>
+        <div class="bottom-tools">
+            <div class="tool-wrench"></div>
+            <div class="tool-hammer"></div>
+            <div class="tool-shield"></div>
+        </div>
+    </div>
+    
+    <div class="right-section">
+        <h1 class="title">Join the FixItForMe Contractor Beta</h1>
+        <h2 class="subtitle">AI-Matched Leads</h2>
+        <ul class="features">
+            <li>Secure Payments</li>
+        </ul>
+    </div>
+    
+    <div class="green-accent"></div>
+</body>
+</html>

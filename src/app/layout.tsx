@@ -12,9 +12,9 @@ import "./globals.css"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://fixitforme-contractor.vercel.app'),
+  metadataBase: new URL('https://contractor.fixitforme.ai'),
   title: "FixItForMe Contractor",
-  description: "Lead generation and management for contractors.",
+  description: "AI-Matched Leads • Secure Payments • Join the FixItForMe Contractor Beta",
   icons: {
     icon: '/logo.png',
     apple: '/logo.png',
@@ -24,6 +24,28 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
+  },
+  openGraph: {
+    title: "Join the FixItForMe Contractor Beta",
+    description: "AI-Matched Leads • Secure Payments • Built for Professional Contractors",
+    url: "https://contractor.fixitforme.ai",
+    siteName: "FixItForMe Contractor",
+    images: [
+      {
+        url: "/social-preview.png",
+        width: 1200,
+        height: 630,
+        alt: "Join the FixItForMe Contractor Beta - AI-Matched Leads & Secure Payments",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Join the FixItForMe Contractor Beta",
+    description: "AI-Matched Leads • Secure Payments • Built for Professional Contractors",
+    images: ["/social-preview.png"],
   },
 }
 

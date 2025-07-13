@@ -27,16 +27,16 @@ export const metadata: Metadata = {
   publisher: "FixItForMe",
   
   openGraph: {
-    title: "Contractor Login | FixItForMe – AI-Powered Home-Service Leads",
-    description: "Access AI-matched job leads, smart bidding tools, and secure payments. Join the contractor platform that grows your business.",
-    url: "https://fixitforme-contractor.vercel.app/auth",
+    title: "Join the FixItForMe Contractor Beta",
+    description: "AI-Matched Leads • Secure Payments • Built for Professional Contractors",
+    url: "https://contractor.fixitforme.ai/auth",
     siteName: "FixItForMe Contractor",
     images: [
       {
-        url: "/contractor-login-preview.png",
+        url: "/social-preview.png",
         width: 1200,
         height: 630,
-        alt: "FixItForMe Contractor Portal - AI-Matched Leads & Secure Payments",
+        alt: "Join the FixItForMe Contractor Beta - AI-Matched Leads & Secure Payments",
       },
     ],
     locale: "en_US",
@@ -45,9 +45,9 @@ export const metadata: Metadata = {
   
   twitter: {
     card: "summary_large_image",
-    title: "Contractor Login | FixItForMe – AI-Powered Home-Service Leads",
-    description: "Access AI-matched job leads, smart bidding tools, and secure payments.",
-    images: ["/contractor-login-preview.png"],
+    title: "Join the FixItForMe Contractor Beta",
+    description: "AI-Matched Leads • Secure Payments • Built for Professional Contractors",
+    images: ["/social-preview.png"],
     creator: "@FixItForMe",
   },
   
