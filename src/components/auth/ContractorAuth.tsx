@@ -158,7 +158,7 @@ export function ContractorAuth() {
                     type="button"
                     variant="outline"
                     className="w-full"
-                    onClick={() => window.open('https://wa.me/+14155238886?text=join%20FixItForMe', '_blank')}
+                    onClick={() => window.open('https://wa.me/+14155238886?text=join%20shine-native', '_blank')}
                   >
                     Join WhatsApp Bot
                   </Button>
