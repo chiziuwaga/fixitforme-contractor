@@ -1,8 +1,8 @@
 // FixItForMe Mobile PWA Service Worker
 // Focused on mobile contractor essential features with offline fallbacks
 
-const CACHE_NAME = 'fixitforme-mobile-v1.0.0'
-const STATIC_CACHE = 'fixitforme-static-v1.0.0'
+const CACHE_NAME = 'fixitforme-mobile-v1.1.0'
+const STATIC_CACHE = 'fixitforme-static-v1.1.0'
 
 // Essential files for mobile contractor experience
 // Note: Excluding '/' since it redirects to '/login' - causes service worker conflicts
@@ -50,6 +50,13 @@ self.addEventListener('activate', (event) => {
               return caches.delete(cacheName)
             })
         )
+      })
+      .then(() => {
+        // Also explicitly remove any cached root route from current cache
+        return caches.open(CACHE_NAME).then((cache) => {
+          console.log('[SW] Removing any cached root route')
+          return cache.delete('/')
+        })
       })
       .then(() => {
         console.log('[SW] Mobile PWA activated, claiming clients')
@@ -113,18 +120,20 @@ self.addEventListener('fetch', (event) => {
   }
 
   // Handle static assets and pages - cache-first strategy
+  // Special handling for root route FIRST - never cache, always redirect
+  if (url.pathname === '/') {
+    console.log('[SW] Root route requested, redirecting to login (bypassing cache)')
+    event.respondWith(Response.redirect(new URL('/login', url.origin), 302))
+    return
+  }
+
+  // For all other routes, use cache-first strategy
   event.respondWith(
     caches.match(request)
       .then((cachedResponse) => {
         if (cachedResponse) {
           console.log('[SW] Serving cached asset:', url.pathname)
           return cachedResponse
-        }
-
-        // Special handling for root route - don't cache, redirect to login
-        if (url.pathname === '/') {
-          console.log('[SW] Root route requested, redirecting to login')
-          return Response.redirect(new URL('/login', url.origin), 302)
         }
 
         // Fetch from network and cache - handle redirects properly
