@@ -94,6 +94,10 @@ export function useAuth() {
       const data = await response.json();
 
       if (!response.ok) {
+        // Handle sandbox-specific errors
+        if (data.sandboxRequired) {
+          throw new Error(data.error + '\n\n1. Open WhatsApp\n2. Send "join shine-native" to +14155238886\n3. Wait for confirmation\n4. Try login again');
+        }
         throw new Error(data.error || 'Failed to send WhatsApp verification code');
       }
 

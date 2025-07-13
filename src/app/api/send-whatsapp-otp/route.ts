@@ -68,6 +68,13 @@ export async function POST(request: NextRequest) {
       console.error('Twilio WhatsApp API error:', error);
       
       // Handle specific Twilio errors
+      if (error.code === 63015) {
+        return NextResponse.json({ 
+          error: 'Please join our WhatsApp sandbox first. Send "join shine-native" to +14155238886, then try again.',
+          sandboxRequired: true
+        }, { status: 400 });
+      }
+      
       if (error.code === 63016) {
         return NextResponse.json({ 
           error: 'WhatsApp number not opted in. Please message the WhatsApp sandbox first.' 
