@@ -13,16 +13,20 @@ async function storeOTP(phone: string, otpCode: string) {
     const supabase = createAdminClient();
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes from now
     
-    // Upsert OTP (update if exists, insert if new)
+    // First try to delete any existing OTP for this phone
+    await supabase
+      .from('whatsapp_otps')
+      .delete()
+      .eq('phone_number', phone);
+    
+    // Insert new OTP
     const { error } = await supabase
       .from('whatsapp_otps')
-      .upsert({
+      .insert({
         phone_number: phone,
         otp_code: otpCode,
         expires_at: expiresAt.toISOString(),
         created_at: new Date().toISOString()
-      }, {
-        onConflict: 'phone_number'
       });
     
     return { error };
@@ -62,6 +66,9 @@ export async function POST(request: NextRequest) {
       const { error: storageError } = await storeOTP(phone, otpCode);
       if (storageError) {
         console.error('Failed to store demo OTP:', storageError);
+        console.error('Phone:', phone, 'OTP:', otpCode);
+      } else {
+        console.log('Demo OTP stored successfully for phone:', phone);
       }
       
       return NextResponse.json({ 
@@ -88,7 +95,10 @@ export async function POST(request: NextRequest) {
       const { error: storageError } = await storeOTP(phone, otpCode);
       if (storageError) {
         console.error('Failed to store OTP:', storageError);
-        // Continue anyway - don't fail the request
+        console.error('Phone:', phone, 'OTP:', otpCode);
+        // Continue anyway - user will get the message but verification might fail
+      } else {
+        console.log('OTP stored successfully for phone:', phone);
       }
       
       return NextResponse.json({ 

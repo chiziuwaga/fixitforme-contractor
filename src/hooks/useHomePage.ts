@@ -97,7 +97,7 @@ export function useHomePage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          url: window.location.origin + '/login',
+          url: (typeof window !== 'undefined' ? window.location.origin : 'https://contractor.fixitforme.ai') + '/login',
         }),
       })
       if (response.ok) {
