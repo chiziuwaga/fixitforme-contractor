@@ -35,7 +35,7 @@ export function MobileRedirect({ onContinueAnyway }: MobileRedirectProps) {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentFeature((prev) => (prev + 1) % features.length)
-    }, 3000)
+    }, 6000) // Increased to 6 seconds for better readability
     return () => clearInterval(interval)
   }, [features.length])
   
@@ -97,19 +97,36 @@ export function MobileRedirect({ onContinueAnyway }: MobileRedirectProps) {
             {/* Rotating Features */}
             <motion.div
               key={currentFeature}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              className="p-4 bg-slate-50 rounded-lg border border-slate-200"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.8, ease: "easeInOut" }}
+              className="p-4 bg-muted/30 rounded-lg border border-border"
             >
               <div className="flex flex-col items-center gap-3">
-                {features[currentFeature].icon}
-                <h3 className="font-semibold text-slate-900">
+                <motion.div
+                  initial={{ scale: 0.8 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.3, duration: 0.5 }}
+                >
+                  {features[currentFeature].icon}
+                </motion.div>
+                <motion.h3 
+                  className="font-semibold text-foreground"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.4 }}
+                >
                   {features[currentFeature].title}
-                </h3>
-                <p className="text-sm text-slate-600 text-center">
+                </motion.h3>
+                <motion.p 
+                  className="text-sm text-muted-foreground text-center"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.5 }}
+                >
                   {features[currentFeature].description}
-                </p>
+                </motion.p>
               </div>
             </motion.div>
             
@@ -118,8 +135,8 @@ export function MobileRedirect({ onContinueAnyway }: MobileRedirectProps) {
               {features.map((_, index) => (
                 <div
                   key={index}
-                  className={`w-2 h-2 rounded-full transition-colors ${
-                    index === currentFeature ? "bg-primary" : "bg-slate-300"
+                  className={`w-3 h-3 rounded-full transition-all duration-500 ${
+                    index === currentFeature ? "bg-primary scale-110" : "bg-muted-foreground/40"
                   }`}
                 />
               ))}
@@ -127,32 +144,32 @@ export function MobileRedirect({ onContinueAnyway }: MobileRedirectProps) {
             
             {/* Actions */}
             <div className="space-y-3 pt-2">
-              <p className="text-sm text-slate-500">
+              <p className="text-sm text-muted-foreground font-medium">
                 Get the best experience on desktop, or continue with mobile access
               </p>
               
               <div className="space-y-2">
                 <Button
                   onClick={onContinueAnyway}
-                  className="w-full flex items-center gap-2"
+                  className="w-full flex items-center gap-2 font-semibold"
                 >
                   Login on Mobile
                   <ArrowRight className="h-4 w-4" />
                 </Button>
                 
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-muted-foreground font-medium">
                   ✓ Access leads & notifications ✓ Chat with AI agents ✓ View earnings
                 </p>
               </div>
             </div>
             
             {/* Footer */}
-            <div className="pt-4 border-t border-slate-200">
-              <p className="text-xs text-slate-400">
+            <div className="pt-4 border-t border-border">
+              <p className="text-xs text-muted-foreground">
                 Visit{" "}
                 <a
                   href="https://fixitforme.ai"
-                  className="text-primary hover:underline"
+                  className="text-primary hover:underline font-medium"
                   target="_blank"
                   rel="noopener noreferrer"
                 >

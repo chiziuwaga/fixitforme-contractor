@@ -35,9 +35,9 @@ export async function POST(request: NextRequest) {
     
     // Check if test contractor already exists
     const { data: existingContractor, error: checkError } = await supabase
-      .from('contractors')
+      .from('contractor_profiles')
       .select('*')
-      .eq('phone', phone)
+      .eq('contact_phone', phone)
       .single();
 
     let contractorProfile;
@@ -53,50 +53,45 @@ export async function POST(request: NextRequest) {
         case '+1234567890':
           testProfile = {
             company_name: 'Test Contracting LLC',
-            business_type: 'general_contractor',
-            services: ['plumbing', 'electrical', 'hvac'],
-            license_number: 'TEST-123456',
+            services_offered: ['plumbing', 'electrical', 'hvac'],
+            business_license: 'TEST-123456',
             tier: 'growth',
-            profile_completion_score: 25
+            profile_score: 25
           };
           break;
         case '+1234567891':
           testProfile = {
             company_name: 'Premium Test Services',
-            business_type: 'specialty_contractor',
-            services: ['plumbing', 'electrical', 'hvac', 'roofing'],
-            license_number: 'TEST-789012',
+            services_offered: ['plumbing', 'electrical', 'hvac', 'roofing'],
+            business_license: 'TEST-789012',
             tier: 'scale',
-            profile_completion_score: 40
+            profile_score: 40
           };
           break;
         case '+1234567892':
           testProfile = {
             company_name: 'Complete Test Solutions',
-            business_type: 'general_contractor',
-            services: ['plumbing', 'electrical', 'hvac', 'roofing', 'flooring'],
-            license_number: 'TEST-345678',
+            services_offered: ['plumbing', 'electrical', 'hvac', 'roofing', 'flooring'],
+            business_license: 'TEST-345678',
             tier: 'growth',
-            profile_completion_score: 85,
+            profile_score: 85,
             onboarding_completed: true,
-            business_address: '123 Test Street, Test City, TC 12345',
-            years_experience: 10,
-            team_size: 5,
-            insurance_verified: true
+            service_areas: ['Oakland, CA', 'San Francisco, CA']
           };
           break;
         default:
           testProfile = {
             tier: 'growth',
-            profile_completion_score: 20
+            profile_score: 20
           };
       }
 
       const { data: newContractor, error: createError } = await supabase
-        .from('contractors')
+        .from('contractor_profiles')
         .insert({
           id: testUserId,
-          phone: phone,
+          user_id: testUserId,
+          contact_phone: phone,
           created_at: new Date().toISOString(),
           onboarding_completed: testProfile.onboarding_completed || false,
           ...testProfile

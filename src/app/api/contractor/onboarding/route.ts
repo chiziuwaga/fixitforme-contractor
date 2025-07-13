@@ -31,12 +31,12 @@ export async function POST(request: NextRequest) {
 
     // Create contractor record
     const { data: contractor, error: contractorError } = await supabase
-      .from('contractors')
+      .from('contractor_profiles')
       .insert({
         id: contractorId,
-        phone: '+1234567890', // Placeholder - would come from session
+        contact_phone: '+1234567890', // Placeholder - would come from session
         onboarding_completed: true,
-        subscription_status: 'growth',
+        tier: 'growth',
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       })

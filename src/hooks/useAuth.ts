@@ -3,8 +3,6 @@
 import type React from "react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { createBrowserClient } from "@/lib/supabaseClient"
-import type { SupabaseClient } from "@supabase/supabase-js"
 import { toast } from "sonner"
 
 export function useAuth() {
@@ -14,23 +12,35 @@ export function useAuth() {
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const supabase = createBrowserClient() as SupabaseClient;
 
   const handlePhoneSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
-    const { error } = await (supabase.auth as any).signInWithOtp({
-      phone: `+1${phoneNumber.replace(/\D/g, "")}`,
-    });
+    try {
+      const phone = `+1${phoneNumber.replace(/\D/g, "")}`;
+      
+      const response = await fetch('/api/auth/send-sms', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone })
+      });
 
-    if (error) {
-      setError(error.message);
-      toast.error("Failed to send code", { description: error.message });
-    } else {
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to send verification code');
+      }
+
       setStep("otp");
-      toast.success("Verification code sent!");
+      toast.success("Verification code sent!", { 
+        description: data.demo ? `Demo code: ${data.hint?.split(': ')[1]}` : "Check your phone for the 6-digit code"
+      });
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to send code';
+      setError(errorMessage);
+      toast.error("Failed to send code", { description: errorMessage });
     }
     setLoading(false);
   };
@@ -40,21 +50,30 @@ export function useAuth() {
     setLoading(true);
     setError(null);
 
-    const {
-      data: { session },
-      error,
-    } = await (supabase.auth as any).verifyOtp({
-      phone: `+1${phoneNumber.replace(/\D/g, "")}`,
-      token: otp,
-      type: "sms",
-    });
+    try {
+      const phone = `+1${phoneNumber.replace(/\D/g, "")}`;
+      
+      const response = await fetch('/api/auth/verify-sms', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone, token: otp })
+      });
 
-    if (error) {
-      setError(error.message);
-      toast.error("Invalid verification code", { description: error.message });
-    } else if (session) {
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Invalid verification code');
+      }
+
       toast.success("Successfully logged in!");
-      router.push("/contractor/dashboard");
+      
+      // Redirect based on onboarding status
+      const redirectUrl = data.redirect_url || '/contractor/dashboard';
+      router.push(redirectUrl);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Invalid verification code';
+      setError(errorMessage);
+      toast.error("Invalid verification code", { description: errorMessage });
     }
     setLoading(false);
   };

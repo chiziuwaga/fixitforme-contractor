@@ -40,7 +40,7 @@ const platformGuides: Record<Platform, PlatformInfo> = {
   ios: {
     name: "iOS Safari",
     icon: "🍎",
-    color: "text-blue-600",
+    color: "text-primary",
     steps: [
       {
         step: 1,
@@ -68,7 +68,7 @@ const platformGuides: Record<Platform, PlatformInfo> = {
   android: {
     name: "Android Chrome",
     icon: "🤖",
-    color: "text-green-600",
+    color: "text-secondary",
     steps: [
       {
         step: 1,
@@ -96,7 +96,7 @@ const platformGuides: Record<Platform, PlatformInfo> = {
   other: {
     name: "Other Browsers",
     icon: "🌐",
-    color: "text-gray-600",
+    color: "text-muted-foreground",
     steps: [
       {
         step: 1,
@@ -219,13 +219,13 @@ export function AddToHomeScreenGuide({ isOpen, onClose }: AddToHomeScreenGuidePr
               <CardContent className="max-h-[60vh] overflow-y-auto">
                 {/* Platform-Specific Instructions */}
                 <div className="space-y-4">
-                  <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg">
-                    <Smartphone className="h-5 w-5 text-primary" />
+                  <div className="flex items-center gap-3 p-4 bg-primary/10 border border-primary/20 rounded-lg">
+                    <Smartphone className="h-6 w-6 text-primary" />
                     <div>
-                      <p className="font-medium text-sm">
+                      <p className="font-semibold text-sm text-foreground">
                         Instructions for {currentGuide.name}
                       </p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-xs text-muted-foreground font-medium">
                         Follow these steps to install FixItForMe Mobile
                       </p>
                     </div>
@@ -238,39 +238,39 @@ export function AddToHomeScreenGuide({ isOpen, onClose }: AddToHomeScreenGuidePr
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: index * 0.1 }}
-                      className="flex gap-4 p-3 border rounded-lg"
+                      className="flex gap-4 p-4 border-2 border-muted rounded-lg hover:border-primary/30 transition-colors"
                     >
                       <div className="flex-shrink-0">
-                        <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white text-sm font-bold">
+                        <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-sm font-bold shadow-sm">
                           {step.step}
                         </div>
                       </div>
                       
                       <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
+                        <div className="flex items-center gap-2 mb-2">
                           {step.icon}
-                          <h3 className="font-semibold text-sm">{step.title}</h3>
+                          <h3 className="font-semibold text-sm text-foreground">{step.title}</h3>
                         </div>
-                        <p className="text-sm text-muted-foreground mb-2">
+                        <p className="text-sm text-foreground/80 mb-3 leading-relaxed">
                           {step.description}
                         </p>
                         {step.visual && (
-                          <div className="text-xs text-primary bg-primary/10 px-2 py-1 rounded">
+                          <div className="text-xs text-primary bg-primary/10 border border-primary/20 px-3 py-2 rounded-md font-medium">
                             {step.visual}
                           </div>
                         )}
                       </div>
 
-                      <ChevronRight className="h-4 w-4 text-muted-foreground self-center" />
+                      <ChevronRight className="h-5 w-5 text-primary/60 self-center" />
                     </motion.div>
                   ))}
 
                   {/* Benefits Section */}
-                  <div className="mt-6 p-4 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg">
-                    <h3 className="font-semibold text-sm mb-2 flex items-center gap-2">
+                  <div className="mt-6 p-4 bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/20 rounded-lg">
+                    <h3 className="font-semibold text-sm mb-3 flex items-center gap-2 text-foreground">
                       🚀 Why Add to Home Screen?
                     </h3>
-                    <ul className="text-xs text-muted-foreground space-y-1">
+                    <ul className="text-xs text-foreground/70 space-y-2 font-medium">
                       <li>• ⚡ Instant access - no browser needed</li>
                       <li>• 📱 Native app-like experience</li>
                       <li>• 🔔 Push notifications for new leads</li>

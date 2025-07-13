@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { useAuth } from "@/hooks/useAuth"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -25,7 +26,8 @@ export function ContractorAuth() {
     const checkMobile = () => {
       if (typeof window !== 'undefined') {
         const width = window.innerWidth
-        const isMobileDevice = width < 768 // Less than tablet size
+        const userAgent = navigator.userAgent.toLowerCase()
+        const isMobileDevice = width < 768 || /android|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent)
         setIsMobile(isMobileDevice)
         setShowMobileRedirect(isMobileDevice)
       }
@@ -94,10 +96,12 @@ export function ContractorAuth() {
         
         <Card>
           <CardHeader className="flex flex-col items-center">
-            <img 
+            <Image 
               src="/logo.png" 
               alt="FixItForMe Logo" 
-              className="w-20 h-20 mb-4 rounded-full shadow-sm" 
+              width={80}
+              height={80}
+              className="mb-4 rounded-full shadow-sm" 
             />
             
             {step === "otp" && (

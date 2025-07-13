@@ -34,9 +34,9 @@ export async function POST(request: NextRequest) {
 
     // Check if contractor profile exists
     const { data: contractorProfile, error: profileError } = await supabase
-      .from('contractors')
+      .from('contractor_profiles')
       .select('*')
-      .eq('id', data.user.id)
+      .eq('user_id', data.user.id)
       .single();
 
     let isNewUser = false;
@@ -45,14 +45,15 @@ export async function POST(request: NextRequest) {
     if (profileError && profileError.code === 'PGRST116') {
       isNewUser = true;
       const { error: createError } = await supabase
-        .from('contractors')
+        .from('contractor_profiles')
         .insert({
           id: data.user.id,
-          phone: phone,
+          user_id: data.user.id,
+          contact_phone: phone,
           tier: 'growth',
           created_at: new Date().toISOString(),
           onboarding_completed: false,
-          profile_completion_score: 20 // Phone verified = 20%
+          profile_score: 20 // Phone verified = 20%
         });
 
       if (createError) {

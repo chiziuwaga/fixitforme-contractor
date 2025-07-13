@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get contractor profile and current state
-    const { data: contractorProfile } = await supabase.from("contractors").select("*").eq("id", user.id).single()
+    const { data: contractorProfile } = await supabase.from("contractor_profiles").select("*").eq("user_id", user.id).single()
 
     // Get current subscription tier
     const { data: subscription } = await supabase
@@ -56,13 +56,13 @@ export async function POST(request: NextRequest) {
 
     // Get peer benchmarking data (anonymous aggregated data)
     const { data: peerData } = await supabase
-      .from("contractors")
-      .select("avg_bid_value, conversion_rate, services")
-      .eq("location", contractorProfile?.location)
-      .neq("id", user.id)
+      .from("contractor_profiles")
+      .select("avg_bid_value, conversion_rate, services_offered")
+      .eq("service_areas", contractorProfile?.service_areas)
+      .neq("user_id", user.id)
 
     // Calculate profile completion score
-    const profileFields = ["business_name", "phone", "location", "services", "bio", "certifications"]
+    const profileFields = ["company_name", "contact_phone", "service_areas", "services_offered", "business_license"]
     const completedFields = profileFields.filter((field) => contractorProfile?.[field])
     const profileCompletionScore = Math.round((completedFields.length / profileFields.length) * 100)
 
@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
         ? {
             avgBidValue: peerData.reduce((sum, p) => sum + (p.avg_bid_value || 0), 0) / peerData.length,
             avgConversionRate: peerData.reduce((sum, p) => sum + (p.conversion_rate || 0), 0) / peerData.length,
-            commonServices: peerData.flatMap((p) => p.services || []).slice(0, 5),
+            commonServices: peerData.flatMap((p) => p.services_offered || []).slice(0, 5),
           }
         : null,
     }
