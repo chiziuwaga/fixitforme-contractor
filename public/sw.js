@@ -1,8 +1,8 @@
 // FixItForMe Mobile PWA Service Worker
 // Focused on mobile contractor essential features with offline fallbacks
 
-const CACHE_NAME = 'fixitforme-mobile-v1.1.0'
-const STATIC_CACHE = 'fixitforme-static-v1.1.0'
+const CACHE_NAME = 'fixitforme-mobile-v1.2.0'
+const STATIC_CACHE = 'fixitforme-static-v1.2.0'
 
 // Essential files for mobile contractor experience
 // Note: Excluding '/' since it redirects to '/login' - causes service worker conflicts
@@ -127,7 +127,30 @@ self.addEventListener('fetch', (event) => {
     return
   }
 
-  // For all other routes, use cache-first strategy
+  // Handle Next.js chunks and build assets - ALWAYS fetch fresh (network-first)
+  if (url.pathname.includes('/_next/static/chunks/') || url.pathname.includes('/_next/static/css/')) {
+    console.log('[SW] Next.js build asset - fetching fresh:', url.pathname)
+    event.respondWith(
+      fetch(request, { redirect: 'follow' })
+        .then((response) => {
+          // Cache fresh Next.js assets
+          if (response && response.status === 200) {
+            const responseClone = response.clone()
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(request, responseClone)
+            })
+          }
+          return response
+        })
+        .catch(() => {
+          // Fallback to cache only if network fails
+          return caches.match(request)
+        })
+    )
+    return
+  }
+
+  // For other routes (pages, images, etc.), use cache-first strategy
   event.respondWith(
     caches.match(request)
       .then((cachedResponse) => {
