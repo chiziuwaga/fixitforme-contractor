@@ -106,7 +106,7 @@ export function ContractorAuth() {
                   <Input
                     id="phone"
                     type="tel"
-                    placeholder="3477646025"
+                    placeholder="5551234567"
                     value={phoneNumber}
                     onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, ""))}
                     className="pl-12"
