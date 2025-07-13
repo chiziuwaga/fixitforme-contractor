@@ -1,5 +1,5 @@
 import type React from "react"
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import { Inter } from "next/font/google"
 import { Toaster } from "@/components/ui/sonner"
 import { SupabaseProvider } from "@/providers/SupabaseProvider"
@@ -17,6 +17,19 @@ export const metadata: Metadata = {
     apple: '/logo.png',
     shortcut: '/logo.png',
   },
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+  },
+}
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  themeColor: '#1A2E1A', // Forest Green
 }
 
 export default function RootLayout({
