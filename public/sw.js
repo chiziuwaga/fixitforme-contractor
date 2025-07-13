@@ -1,8 +1,8 @@
 // FixItForMe Mobile PWA Service Worker
 // Focused on mobile contractor essential features with offline fallbacks
 
-const CACHE_NAME = 'fixitforme-mobile-v1.2.0'
-const STATIC_CACHE = 'fixitforme-static-v1.2.0'
+const CACHE_NAME = 'fixitforme-mobile-v1.3.0'
+const STATIC_CACHE = 'fixitforme-static-v1.3.0'
 
 // Essential files for mobile contractor experience
 // Note: Excluding '/' since it redirects to '/login' - causes service worker conflicts
@@ -35,7 +35,7 @@ self.addEventListener('install', (event) => {
 
 // Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
-  console.log('[SW] Activating FixItForMe Mobile PWA')
+  console.log('[SW] Activating FixItForMe Mobile PWA v1.3.0 - FORCE CACHE REFRESH')
   
   event.waitUntil(
     caches.keys()
@@ -43,6 +43,7 @@ self.addEventListener('activate', (event) => {
         return Promise.all(
           cacheNames
             .filter((cacheName) => {
+              // Delete ALL old caches, including current ones to force refresh
               return cacheName !== CACHE_NAME && cacheName !== STATIC_CACHE
             })
             .map((cacheName) => {
@@ -52,14 +53,14 @@ self.addEventListener('activate', (event) => {
         )
       })
       .then(() => {
-        // Also explicitly remove any cached root route from current cache
-        return caches.open(CACHE_NAME).then((cache) => {
-          console.log('[SW] Removing any cached root route')
-          return cache.delete('/')
-        })
+        // Also clear current caches to force fresh downloads
+        return Promise.all([
+          caches.delete(CACHE_NAME),
+          caches.delete(STATIC_CACHE)
+        ])
       })
       .then(() => {
-        console.log('[SW] Mobile PWA activated, claiming clients')
+        console.log('[SW] All caches cleared - forcing fresh asset downloads')
         return self.clients.claim()
       })
   )
