@@ -1,12 +1,14 @@
 {
-  "name": "FixItForMe Contractor",
-  "short_name": "FixItForMe",
-  "description": "AI-powered contractor portal for home service professionals",
-  "start_url": "/auth",
+  "name": "FixItForMe Mobile - Contractor Assistant",
+  "short_name": "FixItForMe Mobile",
+  "description": "Mobile contractor assistant with AI-powered lead management and basic onboarding. Desktop version required for advanced features.",
+  "start_url": "/login?utm_source=pwa",
   "display": "standalone",
   "background_color": "#1A2E1A",
   "theme_color": "#D4A574",
   "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en-US",
   "icons": [
     {
       "src": "/logo.png",
@@ -24,18 +26,40 @@
   "categories": ["business", "productivity", "utilities"],
   "shortcuts": [
     {
-      "name": "Dashboard",
+      "name": "Mobile Dashboard",
       "short_name": "Dashboard",
-      "description": "Access your contractor dashboard",
-      "url": "/contractor/dashboard",
+      "description": "Quick access to leads and notifications",
+      "url": "/contractor/dashboard?mobile=true",
       "icons": [{ "src": "/logo.png", "sizes": "96x96" }]
     },
     {
-      "name": "Leads",
-      "short_name": "Leads",
-      "description": "Browse available job leads",
-      "url": "/contractor/leads",
+      "name": "Chat with Lexi",
+      "short_name": "Lexi Chat",
+      "description": "Mobile onboarding assistant",
+      "url": "/contractor/mobile-chat",
       "icons": [{ "src": "/logo.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "View Leads",
+      "short_name": "Leads",
+      "description": "Browse available job opportunities",
+      "url": "/contractor/leads?mobile=true",
+      "icons": [{ "src": "/logo.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Desktop Version",
+      "short_name": "Desktop",
+      "description": "Access full platform features",
+      "url": "https://fixitforme.ai",
+      "icons": [{ "src": "/logo.png", "sizes": "96x96" }]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/logo.png",
+      "sizes": "320x640",
+      "type": "image/png",
+      "form_factor": "narrow"
     }
   ]
 }

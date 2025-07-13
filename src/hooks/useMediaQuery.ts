@@ -4,8 +4,15 @@ import { useState, useEffect } from 'react'
 
 export function useMediaQuery(query: string): boolean {
   const [matches, setMatches] = useState(false)
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (!mounted || typeof window === 'undefined') return
+    
     const media = window.matchMedia(query)
     
     // Set initial value
@@ -21,9 +28,10 @@ export function useMediaQuery(query: string): boolean {
     
     // Cleanup
     return () => media.removeEventListener('change', listener)
-  }, [query])
+  }, [query, mounted])
 
-  return matches
+  // Return false during SSR to prevent hydration mismatches
+  return mounted ? matches : false
 }
 
 // Convenience hooks for common breakpoints

@@ -7,11 +7,16 @@ import { useResponsiveChart } from '../../hooks/useResponsiveChart'
 import { useMediaQuery } from '../../hooks/useMediaQuery'
 import { cn } from '../../lib/utils'
 
-// Get CSS custom property value utility
+// Get CSS custom property value utility with SSR safety
 function getCSSCustomProperty(property: string): string {
   if (typeof window === 'undefined') return '#1A2E1A' // Fallback for SSR
-  const value = getComputedStyle(document.documentElement).getPropertyValue(property).trim()
-  return value || '#1A2E1A' // Fallback if property not found
+  try {
+    const value = getComputedStyle(document.documentElement).getPropertyValue(property).trim()
+    return value || '#1A2E1A' // Fallback if property not found
+  } catch (error) {
+    console.warn(`Failed to get CSS property ${property}:`, error)
+    return '#1A2E1A' // Fallback for any errors
+  }
 }
 
 // Semantic color palette using CSS variables

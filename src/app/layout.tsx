@@ -4,6 +4,9 @@ import { Inter } from "next/font/google"
 import { Toaster } from "@/components/ui/sonner"
 import { SupabaseProvider } from "@/providers/SupabaseProvider"
 import { UserProvider } from "@/providers/UserProvider"
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary"
+import { PWAInstaller } from "@/components/mobile/PWAInstaller"
+import { MobileAddToHomeScreenTrigger } from "@/components/mobile/MobileAddToHomeScreenTrigger"
 import "./globals.css"
 
 const inter = Inter({ subsets: ["latin"] })
@@ -27,8 +30,8 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
+  maximumScale: 5, // Allow zooming for accessibility
+  userScalable: true, // Allow user scaling for accessibility
   themeColor: '#1A2E1A', // Forest Green
 }
 
@@ -40,12 +43,16 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={inter.className}>
-        <SupabaseProvider>
-          <UserProvider>
-            <main>{children}</main>
-            <Toaster />
-          </UserProvider>
-        </SupabaseProvider>
+        <ErrorBoundary>
+          <SupabaseProvider>
+            <UserProvider>
+              <main>{children}</main>
+              <Toaster />
+              <PWAInstaller />
+              <MobileAddToHomeScreenTrigger />
+            </UserProvider>
+          </SupabaseProvider>
+        </ErrorBoundary>
       </body>
     </html>
   )

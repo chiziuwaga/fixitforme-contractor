@@ -35,6 +35,33 @@ This is the contractor-facing module for FixItForMe, a robust, AI-driven platfor
 - **Payments:** Stripe
 - **Authentication:** Supabase Auth with SMS verification
 
+## 📱 Mobile PWA Experience
+
+**NEW: Progressive Web App with Mobile-First Contractor Support**
+
+### **Mobile Strategy: Progressive Professional Experience**
+- **Mobile = Essential Access** - Lead notifications, basic onboarding, chat with Lexi
+- **Desktop = Full Professional Suite** - Advanced bidding, document analysis, multi-agent workflows
+
+### **Key Mobile Features**
+- 🚀 **Install as Native App** - Add to home screen with platform-specific guides
+- 💬 **Mobile Lexi Chat** - Basic onboarding with conditional desktop redirects
+- 📱 **Touch-Optimized UI** - Mobile dashboard, navigation, and interactions
+- 🔄 **Offline Functionality** - Service worker with cached essential features
+- 🔔 **Push Notifications** - Real-time lead alerts (when installed as PWA)
+- 💾 **Background Sync** - Data synchronization when connection restored
+
+### **Platform-Specific Installation**
+- **iOS Safari**: Share → "Add to Home Screen" → Confirm
+- **Android Chrome**: Menu (⋮) → "Add to Home screen/Install app"
+- **Automatic Guide**: Smart modal with step-by-step instructions
+
+### **Mobile Components**
+- `MobileLexiChat` - Limited-scope AI assistant with desktop upgrade prompts
+- `MobileDashboard` - Essential contractor metrics and quick actions  
+- `AddToHomeScreenGuide` - Platform-aware installation instructions
+- `MobileNavigation` - Touch-friendly sliding menu
+
 ## 🤖 AI Agent Family
 
 - **Lexi the Liaison:** A friendly onboarding guide for new contractors.

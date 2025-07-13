@@ -13,14 +13,33 @@ export function useHomePage() {
   const router = useRouter()
   const supabase = createBrowserClient();
 
-  // Mobile detection
+  // Mobile detection with SSR safety
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768)
+      if (typeof window !== 'undefined') {
+        setIsMobile(window.innerWidth < 768)
+      }
     }
-    checkMobile()
-    window.addEventListener('resize', checkMobile)
-    return () => window.removeEventListener('resize', checkMobile)
+    
+    // Initial check with delay for proper hydration
+    const timer = setTimeout(checkMobile, 100)
+    
+    const handleResize = () => {
+      if (typeof window !== 'undefined') {
+        checkMobile()
+      }
+    }
+    
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', handleResize)
+    }
+    
+    return () => {
+      clearTimeout(timer)
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('resize', handleResize)
+      }
+    }
   }, [])
 
   // Authentication check and redirect logic

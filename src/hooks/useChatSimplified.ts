@@ -4,6 +4,7 @@ import { useState, useCallback, useMemo } from 'react';
 import { useChat as useAIChat } from 'ai/react';
 import { useConcurrentExecutionManager } from '@/components/ui/ConcurrentExecutionManager';
 import { toast } from 'sonner';
+import safeLocalStorage, { getStoredJSON, setStoredJSON } from '@/lib/safeStorage';
 
 export type AgentType = 'lexi' | 'alex' | 'rex';
 
@@ -138,7 +139,7 @@ export const useChat = (): ChatHookReturn => {
   const setChatState = useCallback((newState: Partial<ChatState>) => {
     setChatStateInternal(prev => {
       const updated = { ...prev, ...newState };
-      localStorage.setItem('chat-state', JSON.stringify(updated));
+      setStoredJSON('chat-state', updated);
       return updated;
     });
   }, []);
@@ -159,7 +160,7 @@ export const useChat = (): ChatHookReturn => {
 
     setConversations(prev => {
       const updated = [newConversation, ...prev];
-      localStorage.setItem('chat-conversations', JSON.stringify(updated));
+      setStoredJSON('chat-conversations', updated);
       return updated;
     });
 
@@ -175,7 +176,7 @@ export const useChat = (): ChatHookReturn => {
           ? { ...conv, archived: true, updated_at: new Date() }
           : conv
       );
-      localStorage.setItem('chat-conversations', JSON.stringify(updated));
+      setStoredJSON('chat-conversations', updated);
       return updated;
     });
 
@@ -190,7 +191,7 @@ export const useChat = (): ChatHookReturn => {
   const deleteConversation = useCallback((conversationId: string) => {
     setConversations(prev => {
       const updated = prev.filter(conv => conv.id !== conversationId);
-      localStorage.setItem('chat-conversations', JSON.stringify(updated));
+      setStoredJSON('chat-conversations', updated);
       return updated;
     });
 
@@ -236,7 +237,7 @@ export const useChat = (): ChatHookReturn => {
             ? { ...conv, messages: [], updated_at: new Date() }
             : conv
         );
-        localStorage.setItem('chat-conversations', JSON.stringify(updated));
+        setStoredJSON('chat-conversations', updated);
         return updated;
       });
     }
@@ -268,7 +269,7 @@ export const useChat = (): ChatHookReturn => {
               }
             : conv
         );
-        localStorage.setItem('chat-conversations', JSON.stringify(updated));
+        setStoredJSON('chat-conversations', updated);
         return updated;
       });
     }
@@ -303,17 +304,15 @@ export const useChat = (): ChatHookReturn => {
   // Load persisted data on mount
   useMemo(() => {
     try {
-      // Load chat state
-      const savedState = localStorage.getItem('chat-state');
-      if (savedState) {
-        const parsedState = JSON.parse(savedState);
+      // Load chat state using safe storage
+      const parsedState = getStoredJSON<ChatState>('chat-state', {} as ChatState);
+      if (Object.keys(parsedState).length > 0) {
         setChatStateInternal(parsedState);
       }
 
-      // Load conversations
-      const savedConversations = localStorage.getItem('chat-conversations');
-      if (savedConversations) {
-        const parsedConversations = JSON.parse(savedConversations);
+      // Load conversations using safe storage
+      const parsedConversations = getStoredJSON<ConversationData[]>('chat-conversations', []);
+      if (parsedConversations.length > 0) {
         setConversations(parsedConversations);
       }
     } catch (error) {

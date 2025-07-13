@@ -15,19 +15,41 @@ export function ContractorAuth() {
     useAuth()
   const [showMobileRedirect, setShowMobileRedirect] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
+  
+  // WhatsApp OTP handler - must be declared before any conditional returns
+  const [waLoading, setWaLoading] = useState(false);
+  const [waMsg, setWaMsg] = useState<string | null>(null);
 
-  // Mobile detection
+  // Mobile detection with SSR safety
   useEffect(() => {
     const checkMobile = () => {
-      const width = window.innerWidth
-      const isMobileDevice = width < 768 // Less than tablet size
-      setIsMobile(isMobileDevice)
-      setShowMobileRedirect(isMobileDevice)
+      if (typeof window !== 'undefined') {
+        const width = window.innerWidth
+        const isMobileDevice = width < 768 // Less than tablet size
+        setIsMobile(isMobileDevice)
+        setShowMobileRedirect(isMobileDevice)
+      }
     }
     
-    checkMobile()
-    window.addEventListener('resize', checkMobile)
-    return () => window.removeEventListener('resize', checkMobile)
+    // Delay initial check to ensure proper hydration
+    const timer = setTimeout(checkMobile, 100)
+    
+    const handleResize = () => {
+      if (typeof window !== 'undefined') {
+        checkMobile()
+      }
+    }
+    
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', handleResize)
+    }
+    
+    return () => {
+      clearTimeout(timer)
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('resize', handleResize)
+      }
+    }
   }, [])
 
   // If mobile and should show redirect
@@ -36,8 +58,6 @@ export function ContractorAuth() {
   }
 
   // WhatsApp OTP handler
-  const [waLoading, setWaLoading] = useState(false);
-  const [waMsg, setWaMsg] = useState<string | null>(null);
   const sendWhatsAppOtp = async () => {
     setWaLoading(true);
     setWaMsg(null);

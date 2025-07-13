@@ -140,8 +140,17 @@ export const useChat = () => {
   // Enhanced rate limiting based on subscription tier
   const isScaleTier = profile?.subscription_tier === 'scale';
   
-  // Daily usage tracking (stored in localStorage for now)
+  // Daily usage tracking (stored in localStorage for now) with SSR safety
   const [dailyUsage, setDailyUsage] = useState(() => {
+    if (typeof window === 'undefined') {
+      return {
+        date: new Date().toDateString(),
+        rex: 0,
+        alex: 0,
+        lexi: 0
+      };
+    }
+    
     try {
       const stored = localStorage.getItem('agent-daily-usage');
       const today = new Date().toDateString();
@@ -157,7 +166,8 @@ export const useChat = () => {
         };
       }
       return usage;
-    } catch {
+    } catch (error) {
+      console.warn('Failed to parse daily usage from localStorage:', error);
       return {
         date: new Date().toDateString(),
         rex: 0,
@@ -195,7 +205,16 @@ export const useChat = () => {
         date: today,
         [agent]: (prev.date === today ? prev[agent] : 0) + 1
       };
-      localStorage.setItem('agent-daily-usage', JSON.stringify(updated));
+      
+      // Only update localStorage if window is available (client-side)
+      if (typeof window !== 'undefined') {
+        try {
+          localStorage.setItem('agent-daily-usage', JSON.stringify(updated));
+        } catch (error) {
+          console.warn('Failed to save daily usage to localStorage:', error);
+        }
+      }
+      
       return updated;
     });
   }, []);

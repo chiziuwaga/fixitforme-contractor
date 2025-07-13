@@ -6,16 +6,18 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { MessageCircle, Users, TrendingUp } from "lucide-react"
 import { motion } from "framer-motion"
+import { MobileLayout } from "@/components/dashboard/MobileLayout"
 
 export default function DashboardPage() {
-  const { user, profile } = useUser()
+  const { profile } = useUser()
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="h-screen flex flex-col"
-    >
+    <MobileLayout fallbackToMobile={true}>
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="h-screen flex flex-col"
+      >
       {/* Header - Minimal */}
       <div className="flex items-center justify-between p-6 border-b">
         <div>
@@ -141,5 +143,6 @@ export default function DashboardPage() {
         </div>
       </div>
     </motion.div>
+    </MobileLayout>
   )
 }

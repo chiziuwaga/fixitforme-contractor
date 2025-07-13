@@ -128,17 +128,22 @@ export function MobileRedirect({ onContinueAnyway }: MobileRedirectProps) {
             {/* Actions */}
             <div className="space-y-3 pt-2">
               <p className="text-sm text-slate-500">
-                Switch to desktop or tablet for the full contractor experience
+                Get the best experience on desktop, or continue with mobile access
               </p>
               
-              <Button
-                onClick={onContinueAnyway}
-                variant="outline"
-                className="w-full flex items-center gap-2"
-              >
-                Continue on Mobile Anyway
-                <ArrowRight className="h-4 w-4" />
-              </Button>
+              <div className="space-y-2">
+                <Button
+                  onClick={onContinueAnyway}
+                  className="w-full flex items-center gap-2"
+                >
+                  Login on Mobile
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+                
+                <p className="text-xs text-slate-400">
+                  ✓ Access leads & notifications ✓ Chat with AI agents ✓ View earnings
+                </p>
+              </div>
             </div>
             
             {/* Footer */}
