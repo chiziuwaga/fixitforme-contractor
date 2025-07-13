@@ -11,19 +11,28 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Phone number and verification code are required' }, { status: 400 });
     }
 
-    // For WhatsApp OTP, we need to verify against our stored OTP
-    // In a production system, you'd store the OTP in Redis or database with expiration
-    // For now, we'll simulate this verification
-    
-    // TODO: Implement proper OTP storage and verification
-    // This is a simplified version that accepts any 6-digit code for demo purposes
-    const otpRegex = /^\d{6}$/;
-    if (!otpRegex.test(token)) {
+    // Verify OTP against stored value in Supabase
+    const { data: otpData, error: otpError } = await supabase
+      .from('whatsapp_otps')
+      .select('*')
+      .eq('phone_number', phone)
+      .eq('otp_code', token)
+      .gte('expires_at', new Date().toISOString())
+      .single();
+
+    if (otpError || !otpData) {
+      console.error('OTP verification failed:', otpError);
       return NextResponse.json(
-        { error: 'Invalid verification code format' }, 
+        { error: 'Invalid or expired verification code' }, 
         { status: 400 }
       );
     }
+
+    // Delete used OTP to prevent reuse
+    await supabase
+      .from('whatsapp_otps')
+      .delete()
+      .eq('phone_number', phone);
 
     // Create or get user with WhatsApp phone number
     // Use Supabase Auth admin API to create a verified user with phone

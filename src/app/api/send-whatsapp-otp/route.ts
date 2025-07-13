@@ -1,9 +1,35 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createAdminClient } from '@/lib/supabaseServer';
 
 // Twilio types
 interface TwilioError extends Error {
   code?: number;
   status?: number;
+}
+
+// Store OTP in Supabase for verification
+async function storeOTP(phone: string, otpCode: string) {
+  try {
+    const supabase = createAdminClient();
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes from now
+    
+    // Upsert OTP (update if exists, insert if new)
+    const { error } = await supabase
+      .from('whatsapp_otps')
+      .upsert({
+        phone_number: phone,
+        otp_code: otpCode,
+        expires_at: expiresAt.toISOString(),
+        created_at: new Date().toISOString()
+      }, {
+        onConflict: 'phone_number'
+      });
+    
+    return { error };
+  } catch (error) {
+    console.error('Error storing OTP:', error);
+    return { error };
+  }
 }
 
 export async function POST(request: NextRequest) {
@@ -32,8 +58,12 @@ export async function POST(request: NextRequest) {
       // Fallback: Use sandbox/demo mode for development
       console.log(`[DEMO] WhatsApp OTP for ${phone}: ${otpCode}`);
       
-      // Store OTP in session/database for verification
-      // In production, you'd store this in Redis or database
+      // Store OTP in Supabase even in demo mode
+      const { error: storageError } = await storeOTP(phone, otpCode);
+      if (storageError) {
+        console.error('Failed to store demo OTP:', storageError);
+      }
+      
       return NextResponse.json({ 
         success: true, 
         message: `WhatsApp OTP sent to ${phone}`,
@@ -54,8 +84,12 @@ export async function POST(request: NextRequest) {
 
       console.log(`WhatsApp OTP sent successfully: ${message.sid}`);
       
-      // Store OTP for verification (implement your storage logic)
-      // Example: await storeOTP(phone, otpCode, 10 * 60 * 1000); // 10 minutes
+      // Store OTP in Supabase for verification
+      const { error: storageError } = await storeOTP(phone, otpCode);
+      if (storageError) {
+        console.error('Failed to store OTP:', storageError);
+        // Continue anyway - don't fail the request
+      }
       
       return NextResponse.json({ 
         success: true, 
