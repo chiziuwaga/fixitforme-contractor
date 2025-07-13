@@ -59,60 +59,43 @@ export function ContractorAuth() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-secondary via-slate-950 to-primary/20 p-4">
-      {/* Floating Background Elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-primary/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-48 h-48 bg-secondary/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-      </div>
-      
-      <div className="relative w-full max-w-sm">
-        {/* Link to main site */}
+    <div className="flex min-h-screen items-center justify-center bg-background p-4">
+      <div className="w-full max-w-sm">
         <div className="text-center mb-6">
           <Link 
             href="https://fixitforme.ai" 
             target="_blank"
-            className="inline-flex items-center gap-2 text-white/70 hover:text-white transition-colors text-sm group"
+            className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors text-sm group"
           >
             <ExternalLink className="h-4 w-4 group-hover:scale-110 transition-transform" />
             Visit FixItForMe.ai
           </Link>
         </div>
         
-        <Card className="backdrop-blur-sm bg-white/95 border-0 shadow-2xl">
-          <CardHeader className="flex flex-col items-center relative overflow-hidden">
-            {/* Animated background pattern */}
-            <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-secondary/5 opacity-50"></div>
+        <Card>
+          <CardHeader className="flex flex-col items-center">
+            <img 
+              src="/logo.png" 
+              alt="FixItForMe Logo" 
+              className="w-20 h-20 mb-4 rounded-full shadow-sm" 
+            />
             
-            <div className="relative z-10 flex flex-col items-center">
-              <div className="relative">
-                <img 
-                  src="/logo.png" 
-                  alt="FixItForMe Logo" 
-                  className="w-20 h-20 mb-4 rounded-full shadow-lg ring-4 ring-white/50 hover:ring-primary/20 transition-all duration-300 hover:scale-105" 
-                />
-                {/* Animated rings */}
-                <div className="absolute inset-0 rounded-full border-2 border-primary/30 animate-ping"></div>
-                <div className="absolute inset-0 rounded-full border border-secondary/20 animate-pulse delay-500"></div>
-              </div>
-              
-              {step === "otp" && (
-                <Button variant="ghost" size="sm" className="absolute left-4 top-4 hover:bg-white/80" onClick={goBack}>
-                  <ArrowLeft className="h-4 w-4" />
-                </Button>
-              )}
-              
-              <CardTitle className="text-2xl text-center bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                {step === "phone" ? "Contractor Login" : "Enter Code"}
-              </CardTitle>
-              <CardDescription className="text-center text-slate-600">
-                {step === "phone"
-                  ? "Enter your phone number to receive a login code via SMS or WhatsApp."
-                  : `We sent a code to +1 ${phoneNumber}.`}
-              </CardDescription>
-            </div>
+            {step === "otp" && (
+              <Button variant="ghost" size="sm" className="absolute left-4 top-4" onClick={goBack}>
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+            )}
+            
+            <CardTitle className="text-2xl text-center">
+              {step === "phone" ? "Contractor Login" : "Enter Code"}
+            </CardTitle>
+            <CardDescription className="text-center">
+              {step === "phone"
+                ? "Enter your phone number to receive a login code via SMS or WhatsApp."
+                : `We sent a code to +1 ${phoneNumber}.`}
+            </CardDescription>
           </CardHeader>
-        <CardContent className="relative z-10">
+        <CardContent>
           {step === "phone" ? (
             <form onSubmit={handlePhoneSubmit} className="space-y-4">
               <div className="space-y-2">
@@ -125,50 +108,48 @@ export function ContractorAuth() {
                   onChange={(e) => setPhoneNumber(e.target.value)}
                   required
                   disabled={loading}
-                  className="transition-all duration-200 focus:ring-2 focus:ring-primary/20"
                 />
               </div>
               <div className="flex flex-col gap-2">
                 <Button 
                   type="submit" 
-                  className="w-full bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 transition-all duration-200 transform hover:scale-[1.02]" 
-                  loading={loading}
+                  className="w-full" 
+                  disabled={loading}
                 >
-                  Send SMS Code
+                  {loading ? "Sending..." : "Send SMS Code"}
                 </Button>
                 <div className="relative">
                   <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t border-slate-200" />
+                    <span className="w-full border-t" />
                   </div>
                   <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-white px-2 text-slate-400">Or</span>
+                    <span className="bg-background px-2 text-muted-foreground">Or</span>
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-xs text-center text-slate-500">
+                  <p className="text-xs text-center text-muted-foreground">
                     First time? Join our WhatsApp bot for instant notifications:
                   </p>
                   <Button
                     type="button"
                     variant="outline"
-                    className="w-full border-green-500 text-green-700 hover:bg-green-50 transition-all duration-200"
+                    className="w-full"
                     onClick={() => window.open('https://wa.me/+14155238886?text=join%20FixItForMe', '_blank')}
                   >
                     Join WhatsApp Bot
                   </Button>
                   <Button
                     type="button"
-                    className="w-full bg-green-600 hover:bg-green-700 text-white transition-all duration-200 transform hover:scale-[1.02]"
-                    loading={waLoading}
+                    className="w-full"
                     disabled={loading || waLoading || !/^\+?1?\d{10,15}$/.test(phoneNumber)}
                     onClick={sendWhatsAppOtp}
                   >
-                    Send WhatsApp Code
+                    {waLoading ? "Sending..." : "Send WhatsApp Code"}
                   </Button>
                 </div>
               </div>
               {waMsg && (
-                <div className="text-xs text-center mt-2 p-2 rounded bg-primary/5 text-primary border border-primary/20">
+                <div className="text-xs text-center mt-2 p-2 rounded bg-muted text-muted-foreground border">
                   {waMsg}
                 </div>
               )}
@@ -186,34 +167,25 @@ export function ContractorAuth() {
                   onChange={(e) => setOtp(e.target.value)}
                   required
                   disabled={loading}
-                  className="text-center text-lg tracking-widest transition-all duration-200 focus:ring-2 focus:ring-primary/20"
+                  className="text-center text-lg tracking-widest"
                 />
               </div>
               <Button 
                 type="submit" 
-                className="w-full bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 transition-all duration-200 transform hover:scale-[1.02]" 
-                loading={loading}
+                className="w-full" 
+                disabled={loading}
               >
-                Verify & Login
+                {loading ? "Verifying..." : "Verify & Login"}
               </Button>
             </form>
           )}
           {error && (
-            <div className="mt-4 p-3 rounded-lg bg-red-50 border border-red-200">
-              <p className="text-center text-sm text-red-600">{error}</p>
+            <div className="mt-4 p-3 rounded-lg bg-destructive/10 border border-destructive/20">
+              <p className="text-center text-sm text-destructive">{error}</p>
             </div>
           )}
         </CardContent>
       </Card>
-      
-      {/* Decorative icons */}
-      <div className="absolute bottom-8 left-8 opacity-20">
-        <div className="flex items-center gap-2 text-white">
-          <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-          <div className="w-2 h-2 bg-secondary rounded-full animate-pulse delay-300"></div>
-          <div className="w-2 h-2 bg-primary rounded-full animate-pulse delay-700"></div>
-        </div>
-      </div>
       </div>
     </div>
   )

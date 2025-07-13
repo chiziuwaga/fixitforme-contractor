@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Loader2, Bot, Brain, Search, Calculator } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { BRAND } from '@/lib/brand';
+
 
 interface AgentWorkingIndicatorProps {
   agent: 'lexi' | 'alex' | 'rex';
@@ -17,7 +17,8 @@ const agentConfig = {
   lexi: {
     name: 'Lexi',
     icon: Bot,
-    color: BRAND.colors.primary,
+    className: "text-primary",
+    bgClassName: "bg-primary/10",
     tasks: [
       'Analyzing your request...',
       'Preparing onboarding materials...',
@@ -28,7 +29,8 @@ const agentConfig = {
   alex: {
     name: 'Alex',
     icon: Calculator,
-    color: BRAND.colors.accent,
+    className: "text-green-600",
+    bgClassName: "bg-green-600/10",
     tasks: [
       'Analyzing project requirements...',
       'Calculating material costs...',
@@ -39,7 +41,8 @@ const agentConfig = {
   rex: {
     name: 'Rex',
     icon: Search,
-    color: BRAND.colors.secondary,
+    className: "text-secondary",
+    bgClassName: "bg-secondary/10",
     tasks: [
       'Searching for new leads...',
       'Analyzing market opportunities...',
@@ -78,7 +81,7 @@ export function AgentWorkingIndicator({
       exit={{ opacity: 0, y: -10 }}
       className={cn(
         "flex items-center gap-3 p-3 rounded-lg border",
-        "bg-gradient-to-r from-background to-muted/50",
+        "bg-muted/50",
         "border-border/50",
         className
       )}
@@ -87,20 +90,17 @@ export function AgentWorkingIndicator({
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-          className="p-2 rounded-full"
-          style={{ backgroundColor: `${config.color}20` }}
+          className={cn("p-2 rounded-full", config.bgClassName)}
         >
           <Icon 
-            className="w-4 h-4" 
-            style={{ color: config.color }}
+            className={cn("w-4 h-4", config.className)}
           />
         </motion.div>
         
         <motion.div
           animate={{ scale: [1, 1.2, 1] }}
           transition={{ duration: 1.5, repeat: Infinity }}
-          className="absolute -top-1 -right-1 w-3 h-3 rounded-full"
-          style={{ backgroundColor: config.color }}
+          className={cn("absolute -top-1 -right-1 w-3 h-3 rounded-full", config.className.replace('text-', 'bg-'))}
         />
       </div>
 
@@ -130,12 +130,9 @@ export function AgentWorkingIndicator({
             className={cn(
               "w-1.5 h-1.5 rounded-full",
               index === currentTaskIndex 
-                ? "bg-current" 
+                ? config.className.replace('text-', 'bg-')
                 : "bg-muted-foreground/30"
             )}
-            style={{ 
-              color: index === currentTaskIndex ? config.color : undefined 
-            }}
             animate={index === currentTaskIndex ? { scale: [1, 1.2, 1] } : {}}
             transition={{ duration: 0.5 }}
           />

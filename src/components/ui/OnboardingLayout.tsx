@@ -36,7 +36,7 @@ function FeatureBlockedOverlay({
   onUpgrade?: () => void;
 }) {
   return (
-    <div className="absolute inset-0 bg-gray-50/90 backdrop-blur-sm z-50 flex items-center justify-center">
+    <div className="absolute inset-0 bg-background/90 z-50 flex items-center justify-center">
       <Card className="max-w-md mx-4">
         <CardHeader className="text-center">
           <div className="mx-auto mb-4 w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">

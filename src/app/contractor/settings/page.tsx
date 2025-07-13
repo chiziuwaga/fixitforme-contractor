@@ -7,7 +7,6 @@ import ProfileEditor from "@/components/settings/ProfileEditor"
 import DocumentUploader from "@/components/settings/DocumentUploader"
 import { DocumentViewer } from "@/components/settings/DocumentViewer"
 import SubscriptionManager from "@/components/settings/SubscriptionManager"
-import { TYPOGRAPHY, SPACING } from "@/lib/design-system"
 
 interface SettingsTab {
   value: string
@@ -39,13 +38,13 @@ const settingsTabs: SettingsTab[] = [
 
 export default function SettingsPage() {
   return (
-    <div className={SPACING.component.xl}>
+    <div className="p-6 space-y-6">
       <header className="mb-8">
-        <h1 className={`${TYPOGRAPHY.heading.h1} flex items-center gap-3`}>
+        <h1 className="text-3xl font-bold flex items-center gap-3">
           <SettingsIcon className="h-8 w-8 text-primary" />
           Settings
         </h1>
-        <p className={`${TYPOGRAPHY.body.medium} text-muted-foreground mt-1`}>
+        <p className="text-base text-muted-foreground mt-1">
           Manage your account, profile, and subscription settings.
         </p>
       </header>

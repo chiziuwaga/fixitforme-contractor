@@ -73,7 +73,7 @@ export const AGENT_CONFIGS: Record<AgentType, AgentConfig> = {
   lexi: {
     name: 'Lexi the Liaison',
     color: 'from-primary to-primary/80',
-    bgColor: 'bg-gradient-to-r from-primary to-primary/80',
+    bgColor: 'bg-primary',
     avatar: '👩‍💼',
     description: 'Onboarding Guide',
     isPremium: false,
@@ -81,7 +81,7 @@ export const AGENT_CONFIGS: Record<AgentType, AgentConfig> = {
   alex: {
     name: 'Alex the Assessor',
     color: 'from-success to-success/80',
-    bgColor: 'bg-gradient-to-r from-success to-success/80',
+    bgColor: 'bg-green-600',
     avatar: '📊',
     description: 'Bidding Assistant',
     isPremium: true,
@@ -89,7 +89,7 @@ export const AGENT_CONFIGS: Record<AgentType, AgentConfig> = {
   rex: {
     name: 'Rex the Retriever',
     color: 'from-warning to-warning/80',
-    bgColor: 'bg-gradient-to-r from-warning to-warning/80',
+    bgColor: 'bg-yellow-600',
     avatar: '🔍',
     description: 'Lead Generator',
     isPremium: true,

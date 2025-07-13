@@ -19,7 +19,7 @@ import {
   Percent,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { BRAND } from "@/lib/brand"
+
 import { motion } from "framer-motion"
 import { useUser } from "@/hooks/useUser"
 import type { Metric, DashboardStats } from "@/hooks/useDashboard"
@@ -229,7 +229,7 @@ export function PerformanceMetrics({ className }: { className?: string }) {
     <Card className={cn("col-span-full", className)}>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Star className="w-5 h-5" style={{ color: BRAND.colors.primary }} />
+          <Star className="w-5 h-5 text-primary" />
           Performance Overview
         </CardTitle>
         <CardDescription>Your business metrics at a glance</CardDescription>

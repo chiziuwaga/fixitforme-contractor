@@ -165,7 +165,7 @@ export function ChatWindow({
       exit={{ opacity: 0, y: 50 }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
       className={cn(
-        "fixed bottom-24 right-6 w-[400px] bg-card border rounded-xl shadow-2xl flex flex-col overflow-hidden",
+        "fixed bottom-24 right-6 w-[400px] bg-card border rounded-xl shadow-lg flex flex-col overflow-hidden",
         isMinimized ? "h-16" : "h-[600px]",
       )}
     >

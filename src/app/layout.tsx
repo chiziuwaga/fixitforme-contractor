@@ -9,11 +9,13 @@ import "./globals.css"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://fixitforme-contractor.vercel.app'),
   title: "FixItForMe Contractor",
   description: "Lead generation and management for contractors.",
   icons: {
-    icon: '/favicon.ico',
+    icon: '/logo.png',
     apple: '/logo.png',
+    shortcut: '/logo.png',
   },
 }
 

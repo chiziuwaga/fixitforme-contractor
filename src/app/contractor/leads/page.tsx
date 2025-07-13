@@ -9,7 +9,6 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { LeadFeed } from "@/components/dashboard/LeadFeed"
 import { Search, Filter, MapPin, DollarSign, Clock } from "lucide-react"
-import { TYPOGRAPHY, SPACING } from "@/lib/design-system"
 import { useDashboard } from "@/hooks/useDashboard"
 
 export default function LeadsPage() {
@@ -22,14 +21,14 @@ export default function LeadsPage() {
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className={SPACING.component.xl}
+      className="p-6 space-y-6"
     >
       {/* Header */}
       <header className="mb-8">
-        <h1 className={`${TYPOGRAPHY.heading.h1} flex items-center gap-3`}>
+        <h1 className="text-3xl font-bold flex items-center gap-3">
           Available Leads
         </h1>
-        <p className={`${TYPOGRAPHY.body.medium} text-muted-foreground mt-1`}>
+        <p className="text-base text-muted-foreground mt-1">
           Browse and bid on new contractor opportunities in your area.
         </p>
       </header>

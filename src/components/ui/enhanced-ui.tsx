@@ -185,10 +185,10 @@ export const EnhancedAlert = React.forwardRef<
       className={cn(
         "relative w-full rounded-lg border p-4 transition-all duration-200",
         // Enhanced variants with subtle gradients
-        variant === 'default' && "bg-gradient-to-r from-background to-muted/30 border-border text-foreground",
-        variant === 'success' && "bg-gradient-to-r from-green-50 to-green-100/50 border-green-200 text-green-800",
-        variant === 'warning' && "bg-gradient-to-r from-yellow-50 to-yellow-100/50 border-yellow-200 text-yellow-800", 
-        variant === 'destructive' && "bg-gradient-to-r from-red-50 to-red-100/50 border-red-200 text-red-800",
+        variant === 'default' && "bg-background border-border text-foreground",
+        variant === 'success' && "bg-green-50 border-green-200 text-green-800",
+        variant === 'warning' && "bg-yellow-50 border-yellow-200 text-yellow-800", 
+        variant === 'destructive' && "bg-red-50 border-red-200 text-red-800",
         // Enhanced shadow
         "shadow-sm",
         className

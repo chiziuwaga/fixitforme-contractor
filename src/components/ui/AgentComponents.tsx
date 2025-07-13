@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CheckCircle, Clock, TrendingUp, MapPin, DollarSign, Wrench, Users, Star, Crown, Check, Zap, Target, BarChart3, Settings, Scale } from 'lucide-react';
-import { BRAND } from '@/lib/brand';
+
 import { useAgentUI, type AgentAction } from '@/hooks/useAgentUI';
 import { CostBreakdownChart, TimelineChart, LeadDistributionChart } from './Charts';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -533,10 +533,10 @@ export function UpgradePrompt({ data, actions }: UpgradePromptProps) {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-gradient-to-br from-white to-slate-50 border-2 border-felix-gold/20 rounded-xl shadow-lg"
+      className="bg-white border border-primary/20 rounded-xl shadow-sm"
     >
       {/* Header */}
-      <div className="bg-gradient-to-r from-felix-gold to-felix-gold/80 text-white p-4 rounded-t-xl">
+      <div className="bg-primary text-primary-foreground p-4 rounded-t-xl">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
             <Crown className="w-5 h-5" />
@@ -608,7 +608,7 @@ export function UpgradePrompt({ data, actions }: UpgradePromptProps) {
                 {/* Required Tier */}
                 <div className="p-4 rounded-lg border-2 border-felix-gold bg-felix-gold/5">
                   <div className="flex items-center gap-2 mb-3">
-                    <Badge style={{ backgroundColor: BRAND.colors.primary, color: 'white' }}>
+                    <Badge className="bg-primary text-primary-foreground">
                       Required: {tierData[requiredTier as keyof typeof tierData]?.name}
                     </Badge>
                   </div>
@@ -708,7 +708,6 @@ export function UpgradePrompt({ data, actions }: UpgradePromptProps) {
                 key={index} 
                 variant={action.style === 'primary' ? 'default' : 'outline'}
                 size="lg"
-                style={action.style === 'primary' ? { backgroundColor: BRAND.colors.primary } : {}}
                 onClick={() => handleActionClick(action.type)}
                 disabled={action.disabled}
                 className="min-w-[120px]"

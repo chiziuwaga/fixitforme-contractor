@@ -50,7 +50,7 @@ export default function JobBidPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-brand-primary/5 via-transparent to-brand-secondary/5">
+    <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8 max-w-7xl">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
           <JobHeader

@@ -14,7 +14,7 @@ export default function AuthPage() {
   }, [router]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-950 via-slate-950 to-purple-950 flex items-center justify-center">
+    <div className="min-h-screen bg-background flex items-center justify-center">
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}

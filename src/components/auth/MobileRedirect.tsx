@@ -40,13 +40,13 @@ export function MobileRedirect({ onContinueAnyway }: MobileRedirectProps) {
   }, [features.length])
   
   return (
-    <div className="min-h-screen bg-gradient-to-br from-secondary via-slate-950 to-secondary/80 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         className="w-full max-w-md"
       >
-        <Card className="border-0 shadow-2xl backdrop-blur-sm bg-white/95">
+        <Card>
           <CardContent className="p-8 text-center space-y-6">
             {/* Logo */}
             <motion.div
@@ -65,10 +65,10 @@ export function MobileRedirect({ onContinueAnyway }: MobileRedirectProps) {
             
             {/* Main Message */}
             <div className="space-y-3">
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              <h1 className="text-2xl font-bold text-foreground">
                 Better on Desktop
               </h1>
-              <p className="text-slate-600 leading-relaxed">
+              <p className="text-muted-foreground leading-relaxed">
                 FixItForMe Contractor works best on desktop and tablet for the complete experience
               </p>
             </div>

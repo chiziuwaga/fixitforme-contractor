@@ -6,7 +6,7 @@ import { X, Bell, Check, AlertTriangle, Info, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
-import { BRAND } from '@/lib/brand';
+
 
 export interface Notification {
   id: string;
@@ -165,8 +165,7 @@ export function NotificationCenter({ className }: NotificationCenterProps) {
         <Bell className="w-5 h-5" />
         {unreadCount > 0 && (
           <Badge 
-            className="absolute -top-1 -right-1 min-w-[1.25rem] h-5 p-0 flex items-center justify-center text-xs"
-            style={{ backgroundColor: BRAND.colors.primary }}
+            className="absolute -top-1 -right-1 min-w-[1.25rem] h-5 p-0 flex items-center justify-center text-xs bg-primary"
           >
             {unreadCount > 99 ? '99+' : unreadCount}
           </Badge>
