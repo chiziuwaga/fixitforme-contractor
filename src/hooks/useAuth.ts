@@ -53,7 +53,7 @@ export function useAuth() {
     try {
       const phone = `+1${phoneNumber.replace(/\D/g, "")}`;
       
-      const response = await fetch('/api/auth/verify-sms', {
+      const response = await fetch('/api/auth/verify-whatsapp-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone, token: otp })
@@ -78,6 +78,45 @@ export function useAuth() {
     setLoading(false);
   };
 
+  const handleWhatsAppSend = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const phone = `+1${phoneNumber.replace(/\D/g, "")}`;
+      
+      const response = await fetch('/api/send-whatsapp-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to send WhatsApp verification code');
+      }
+
+      setStep("otp");
+      
+      // Show success message with demo code if in development
+      if (data.otpCode && process.env.NODE_ENV === 'development') {
+        toast.success("WhatsApp OTP sent!", { 
+          description: `Demo code: ${data.otpCode}`
+        });
+      } else {
+        toast.success("WhatsApp OTP sent!", { 
+          description: "Check WhatsApp for your 6-digit verification code"
+        });
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to send WhatsApp OTP';
+      setError(errorMessage);
+      toast.error("WhatsApp OTP failed", { description: errorMessage });
+    }
+    setLoading(false);
+  };
+
   const goBack = () => {
     setStep("phone");
     setError(null);
@@ -94,6 +133,7 @@ export function useAuth() {
     error,
     handlePhoneSubmit,
     handleOtpSubmit,
+    handleWhatsAppSend,
     goBack,
   };
 }

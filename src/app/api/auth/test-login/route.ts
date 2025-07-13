@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabaseServer';
 /**
  * Test Authentication Endpoint
  * 
- * This endpoint provides a test login system that bypasses SMS verification
+ * This endpoint provides a test login system that bypasses WhatsApp verification
  * for development and testing purposes. It creates a test contractor account
  * or logs in an existing test account.
  * 

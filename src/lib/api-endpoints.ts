@@ -4,11 +4,13 @@
 export const API_ENDPOINTS = {
   // Authentication endpoints
   auth: {
-    login: '/api/auth/login',           // SMS login initiation
-    verify: '/api/auth/verify',         // SMS code verification  
-    logout: '/api/auth/logout',         // Session termination
-    refresh: '/api/auth/refresh',       // Token refresh
-    check: '/api/auth/check',           // Session validation
+    login: '/api/auth/login',                      // Deprecated: Use WhatsApp instead
+    verify: '/api/auth/verify',                    // Deprecated: Use WhatsApp instead 
+    whatsappSend: '/api/send-whatsapp-otp',        // WhatsApp OTP sending
+    whatsappVerify: '/api/auth/verify-whatsapp-otp', // WhatsApp OTP verification
+    logout: '/api/auth/logout',                    // Session termination
+    refresh: '/api/auth/refresh',                  // Token refresh
+    check: '/api/auth/check',                      // Session validation
   },
   
   // Contractor management

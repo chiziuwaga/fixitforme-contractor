@@ -12,14 +12,10 @@ import { ArrowLeft, ExternalLink } from "lucide-react"
 import { MobileRedirect } from "./MobileRedirect"
 
 export function ContractorAuth() {
-  const { step, phoneNumber, setPhoneNumber, otp, setOtp, loading, error, handlePhoneSubmit, handleOtpSubmit, goBack } =
+  const { step, phoneNumber, setPhoneNumber, otp, setOtp, loading, error, handleWhatsAppSend, handleOtpSubmit, goBack } =
     useAuth()
   const [showMobileRedirect, setShowMobileRedirect] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
-  
-  // WhatsApp OTP handler - must be declared before any conditional returns
-  const [waLoading, setWaLoading] = useState(false);
-  const [waMsg, setWaMsg] = useState<string | null>(null);
 
   // Mobile detection with SSR safety
   useEffect(() => {
@@ -59,27 +55,6 @@ export function ContractorAuth() {
     return <MobileRedirect onContinueAnyway={() => setShowMobileRedirect(false)} />
   }
 
-  // WhatsApp OTP handler
-  const sendWhatsAppOtp = async () => {
-    setWaLoading(true);
-    setWaMsg(null);
-    try {
-      const response = await fetch('/api/send-whatsapp-otp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: phoneNumber })
-      });
-      if (response.ok) {
-        setWaMsg('WhatsApp OTP sent! Check your WhatsApp.');
-      } else {
-        setWaMsg('Failed to send WhatsApp OTP.');
-      }
-    } catch {
-      setWaMsg('Failed to send WhatsApp OTP.');
-    }
-    setWaLoading(false);
-  };
-
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <div className="w-full max-w-sm">
@@ -115,13 +90,13 @@ export function ContractorAuth() {
             </CardTitle>
             <CardDescription className="text-center">
               {step === "phone"
-                ? "Enter your phone number to receive a login code via SMS or WhatsApp."
-                : `We sent a code to +1 ${phoneNumber}.`}
+                ? "Enter your phone number to receive a verification code via WhatsApp."
+                : `We sent a verification code to +1 ${phoneNumber} via WhatsApp.`}
             </CardDescription>
           </CardHeader>
         <CardContent>
           {step === "phone" ? (
-            <form onSubmit={handlePhoneSubmit} className="space-y-4">
+            <div className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="phone">Phone Number</Label>
                 <Input
@@ -131,53 +106,49 @@ export function ContractorAuth() {
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
                   required
-                  disabled={loading}
                 />
               </div>
-              <div className="flex flex-col gap-2">
-                <Button 
-                  type="submit" 
-                  className="w-full" 
-                  disabled={loading}
-                >
-                  {loading ? "Sending..." : "Send SMS Code"}
-                </Button>
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t" />
-                  </div>
-                  <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-background px-2 text-muted-foreground">Or</span>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <p className="text-xs text-center text-muted-foreground">
-                    First time? Join our WhatsApp bot for instant notifications:
+              
+              <div className="text-center space-y-4">
+                {/* Step 1: Join the WhatsApp Bot */}
+                <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                  <h3 className="font-medium text-green-800 mb-2">Step 1: Join Our WhatsApp Bot</h3>
+                  <p className="text-sm text-green-700 mb-3">
+                    First, join our WhatsApp bot to receive verification codes
                   </p>
                   <Button
                     type="button"
+                    onClick={() => window.open(`https://wa.me/+14155238886?text=join%20shine-native`, '_blank')}
                     variant="outline"
-                    className="w-full"
-                    onClick={() => window.open('https://wa.me/+14155238886?text=join%20shine-native', '_blank')}
+                    className="w-full border-green-300 text-green-700 hover:bg-green-100"
                   >
-                    Join WhatsApp Bot
+                    📱 Join WhatsApp Bot
                   </Button>
+                  <p className="text-xs text-green-600 mt-2">
+                    This will open WhatsApp with the message &ldquo;join shine-native&rdquo; ready to send
+                  </p>
+                </div>
+
+                {/* Step 2: Send OTP via the Bot */}
+                <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <h3 className="font-medium text-blue-800 mb-2">Step 2: Get Verification Code</h3>
+                  <p className="text-sm text-blue-700 mb-3">
+                    After joining the bot, click below to receive your verification code
+                  </p>
                   <Button
                     type="button"
-                    className="w-full"
-                    disabled={loading || waLoading || !/^\+?1?\d{10,15}$/.test(phoneNumber)}
-                    onClick={sendWhatsAppOtp}
+                    className="w-full bg-[#25D366] hover:bg-[#128C7E] text-white"
+                    onClick={handleWhatsAppSend}
+                    disabled={!phoneNumber.trim() || loading}
                   >
-                    {waLoading ? "Sending..." : "Send WhatsApp Code"}
+                    {loading ? "Sending..." : "Send WhatsApp OTP"}
                   </Button>
+                  <p className="text-xs text-blue-600 mt-2">
+                    The bot will send you a 6-digit verification code
+                  </p>
                 </div>
               </div>
-              {waMsg && (
-                <div className="text-xs text-center mt-2 p-2 rounded bg-muted text-muted-foreground border">
-                  {waMsg}
-                </div>
-              )}
-            </form>
+            </div>
           ) : (
             <form onSubmit={handleOtpSubmit} className="space-y-4">
               <div className="space-y-2">

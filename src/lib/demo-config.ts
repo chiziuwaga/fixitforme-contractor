@@ -9,8 +9,8 @@ export const DEMO_CONFIG = {
     enabled: !process.env.STRIPE_PUBLISHABLE_KEY,
   },
 
-  // Mock Twilio/SMS for demo
-  SMS_DEMO: {
+  // Mock WhatsApp/OTP for demo
+  WHATSAPP_DEMO: {
     enabled: !process.env.TWILIO_ACCOUNT_SID,
     mockCode: "123456", // Fixed demo verification code
   },

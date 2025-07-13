@@ -17,17 +17,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid phone number format' }, { status: 400 });
     }
 
-    // DEMO MODE: Return mock success without actual SMS
-    if (DEMO_CONFIG.SMS_DEMO.enabled || DEMO_CONFIG.DEMO_MODE) {
-      console.log(`[DEMO] SMS would be sent to: ${phone} with code: ${DEMO_CONFIG.SMS_DEMO.mockCode}`);
+    // DEMO MODE: Return mock success without actual SMS (DEPRECATED - Use WhatsApp instead)
+    if (DEMO_CONFIG.WHATSAPP_DEMO.enabled || DEMO_CONFIG.DEMO_MODE) {
+      console.log(`[DEMO] SMS would be sent to: ${phone} with code: ${DEMO_CONFIG.WHATSAPP_DEMO.mockCode}`);
       
       await createDemoResponse(null, 1500); // Simulate API delay
       
       return NextResponse.json({ 
         success: true, 
-        message: `Demo verification code sent to ${phone}`,
+        message: `Demo verification code sent to ${phone} (Use WhatsApp instead)`,
         demo: true,
-        hint: `Use code: ${DEMO_CONFIG.SMS_DEMO.mockCode}` // Only for demo!
+        hint: `Use code: ${DEMO_CONFIG.WHATSAPP_DEMO.mockCode}`, // Only for demo!
+        deprecated: true,
+        alternative: '/api/send-whatsapp-otp'
       });
     }
 
