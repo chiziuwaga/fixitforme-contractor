@@ -91,7 +91,7 @@ export function ContractorAuth() {
             <CardDescription className="text-center">
               {step === "phone"
                 ? "Enter your phone number to receive a verification code via WhatsApp."
-                : `We sent a verification code to +1 ${phoneNumber} via WhatsApp.`}
+                : `We sent a verification code to +1${phoneNumber.replace(/\D/g, "")} via WhatsApp.`}
             </CardDescription>
           </CardHeader>
         <CardContent>
@@ -99,14 +99,24 @@ export function ContractorAuth() {
             <div className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="phone">Phone Number</Label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  placeholder="(555) 555-5555"
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                  required
-                />
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
+                    +1
+                  </span>
+                  <Input
+                    id="phone"
+                    type="tel"
+                    placeholder="3477646025"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, ""))}
+                    className="pl-12"
+                    maxLength={10}
+                    required
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  {phoneNumber && `Will send to: +1${phoneNumber.replace(/\D/g, "")}`}
+                </p>
               </div>
               
               <div className="text-center space-y-4">

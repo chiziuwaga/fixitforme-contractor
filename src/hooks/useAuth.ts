@@ -51,7 +51,13 @@ export function useAuth() {
     setError(null);
 
     try {
-      const phone = `+1${phoneNumber.replace(/\D/g, "")}`;
+      // Clean phone number and add US country code (consistent with handleWhatsAppSend)
+      const cleanPhone = phoneNumber.replace(/\D/g, "");
+      const phone = `+1${cleanPhone}`;
+      
+      if (cleanPhone.length !== 10) {
+        throw new Error('Please enter a valid 10-digit US phone number');
+      }
       
       const response = await fetch('/api/auth/verify-whatsapp-otp', {
         method: 'POST',
@@ -83,7 +89,13 @@ export function useAuth() {
     setError(null);
 
     try {
-      const phone = `+1${phoneNumber.replace(/\D/g, "")}`;
+      // Clean phone number and add US country code
+      const cleanPhone = phoneNumber.replace(/\D/g, "");
+      const phone = `+1${cleanPhone}`;
+      
+      if (cleanPhone.length !== 10) {
+        throw new Error('Please enter a valid 10-digit US phone number');
+      }
       
       const response = await fetch('/api/send-whatsapp-otp', {
         method: 'POST',
