@@ -5,8 +5,8 @@ const CACHE_NAME = 'fixitforme-mobile-v1.0.0'
 const STATIC_CACHE = 'fixitforme-static-v1.0.0'
 
 // Essential files for mobile contractor experience
+// Note: Excluding '/' since it redirects to '/login' - causes service worker conflicts
 const STATIC_ASSETS = [
-  '/',
   '/login',
   '/contractor/dashboard',
   '/contractor/mobile-chat',
@@ -14,13 +14,6 @@ const STATIC_ASSETS = [
   '/manifest.json',
   '/logo.png',
   '/favicon.ico'
-]
-
-// API endpoints that need caching for offline functionality
-const API_CACHE_PATTERNS = [
-  '/api/auth/user',
-  '/api/leads',
-  '/api/notifications'
 ]
 
 // Install event - cache essential assets
@@ -78,7 +71,7 @@ self.addEventListener('fetch', (event) => {
   // Handle API requests - cache with network-first strategy
   if (url.pathname.startsWith('/api/')) {
     event.respondWith(
-      fetch(request)
+      fetch(request, { redirect: 'follow' })
         .then((response) => {
           // Only cache successful API responses
           if (response.status === 200) {
@@ -128,11 +121,17 @@ self.addEventListener('fetch', (event) => {
           return cachedResponse
         }
 
-        // Fetch from network and cache
-        return fetch(request)
+        // Special handling for root route - don't cache, redirect to login
+        if (url.pathname === '/') {
+          console.log('[SW] Root route requested, redirecting to login')
+          return Response.redirect(new URL('/login', url.origin), 302)
+        }
+
+        // Fetch from network and cache - handle redirects properly
+        return fetch(request, { redirect: 'follow' })
           .then((response) => {
-            // Only cache successful responses
-            if (response.status === 200) {
+            // Only cache successful responses that aren't redirects
+            if (response.status === 200 && response.type !== 'opaqueredirect') {
               const responseClone = response.clone()
               caches.open(CACHE_NAME)
                 .then((cache) => {

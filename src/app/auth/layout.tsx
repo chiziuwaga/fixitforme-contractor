@@ -96,7 +96,7 @@ export default function AuthLayout({
             "@context": "https://schema.org",
             "@type": "WebPage",
             "name": "FixItForMe Contractor Login",
-            "url": "https://fixitforme-contractor.vercel.app/auth",
+            "url": "https://contractor.fixitforme.ai/auth",
             "description": "AI-powered contractor portal with qualified leads, secure payments and business analytics.",
             "breadcrumb": {
               "@type": "BreadcrumbList",
@@ -107,12 +107,12 @@ export default function AuthLayout({
             },
             "potentialAction": {
               "@type": "LoginAction",
-              "target": "https://fixitforme-contractor.vercel.app/auth"
+              "target": "https://contractor.fixitforme.ai/auth"
             },
             "publisher": {
               "@type": "Organization",
               "name": "FixItForMe",
-              "logo": { "@type": "ImageObject", "url": "https://fixitforme-contractor.vercel.app/logo.png" }
+              "logo": { "@type": "ImageObject", "url": "https://contractor.fixitforme.ai/logo.png" }
             }
           }),
         }}
