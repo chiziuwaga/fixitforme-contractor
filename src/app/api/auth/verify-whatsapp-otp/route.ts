@@ -67,14 +67,51 @@ export async function POST(request: NextRequest) {
 
       if (createError) {
         if (createError.message.includes('already exists') || createError.message.includes('already registered')) {
-          const { data: existingUsers } = await adminSupabase.auth.admin.listUsers();
-          const existingUser = existingUsers.users.find(u => u.phone === phone);
+          console.log('[VERIFY API] User already exists, retrieving existing user...');
           
-          if (existingUser) {
-            user = existingUser;
-            console.log('[VERIFY API] Found existing user:', user.id);
-          } else {
-            throw new Error('User exists but could not be retrieved');
+          // Try to find existing user by phone using getUserByPhone (if available) or admin.getUserById
+          try {
+            // Alternative approach: Use admin.listUsers with phone filter
+            const { data: existingUsers, error: listError } = await adminSupabase.auth.admin.listUsers({
+              page: 1,
+              perPage: 1000 // Increase limit to catch all users
+            });
+            
+            if (listError) {
+              console.error('[VERIFY API] Error listing users:', listError);
+              throw new Error(`Failed to retrieve existing user: ${listError.message}`);
+            }
+            
+            const existingUser = existingUsers.users.find(u => u.phone === phone);
+            
+            if (existingUser) {
+              user = existingUser;
+              console.log('[VERIFY API] Found existing user:', user.id);
+            } else {
+              // Final fallback: Query the contractor_profiles table to find user
+              const { data: contractorProfile } = await supabase
+                .from('contractor_profiles')
+                .select('user_id')
+                .eq('contact_phone', phone)
+                .single();
+                
+              if (contractorProfile) {
+                // Get user by ID from contractor profile
+                const { data: userById, error: userError } = await adminSupabase.auth.admin.getUserById(contractorProfile.user_id);
+                
+                if (userError || !userById.user) {
+                  throw new Error(`User exists in contractor_profiles but not in auth: ${userError?.message || 'User not found'}`);
+                }
+                
+                user = userById.user;
+                console.log('[VERIFY API] Found user via contractor profile lookup:', user.id);
+              } else {
+                throw new Error('User exists but could not be retrieved from auth.users or contractor_profiles');
+              }
+            }
+          } catch (retrievalError) {
+            console.error('[VERIFY API] User retrieval failed:', retrievalError);
+            throw new Error(`User exists but could not be retrieved: ${retrievalError instanceof Error ? retrievalError.message : 'Unknown error'}`);
           }
         } else {
           throw createError;
@@ -95,14 +132,35 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to create user account' }, { status: 500 });
     }
 
-    const { data: contractor, error: contractorError } = await supabase
-      .from('contractor_profiles')
-      .select('*')
-      .eq('contact_phone', phone)
-      .single();
+    // Get or create contractor profile using consistent lookup
+    let contractor = null;
+    try {
+      if (user?.id) {
+        // Use the database function to ensure consistent profile
+        const { data: profileResult, error: profileFunctionError } = await supabase
+          .rpc('ensure_contractor_profile', {
+            input_phone: phone,
+            input_user_id: user.id
+          });
 
-    if (contractorError && contractorError.code !== 'PGRST116') {
-      console.error('[VERIFY API] Contractor profile fetch error:', contractorError);
+        if (profileFunctionError) {
+          console.error('[VERIFY API] Profile function error:', profileFunctionError);
+        } else {
+          // Now fetch the complete contractor profile
+          const { data: fullProfile, error: fetchError } = await supabase
+            .from('contractor_profiles')
+            .select('*')
+            .eq('id', profileResult)
+            .single();
+            
+          if (!fetchError && fullProfile) {
+            contractor = fullProfile;
+          }
+        }
+      }
+    } catch (profileError) {
+      console.error('[VERIFY API] Contractor profile creation/retrieval error:', profileError);
+      // Continue without profile - user can complete onboarding later
     }
 
     const isNewUser = !contractor;
