@@ -4,7 +4,6 @@ import type React from "react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
-import { createDemoSession, isValidDemoCode, getDemoProfileConfig } from '@/lib/demoSession'
 
 export function useAuth() {
   const router = useRouter();
@@ -40,11 +39,18 @@ export function useAuth() {
         throw new Error(data.error || 'Invalid verification code');
       }
 
-      toast.success("Successfully logged in!");
+      // Check for secret upgrade success
+      if (data.secret_upgrade) {
+        toast.success("🎉 Secret Scale Tier Upgrade Activated!", { 
+          description: "You've been upgraded to Scale tier with premium features!",
+          duration: 5000
+        });
+      } else {
+        toast.success("Successfully logged in!");
+      }
       
       // For phone-based authentication, use Supabase's signInWithOtp approach
-      // BUT skip this for demo mode to avoid SMS signup restrictions
-      if (data.user && data.user.phone && !data.demo_mode) {
+      if (data.user && data.user.phone) {
         const { createClient } = await import('@/lib/supabase-client');
         const supabase = createClient();
         
@@ -57,7 +63,7 @@ export function useAuth() {
               shouldCreateUser: false, // User already exists from API
               data: {
                 user_type: data.user.user_type,
-                demo_mode: data.demo_mode
+                verification_method: 'whatsapp_otp'
               }
             }
           });
@@ -68,21 +74,7 @@ export function useAuth() {
           }
         } catch (sessionError) {
           console.warn('Session creation failed:', sessionError);
-          // Continue with redirect anyway for demo mode
-        }
-      } else if (data.demo_mode && data.demo_code) {
-        console.log(`[DEMO MODE] Skipping Supabase session creation due to SMS signup restrictions`);
-        console.log(`[DEMO MODE] Creating demo session for code: ${data.demo_code}, profile: ${data.demo_profile_type}`);
-        
-        // Create demo session that doesn't rely on Supabase using the specific demo code
-        const demoSession = createDemoSession(data.demo_code, data.user.user_type);
-        if (demoSession) {
-          console.log(`[DEMO MODE] Demo session created: ${demoSession.id} (${demoSession.demo_profile_type})`);
-          toast.success(`Demo mode activated: ${data.demo_profile_type} profile`, {
-            description: `Using code ${data.demo_code}`
-          });
-        } else {
-          console.error('[DEMO MODE] Failed to create demo session');
+          // Continue with redirect anyway
         }
       }
       
@@ -131,16 +123,10 @@ export function useAuth() {
 
       setStep("otp");
       
-      // Show success message with demo code if in development
-      if (data.otpCode && process.env.NODE_ENV === 'development') {
-        toast.success("WhatsApp OTP sent!", { 
-          description: `Demo code: ${data.otpCode}`
-        });
-      } else {
-        toast.success("WhatsApp OTP sent!", { 
-          description: "Check WhatsApp for your 6-digit verification code"
-        });
-      }
+      // Show success message 
+      toast.success("WhatsApp OTP sent!", { 
+        description: "Check WhatsApp for your 6-digit verification code"
+      });
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to send WhatsApp OTP';
       setError(errorMessage);

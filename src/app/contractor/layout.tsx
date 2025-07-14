@@ -6,7 +6,6 @@ import AppLayout from "@/components/layout/AppLayout"
 import { useUser } from "@/hooks/useUser"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
-import { getDemoSession } from "@/lib/demoSession"
 
 export default function ContractorLayout({
   children,
@@ -24,15 +23,9 @@ export default function ContractorLayout({
 
   useEffect(() => {
     if (!loading && isClient) {
-      // Check for demo session if no Supabase user
-      const demoSession = getDemoSession()
-      const hasAuth = user || (demoSession && demoSession.demo_mode)
-      
-      if (!hasAuth) {
+      if (!user) {
         console.log('[CONTRACTOR LAYOUT] No authentication found, redirecting to login')
         router.push("/login")
-      } else if (demoSession) {
-        console.log('[CONTRACTOR LAYOUT] Demo session detected:', demoSession.demo_profile_type)
       }
     }
   }, [user, loading, router, isClient])
@@ -46,11 +39,8 @@ export default function ContractorLayout({
     )
   }
 
-  // Check authentication (Supabase user OR demo session)
-  const demoSession = getDemoSession()
-  const hasAuth = user || (demoSession && demoSession.demo_mode)
-  
-  if (!hasAuth) {
+  // Check authentication (Supabase user only)
+  if (!user) {
     return (
       <div className="flex h-screen w-full items-center justify-center">
         <p>Redirecting to login...</p>

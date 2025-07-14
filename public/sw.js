@@ -68,17 +68,22 @@ self.addEventListener('activate', (event) => {
 
 // Fetch event - serve cached content with network fallback
 self.addEventListener('fetch', (event) => {
+  const { request } = event
+  const url = new URL(request.url)
+
   // AUTHENTICATION CACHE BYPASS - CRITICAL FOR LOGIN
   if (url.pathname.includes('/api/auth/') || 
       url.pathname.includes('/login') || 
       url.pathname.includes('/auth/') ||
+      url.pathname.includes('/api/send-whatsapp-otp') ||
       url.pathname === '/') {
     console.log('[SW] Bypassing cache for auth route:', url.pathname);
-    event.respondWith(fetch(request, { redirect: 'follow' }));
+    event.respondWith(fetch(request, { 
+      redirect: 'follow',
+      cache: 'no-store'  // Force fresh requests for auth
+    }));
     return;
   }
-  const { request } = event
-  const url = new URL(request.url)
 
   // Skip non-GET requests and external URLs
   if (request.method !== 'GET' || !url.origin.includes(self.location.origin)) {

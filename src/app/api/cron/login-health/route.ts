@@ -60,24 +60,19 @@ async function runLoginHealthMonitor(): Promise<HealthReport> {
     : process.env.NEXT_PUBLIC_SITE_URL || 'https://contractor.fixitforme.ai';
   
   try {
-    // Test demo authentication
-    const authResponse = await fetch(`${API_BASE}/api/auth/verify-whatsapp-otp`, {
+    // Test WhatsApp OTP sending (health check only - no actual OTP sent)
+    const healthCheckResponse = await fetch(`${API_BASE}/api/send-whatsapp-otp`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ phone: '+1234567890', token: '209741' })
+      body: JSON.stringify({ phone: '+1555HEALTHCHECK' }) // Invalid number for health check only
     });
     
-    if (!authResponse.ok) {
-      logHealth('critical', 'Demo Authentication', 'FAIL', 
-        `Demo auth endpoint returned ${authResponse.status}`);
+    // We expect this to fail with a proper error response (not server error)
+    if (healthCheckResponse.status >= 500) {
+      logHealth('critical', 'WhatsApp OTP Endpoint', 'FAIL', 
+        `WhatsApp OTP endpoint returned server error ${healthCheckResponse.status}`);
     } else {
-      const authData = await authResponse.json();
-      if (!authData.user || !authData.demo_mode) {
-        logHealth('critical', 'Demo Authentication Response', 'FAIL', 
-          'Demo auth response missing required fields');
-      } else {
-        logHealth('info', 'Demo Authentication', 'PASS', 'Demo login working correctly');
-      }
+      logHealth('info', 'WhatsApp OTP Endpoint', 'PASS', 'WhatsApp OTP endpoint responding correctly');
     }
   } catch (error) {
     logHealth('critical', 'Authentication Endpoints', 'FAIL', 

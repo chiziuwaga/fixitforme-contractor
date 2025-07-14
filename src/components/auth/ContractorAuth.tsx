@@ -122,28 +122,28 @@ export function ContractorAuth() {
               
               <div className="text-center space-y-4">
                 {/* Step 1: Join the WhatsApp Bot */}
-                <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-                  <h3 className="font-medium text-green-800 mb-2">Step 1: Join Our WhatsApp Bot</h3>
-                  <p className="text-sm text-green-700 mb-3">
+                <div className="p-4 bg-[hsl(120,28%,92%)] border border-[hsl(120,28%,80%)] rounded-lg">
+                  <h3 className="font-medium text-[hsl(120,28%,20%)] mb-2">Step 1: Join Our WhatsApp Bot</h3>
+                  <p className="text-sm text-[hsl(120,28%,25%)] mb-3">
                     First, join our WhatsApp bot to receive verification codes
                   </p>
                   <Button
                     type="button"
                     onClick={() => window.open(`https://wa.me/+14155238886?text=join%20shine-native`, '_blank')}
                     variant="outline"
-                    className="w-full border-green-300 text-green-700 hover:bg-green-100"
+                    className="w-full border-[hsl(120,28%,60%)] text-[hsl(120,28%,25%)] hover:bg-[hsl(120,28%,90%)]"
                   >
                     📱 Join WhatsApp Bot
                   </Button>
-                  <p className="text-xs text-green-600 mt-2">
+                  <p className="text-xs text-[hsl(120,28%,35%)] mt-2">
                     This will open WhatsApp with the message &ldquo;join shine-native&rdquo; ready to send
                   </p>
                 </div>
 
                 {/* Step 2: Send OTP via the Bot */}
-                <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                  <h3 className="font-medium text-blue-800 mb-2">Step 2: Get Verification Code</h3>
-                  <p className="text-sm text-blue-700 mb-3">
+                <div className="p-4 bg-[hsl(35,65%,93%)] border border-[hsl(35,65%,85%)] rounded-lg">
+                  <h3 className="font-medium text-[hsl(35,65%,25%)] mb-2">Step 2: Get Verification Code</h3>
+                  <p className="text-sm text-[hsl(35,65%,35%)] mb-3">
                     After joining the bot, click below to receive your verification code
                   </p>
                   <Button
@@ -154,7 +154,7 @@ export function ContractorAuth() {
                   >
                     {loading ? "Sending..." : "Send WhatsApp OTP"}
                   </Button>
-                  <p className="text-xs text-blue-600 mt-2">
+                  <p className="text-xs text-[hsl(35,65%,45%)] mt-2">
                     The bot will send you a 6-digit verification code
                   </p>
                 </div>
@@ -175,6 +175,11 @@ export function ContractorAuth() {
                   disabled={loading}
                   className="text-center text-lg tracking-widest"
                 />
+                <div className="text-center">
+                  <p className="text-xs text-muted-foreground/60 cursor-help" title="Power users know the secret...">
+                    🔓 Pro tip: Special codes unlock premium features
+                  </p>
+                </div>
               </div>
               <Button 
                 type="submit" 

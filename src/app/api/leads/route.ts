@@ -1,25 +1,11 @@
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
-import { DEMO_CONFIG, createDemoResponse } from '@/lib/demo-config';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
-    // DEMO MODE: Return mock leads
-    if (DEMO_CONFIG.DEMO_MODE) {
-      console.log('[DEMO] Returning mock leads data');
-      
-      await createDemoResponse(null, 800); // Simulate API delay
-      
-      return NextResponse.json({ 
-        leads: DEMO_CONFIG.DEMO_LEADS,
-        demo: true,
-        message: 'Demo leads data' 
-      });
-    }
-
     const supabase = createRouteHandlerClient({ cookies });
     const { data: { session } } = await supabase.auth.getSession();
 

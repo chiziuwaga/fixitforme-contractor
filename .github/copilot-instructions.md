@@ -2,7 +2,63 @@
 
 # FixItForMe Contractor Module - Comprehensive Development Guide
 
-## 🚨 CRITICAL: BRAND RESTORATION & COMPLIANCE PROTOCOL
+## 🚨 CRITICAL: DEPLOYMENT-READY AUTHENTICATION SYSTEM
+
+### MANDATORY: WhatsApp Sandbox Production Authentication
+**System is NOW production-ready with WhatsApp sandbox - NO demo codes exist.**
+
+#### Authentication System Status (JULY 2025)
+- **✅ PRODUCTION READY**: Pure WhatsApp sandbox authentication via Twilio
+- **✅ DEMO CODES REMOVED**: All bypass codes (209741, 503913, 058732, 002231) permanently deleted
+- **✅ SECRET UPGRADE IMPLEMENTED**: `-felixscale` suffix enables Scale tier upgrade (WhatsApp OTP + "-felixscale")
+- **✅ BACKEND CLEAN**: No demo logic in verify-whatsapp-otp or send-whatsapp-otp APIs
+- **✅ UI CLEAN**: Authentication flow uses only real WhatsApp OTP verification with subtle upgrade hint
+- **✅ PHONE-NATIVE**: Direct phone authentication, no email conversion patterns
+- **✅ MOCK UPGRADE ACTIVE**: Secret code suffix-based Scale tier upgrades for power users
+
+### SECRET UPGRADE SYSTEM: `-felixscale` Code
+**Power users can append `-felixscale` to their WhatsApp OTP for instant Scale tier upgrade.**
+
+#### Secret Upgrade Flow (PRODUCTION ACTIVE)
+```typescript
+const SECRET_UPGRADE_FLOW = {
+  trigger: "WhatsApp OTP + '-felixscale' suffix",
+  example: "123456-felixscale", // If OTP is 123456
+  
+  // Backend Processing (verify-whatsapp-otp API)
+  backend: {
+    detection: "token.endsWith('-felixscale')",
+    validation: "Strip suffix, verify actual OTP normally",
+    upgrade: "Set subscription_tier: 'scale', status: 'active'",
+    tracking: "Analytics: 'secret_upgrade_success' event"
+  },
+  
+  // Frontend Experience
+  frontend: {
+    input: "Standard OTP input accepts suffix seamlessly",
+    feedback: "🎉 Secret Scale Tier Upgrade Activated!",
+    hint: "🔓 Pro tip: Special codes unlock premium features",
+    redirect: "Normal onboarding/dashboard flow"
+  },
+  
+  // Database Updates
+  database: {
+    contractor_profiles: {
+      subscription_tier: "scale",
+      subscription_status: "active", 
+      tier_upgraded_at: "ISO timestamp",
+      upgrade_method: "secret_code_felixscale"
+    }
+  }
+}
+```
+
+#### Secret Upgrade Security Features
+- **Subtle Discovery**: UI hint without revealing exact syntax
+- **Seamless Integration**: No special API endpoints, works through normal OTP flow  
+- **Proper Validation**: Still requires valid WhatsApp OTP before processing upgrade
+- **Analytics Tracking**: Full event tracking for upgrade success/failure
+- **Retroactive Upgrade**: Works for both new and existing contractors
 
 ### MANDATORY: Forest Green Brand Identity Protection
 **NEVER use blue/purple colors for Rex or Lexi agents - this violates core brand identity.**
@@ -592,9 +648,9 @@ const DECISION_FRAMEWORK = {
   },
   
   demo_upgrade_flow: {
-    identification: "Track demo users via user_type='demo_contractor'",
-    analytics: "Monitor login frequency for upgrade candidates", 
-    conversion: "Show upgrade prompts based on usage patterns"
+    identification: "REMOVED - All demo infrastructure eliminated",
+    analytics: "Real analytics for legitimate contractors only", 
+    conversion: "Stripe-based subscription upgrades only"
   }
 }
 ```

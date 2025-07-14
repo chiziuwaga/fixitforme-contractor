@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient, createAdminClient } from '@/lib/supabaseServer';
 import { trackWhatsAppOTPEvent } from '@/lib/analytics';
-import { createDemoSession, isValidDemoCode, getDemoProfileConfig } from '@/lib/demoSession';
 
 export async function POST(request: NextRequest) {
   console.log('[VERIFY API] Request received');
@@ -11,470 +10,204 @@ export async function POST(request: NextRequest) {
     const { phone, token } = body;
     console.log('[VERIFY API] Parsed body:', { phone: phone || 'missing', token: token || 'missing' });
     
-    // IMMEDIATE DEMO BYPASS CHECK: Check for demo codes first to avoid database issues
-    const DEMO_CODES = ['209741', '503913', '058732', '002231'];
-    if (DEMO_CODES.includes(token)) {
-      console.log(`[DEMO BYPASS] Demo code ${token} detected, activating demo mode immediately`);
-      
-      // Validate demo code and get profile config
-      if (!isValidDemoCode(token)) {
-        console.error('[DEMO BYPASS] Invalid demo code:', token);
-        return NextResponse.json({ error: 'Invalid demo code' }, { status: 400 });
-      }
-      
-      const profileConfig = getDemoProfileConfig(token);
-      if (!profileConfig) {
-        console.error('[DEMO BYPASS] No profile config found for demo code:', token);
-        return NextResponse.json({ error: 'Demo profile not found' }, { status: 500 });
-      }
-      
-      // Track demo bypass (non-blocking)
-      try {
-        await trackWhatsAppOTPEvent(phone, 'verify_success', {
-          demo_mode: true,
-          demo_code: token,
-          demo_profile_type: profileConfig.type,
-          bypass_authentication: true,
-          bypass_reason: `demo_code_${token}`,
-          immediate_bypass: true,
-          timestamp: new Date().toISOString()
-        });
-        console.log('[DEMO BYPASS] Analytics tracking successful');
-      } catch (trackingError) {
-        console.warn('[DEMO BYPASS] Analytics tracking failed (non-blocking):', trackingError);
-      }
-
-      // Create a demo user object that matches normal auth response format
-      const demoUser = {
-        id: `demo-user-${token}-${phone.replace('+', '')}`,
-        phone: phone,
-        user_type: 'demo_contractor',
-        subscription_tier: profileConfig.tier,
-        created_at: new Date().toISOString(),
-        user_metadata: {
-          demo_mode: true,
-          demo_code: token,
-          demo_profile_type: profileConfig.type,
-          verification_method: 'demo_bypass'
-        }
-      };
-
-      // Return unified response format that frontend expects
-      console.log(`[DEMO BYPASS] Returning unified demo mode success response for profile: ${profileConfig.type}`);
-      return NextResponse.json({ 
-        message: `DEMO MODE: Authentication successful with bypass code ${token} (${profileConfig.type})`,
-        user: demoUser,
-        contractor_profile: null, // Demo users don't have profiles yet
-        is_new_user: true,
-        demo_mode: true,
-        demo_code: token,
-        demo_profile_type: profileConfig.type,
-        redirect_url: profileConfig.type === 'scale_tier_user' ? '/contractor/dashboard' : '/contractor/onboarding'
-      });
-    }
-
-    console.log('[VERIFY API] Proceeding with normal verification flow');
     const supabase = createClient();
     const adminSupabase = createAdminClient();
-    const startTime = Date.now();
     
-    // Track verification attempt (non-blocking)
-    try {
-      await trackWhatsAppOTPEvent(phone, 'verify_attempt', {
-        otpLength: token?.length || 0,
-        timestamp: new Date().toISOString()
-      });
-    } catch (trackingError) {
-      console.warn('[ANALYTICS] Tracking failed (non-blocking):', trackingError);
-    }
+    await trackWhatsAppOTPEvent(phone, 'verify_attempt', {
+      otpLength: token?.length || 0,
+      timestamp: new Date().toISOString()
+    });
     
     if (!phone || !token) {
-      try {
-        await trackWhatsAppOTPEvent(phone, 'verify_failure', {
-          reason: 'missing_parameters',
-          timestamp: new Date().toISOString()
-        });
-      } catch (trackingError) {
-        console.warn('[ANALYTICS] Tracking failed (non-blocking):', trackingError);
-      }
-      
       return NextResponse.json({ 
-        error: 'Phone number and verification code are required',
-        hint: 'For demo purposes, use code: 209741 with any phone number'
+        error: 'Phone number and verification code are required'
       }, { status: 400 });
     }
 
-    // Verify OTP against stored value in Supabase
+    // Check for secret upgrade suffix "-felixscale"
+    const hasUpgradeSuffix = token.endsWith('-felixscale');
+    const actualToken = hasUpgradeSuffix ? token.replace('-felixscale', '') : token;
+    
+    console.log('[VERIFY API] Secret upgrade detected:', hasUpgradeSuffix);
+
     const { data: otpData, error: otpError } = await supabase
       .from('whatsapp_otps')
       .select('*')
       .eq('phone_number', phone)
-      .eq('otp_code', token)
+      .eq('otp_code', actualToken)
       .gte('expires_at', new Date().toISOString())
       .single();
 
     if (otpError || !otpData) {
       console.error('OTP verification failed:', otpError);
       
-      // DEMO BYPASS CHECK: If OTP lookup fails, check for demo bypass codes
-      const DEMO_CODES = ['209741', '503913', '058732', '002231'];
-      if (DEMO_CODES.includes(token)) {
-        console.log(`[DEMO BYPASS] Demo code ${token} detected, bypassing OTP verification`);
-        
-        const profileConfig = getDemoProfileConfig(token);
-        
-        await trackWhatsAppOTPEvent(phone, 'verify_success', {
-          demo_mode: true,
-          demo_code: token,
-          demo_profile_type: profileConfig?.type,
-          bypass_authentication: true,
-          bypass_reason: `demo_code_${token}`,
-          timestamp: new Date().toISOString()
-        });
-
-        // Continue with normal auth flow but mark as demo mode
-        // Check if contractor already exists
-        const { data: contractor, error: contractorError } = await supabase
-          .from('contractor_profiles')
-          .select('*')
-          .eq('contact_phone', phone)
-          .single();
-
-        if (contractorError && contractorError.code !== 'PGRST116') {
-          console.error('Database error during demo bypass:', contractorError);
-          return NextResponse.json({ error: 'Database error' }, { status: 500 });
-        }
-
-        // Create unified demo user object
-        const demoUser = {
-          id: contractor?.user_id || `demo-user-${token}-${phone.replace('+', '')}`,
-          phone: phone,
-          user_type: 'demo_contractor',
-          subscription_tier: profileConfig?.tier || 'growth',
-          created_at: contractor?.created_at || new Date().toISOString(),
-          user_metadata: {
-            demo_mode: true,
-            demo_code: token,
-            demo_profile_type: profileConfig?.type,
-            verification_method: 'demo_bypass'
-          }
-        };
-
-        if (contractor) {
-          // Existing contractor - return unified format
-          return NextResponse.json({ 
-            message: `DEMO MODE: Authentication successful with bypass code ${token}`,
-            user: demoUser,
-            contractor_profile: contractor,
-            is_new_user: false,
-            demo_mode: true,
-            demo_code: token,
-            demo_profile_type: profileConfig?.type,
-            redirect_url: contractor.onboarding_completed ? '/contractor/dashboard' : '/contractor/onboarding'
-          });
-        } else {
-          // New contractor - return unified format
-          return NextResponse.json({ 
-            message: `DEMO MODE: New contractor detected, proceed to onboarding (${profileConfig?.type})`,
-            user: demoUser,
-            contractor_profile: null,
-            is_new_user: true,
-            demo_mode: true,
-            demo_code: token,
-            demo_profile_type: profileConfig?.type,
-            redirect_url: profileConfig?.type === 'scale_tier_user' ? '/contractor/dashboard' : '/contractor/onboarding'
-          });
-        }
-      }
-      
       await trackWhatsAppOTPEvent(phone, 'verify_failure', {
         reason: otpError?.code === 'PGRST116' ? 'otp_not_found' : 'invalid_or_expired',
         errorCode: otpError?.code,
         provided_token: token,
-        demo_bypass_attempted: token === '209741',
         timestamp: new Date().toISOString()
       });
       
-      return NextResponse.json(
-        { 
-          error: 'Invalid or expired verification code',
-          hint: 'For demo purposes, try code: 209741'
-        }, 
-        { status: 400 }
-      );
+      return NextResponse.json({ 
+        error: 'Invalid or expired verification code'
+      }, { status: 400 });
     }
 
-    // Delete used OTP to prevent reuse
-    await supabase
-      .from('whatsapp_otps')
-      .delete()
-      .eq('phone_number', phone);
+    console.log('[VERIFY API] OTP verification successful');
 
-    // Create or get user with WhatsApp phone number - PHONE NATIVE APPROACH
-    const isDemoMode = token === '209741';
-    const userType = isDemoMode ? 'demo_contractor' : 'contractor';
-    const subscriptionTier = isDemoMode ? 'demo' : 'growth';
-    
-    // Use Supabase's NATIVE phone authentication - no email conversion needed
-    const { data: authData, error: authError } = await adminSupabase.auth.admin.createUser({
-      phone: phone,
-      phone_confirm: true, // Mark phone as verified since we verified via WhatsApp/demo
-      user_metadata: {
-        platform: 'FixItForMe Contractor',
-        role: 'contractor',
-        verification_method: isDemoMode ? 'demo_bypass' : 'whatsapp_otp',
-        phone_number: phone,
-        user_type: userType,
-        subscription_tier: subscriptionTier
-      }
-    });
+    await supabase.from('whatsapp_otps').delete().eq('id', otpData.id);
 
-    if (authError && authError.message.includes('already been registered')) {
-      // User exists, handle existing user authentication with PHONE
-      console.log('User already exists, proceeding with existing user authentication');
-      
-      // Get contractor profile 
-      const { data: existingUser, error: userError } = await supabase
-        .from('contractor_profiles')
-        .select('*')
-        .eq('contact_phone', phone)
-        .single();
-
-      if (userError) {
-        console.error('Error getting contractor profile:', userError);
-        
-        await trackWhatsAppOTPEvent(phone, 'verify_failure', {
-          reason: 'profile_fetch_error',
-          error: userError.message,
-          timestamp: new Date().toISOString()
-        });
-        
-        return NextResponse.json(
-          { error: 'Failed to get contractor profile' }, 
-          { status: 500 }
-        );
-      }
-
-      // Track successful verification for existing user
-      await trackWhatsAppOTPEvent(phone, 'verify_success', {
-        userId: existingUser.user_id,
-        timeToVerify: Date.now() - startTime,
-        isExistingUser: true,
-        user_type: userType,
-        authMethod: 'existing_user_phone_auth',
-        timestamp: new Date().toISOString()
-      }, existingUser.user_id);
-
-      // Return phone-based authentication tokens for frontend session creation
-      return NextResponse.json({
-        message: 'WhatsApp verification successful',
-        user: { id: existingUser.user_id, phone: phone, user_type: userType },
-        contractor_profile: existingUser,
-        is_new_user: false,
-        demo_mode: isDemoMode,
-        redirect_url: existingUser.onboarding_completed ? '/contractor/dashboard' : '/contractor/onboarding'
+    let user;
+    try {
+      const { data: newUser, error: createError } = await adminSupabase.auth.admin.createUser({
+        phone,
+        phone_confirm: true,
+        user_metadata: {
+          verification_method: 'whatsapp_otp',
+          created_via: 'contractor_portal'
+        }
       });
-    }
-
-    if (authError) {
-      console.error('WhatsApp auth creation error:', authError);
-      
-      await trackWhatsAppOTPEvent(phone, 'verify_failure', {
-        reason: 'auth_creation_error',
-        error: authError.message,
-        timestamp: new Date().toISOString()
-      });
-      
-      return NextResponse.json(
-        { error: 'Failed to create user account' }, 
-        { status: 500 }
-      );
-    }
-
-    if (!authData.user) {
-      await trackWhatsAppOTPEvent(phone, 'verify_failure', {
-        reason: 'no_user_created',
-        timestamp: new Date().toISOString()
-      });
-      
-      return NextResponse.json(
-        { error: 'Verification failed' }, 
-        { status: 400 }
-      );
-    }
-
-    // Check if contractor profile exists
-    const { data: contractorProfile, error: profileError } = await supabase
-      .from('contractor_profiles')
-      .select('*')
-      .eq('user_id', authData.user.id)
-      .single();
-
-    let isNewUser = false;
-    
-    // Create contractor profile if it doesn't exist
-    if (profileError && profileError.code === 'PGRST116') {
-      isNewUser = true;
-      const { error: createError } = await supabase
-        .from('contractor_profiles')
-        .insert({
-          id: authData.user.id,
-          user_id: authData.user.id,
-          contact_phone: phone,
-          tier: subscriptionTier,
-          user_type: userType,
-          created_at: new Date().toISOString(),
-          onboarding_completed: false,
-          profile_score: 20 // Phone verified via WhatsApp = 20%
-        });
 
       if (createError) {
-        console.error('Error creating contractor profile:', createError);
-        
-        await trackWhatsAppOTPEvent(phone, 'verify_failure', {
-          reason: 'profile_creation_error',
-          error: createError.message,
-          userId: authData.user.id,
-          user_type: userType,
-          timestamp: new Date().toISOString()
-        }, authData.user.id);
-        
-        return NextResponse.json(
-          { error: 'Failed to create contractor profile' }, 
-          { status: 500 }
-        );
+        if (createError.message.includes('already exists') || createError.message.includes('already registered')) {
+          const { data: existingUsers } = await adminSupabase.auth.admin.listUsers();
+          const existingUser = existingUsers.users.find(u => u.phone === phone);
+          
+          if (existingUser) {
+            user = existingUser;
+            console.log('[VERIFY API] Found existing user:', user.id);
+          } else {
+            throw new Error('User exists but could not be retrieved');
+          }
+        } else {
+          throw createError;
+        }
+      } else {
+        user = newUser.user;
+        console.log('[VERIFY API] Created new user:', user.id);
       }
-
-      // Create initial onboarding progress record
-      await supabase
-        .from('onboarding_progress')
-        .insert({
-          contractor_id: authData.user.id,
-          step: 'whatsapp_verification',
-          completed: true,
-          completed_at: new Date().toISOString()
-        });
+    } catch (userError) {
+      console.error('[VERIFY API] User creation/retrieval failed:', userError);
+      
+      await trackWhatsAppOTPEvent(phone, 'verify_failure', {
+        reason: 'user_creation_failed',
+        errorMessage: userError instanceof Error ? userError.message : 'Unknown error',
+        timestamp: new Date().toISOString()
+      });
+      
+      return NextResponse.json({ error: 'Failed to create user account' }, { status: 500 });
     }
 
-    // Track successful verification with timing data
-    await trackWhatsAppOTPEvent(phone, 'verify_success', {
-      userId: authData.user.id,
-      timeToVerify: Date.now() - startTime,
-      isNewUser: isNewUser,
-      user_type: userType,
-      subscription_tier: subscriptionTier,
-      demo_mode: isDemoMode,
-      timestamp: new Date().toISOString()
-    }, authData.user.id);
+    const { data: contractor, error: contractorError } = await supabase
+      .from('contractor_profiles')
+      .select('*')
+      .eq('contact_phone', phone)
+      .single();
 
-    // Return phone-based authentication data for frontend session creation
+    if (contractorError && contractorError.code !== 'PGRST116') {
+      console.error('[VERIFY API] Contractor profile fetch error:', contractorError);
+    }
+
+    const isNewUser = !contractor;
+    console.log(`[VERIFY API] User status: ${isNewUser ? 'new' : 'existing'} contractor`);
+
+    // Handle secret upgrade to Scale tier
+    if (hasUpgradeSuffix) {
+      console.log('[VERIFY API] Processing secret Scale tier upgrade');
+      
+      try {
+        // Create or update contractor profile with Scale tier
+        const profileData = {
+          contact_phone: phone,
+          user_id: user.id,
+          subscription_tier: 'scale',
+          subscription_status: 'active',
+          tier_upgraded_at: new Date().toISOString(),
+          upgrade_method: 'secret_code_felixscale',
+          onboarding_completed: contractor?.onboarding_completed || false
+        };
+
+        if (contractor) {
+          // Update existing contractor to Scale tier
+          const { error: updateError } = await supabase
+            .from('contractor_profiles')
+            .update({
+              subscription_tier: 'scale',
+              subscription_status: 'active',
+              tier_upgraded_at: new Date().toISOString(),
+              upgrade_method: 'secret_code_felixscale'
+            })
+            .eq('contact_phone', phone);
+
+          if (updateError) {
+            console.error('[VERIFY API] Failed to upgrade existing contractor:', updateError);
+          } else {
+            console.log('[VERIFY API] Successfully upgraded existing contractor to Scale tier');
+          }
+        } else {
+          // Create new contractor profile with Scale tier
+          const { error: createError } = await supabase
+            .from('contractor_profiles')
+            .insert([profileData]);
+
+          if (createError) {
+            console.error('[VERIFY API] Failed to create Scale tier contractor:', createError);
+          } else {
+            console.log('[VERIFY API] Successfully created new Scale tier contractor');
+          }
+        }
+
+        await trackWhatsAppOTPEvent(phone, 'secret_upgrade_success', {
+          userId: user.id,
+          upgradeMethod: 'felixscale_suffix',
+          previousTier: contractor?.subscription_tier || 'none',
+          newTier: 'scale',
+          timestamp: new Date().toISOString()
+        });
+
+      } catch (upgradeError) {
+        console.error('[VERIFY API] Secret upgrade failed:', upgradeError);
+        
+        await trackWhatsAppOTPEvent(phone, 'secret_upgrade_failure', {
+          userId: user.id,
+          errorMessage: upgradeError instanceof Error ? upgradeError.message : 'Unknown error',
+          timestamp: new Date().toISOString()
+        });
+      }
+    }
+
+    await trackWhatsAppOTPEvent(phone, 'verify_success', {
+      userId: user.id,
+      isNewUser,
+      hasContractorProfile: !!contractor,
+      secretUpgrade: hasUpgradeSuffix,
+      timestamp: new Date().toISOString()
+    });
+
     return NextResponse.json({
-      message: 'WhatsApp verification successful',
-      user: { 
-        ...authData.user, 
-        user_type: userType,
-        subscription_tier: subscriptionTier
+      message: 'Authentication successful',
+      user: {
+        id: user.id,
+        phone: user.phone,
+        created_at: user.created_at,
+        user_metadata: user.user_metadata
       },
-      contractor_profile: contractorProfile,
+      contractor_profile: contractor,
       is_new_user: isNewUser,
-      demo_mode: isDemoMode,
-      redirect_url: isNewUser ? '/contractor/onboarding' : '/contractor/dashboard'
+      secret_upgrade: hasUpgradeSuffix,
+      upgrade_tier: hasUpgradeSuffix ? 'scale' : null,
+      redirect_url: contractor?.onboarding_completed ? '/contractor/dashboard' : '/contractor/onboarding'
     });
 
   } catch (error) {
-    console.error('[VERIFY API] System error occurred:', error);
+    console.error('[VERIFY API] Unexpected error:', error);
     
-    // Get phone and token from request if available  
-    let phoneFromRequest = 'unknown';
-    let tokenFromRequest = '';
-    try {
-      const body = await request.json();
-      phoneFromRequest = body.phone || 'unknown';
-      tokenFromRequest = body.token || '';
-    } catch (parseError) {
-      console.error('[VERIFY API] Could not parse request body for error handling:', parseError);
-    }
-    
-    console.log('[VERIFY API] Error details:', {
-      phone: phoneFromRequest,
-      token: tokenFromRequest,
-      errorType: error instanceof Error ? error.constructor.name : typeof error,
-      errorMessage: error instanceof Error ? error.message : String(error)
+    await trackWhatsAppOTPEvent('unknown', 'verify_failure', {
+      reason: 'unexpected_error',
+      errorMessage: error instanceof Error ? error.message : 'Unknown error',
+      timestamp: new Date().toISOString()
     });
     
-    // EMERGENCY DEMO BYPASS: If system error occurs with demo codes, still allow bypass
-    const DEMO_CODES = ['209741', '503913', '058732', '002231'];
-    if (DEMO_CODES.includes(tokenFromRequest)) {
-      console.log(`[EMERGENCY DEMO BYPASS] System error occurred, but demo code ${tokenFromRequest} detected - allowing bypass`);
-      
-      const profileConfig = getDemoProfileConfig(tokenFromRequest);
-      
-      try {
-        await trackWhatsAppOTPEvent(phoneFromRequest, 'verify_success', {
-          demo_mode: true,
-          demo_code: tokenFromRequest,
-          demo_profile_type: profileConfig?.type,
-          emergency_bypass: true,
-          bypass_reason: 'system_error_demo_fallback',
-          original_error: error instanceof Error ? error.message : String(error),
-          timestamp: new Date().toISOString()
-        });
-      } catch (trackingError) {
-        console.warn('[EMERGENCY DEMO] Analytics tracking failed (non-blocking):', trackingError);
-      }
-      
-      // Create unified demo user for emergency bypass
-      const emergencyDemoUser = {
-        id: `emergency-demo-${tokenFromRequest}-${phoneFromRequest.replace('+', '')}`,
-        phone: phoneFromRequest,
-        user_type: 'demo_contractor',
-        subscription_tier: profileConfig?.tier || 'growth',
-        created_at: new Date().toISOString(),
-        user_metadata: {
-          demo_mode: true,
-          demo_code: tokenFromRequest,
-          demo_profile_type: profileConfig?.type,
-          emergency_bypass: true,
-          verification_method: 'emergency_demo_bypass'
-        }
-      };
-      
-      return NextResponse.json({
-        message: `DEMO MODE: Emergency bypass activated due to system error (${profileConfig?.type})`,
-        user: emergencyDemoUser,
-        contractor_profile: null,
-        is_new_user: true,
-        demo_mode: true,
-        demo_code: tokenFromRequest,
-        demo_profile_type: profileConfig?.type,
-        emergency_bypass: true,
-        redirect_url: profileConfig?.type === 'scale_tier_user' ? '/contractor/dashboard' : '/contractor/onboarding'
-      });
-    }
-    
-    // Regular error tracking (non-blocking)
-    try {
-      await trackWhatsAppOTPEvent(phoneFromRequest, 'verify_failure', {
-        reason: 'system_error',
-        error: error instanceof Error ? error.message : String(error),
-        stack: error instanceof Error ? error.stack : undefined,
-        timestamp: new Date().toISOString()
-      });
-    } catch (trackingError) {
-      console.warn('[ERROR TRACKING] Failed to track error (non-blocking):', trackingError);
-    }
-    
-    return NextResponse.json(
-      { 
-        error: 'Server configuration error. Please contact support.',
-        hint: 'For demo purposes, try using code: 209741 with any phone number',
-        demo_available: true,
-        debug_info: process.env.NODE_ENV === 'development' ? {
-          error_type: error instanceof Error ? error.constructor.name : typeof error,
-          error_message: error instanceof Error ? error.message : String(error)
-        } : undefined
-      }, 
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

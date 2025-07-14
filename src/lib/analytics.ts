@@ -12,7 +12,7 @@ import { createClient } from '@/lib/supabase-client';
  */
 export async function trackWhatsAppOTPEvent(
   phone: string, 
-  eventType: 'send_attempt' | 'send_success' | 'send_failure' | 'verify_attempt' | 'verify_success' | 'verify_failure' | 'expired',
+  eventType: 'send_attempt' | 'send_success' | 'send_failure' | 'verify_attempt' | 'verify_success' | 'verify_failure' | 'expired' | 'secret_upgrade_success' | 'secret_upgrade_failure',
   eventData: Record<string, unknown> = {},
   contractorId?: string
 ) {
