@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { X, Download, Smartphone } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
+import { setupAuthCacheListener } from '@/lib/auth-helpers';
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[]
@@ -22,6 +23,9 @@ export function PWAInstaller() {
   const [isStandalone, setIsStandalone] = useState(false)
 
   useEffect(() => {
+    // Setup auth cache listener for login issues
+    setupAuthCacheListener();
+
     // Register service worker
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js')

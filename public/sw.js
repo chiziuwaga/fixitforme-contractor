@@ -1,7 +1,7 @@
 // FixItForMe Mobile PWA Service Worker
 // Focused on mobile contractor essential features with offline fallbacks
 
-const CACHE_NAME = 'fixitforme-mobile-v1.3.0'
+const CACHE_NAME = 'fixitforme-mobile-v1.3.1'
 const STATIC_CACHE = 'fixitforme-static-v1.3.0'
 
 // Essential files for mobile contractor experience
@@ -68,6 +68,15 @@ self.addEventListener('activate', (event) => {
 
 // Fetch event - serve cached content with network fallback
 self.addEventListener('fetch', (event) => {
+  // AUTHENTICATION CACHE BYPASS - CRITICAL FOR LOGIN
+  if (url.pathname.includes('/api/auth/') || 
+      url.pathname.includes('/login') || 
+      url.pathname.includes('/auth/') ||
+      url.pathname === '/') {
+    console.log('[SW] Bypassing cache for auth route:', url.pathname);
+    event.respondWith(fetch(request, { redirect: 'follow' }));
+    return;
+  }
   const { request } = event
   const url = new URL(request.url)
 
@@ -287,3 +296,19 @@ self.addEventListener('notificationclick', (event) => {
 })
 
 console.log('[SW] FixItForMe Mobile PWA Service Worker loaded successfully')
+
+  // Clear browser storage on auth errors to prevent login issues
+  self.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'CLEAR_AUTH_CACHE') {
+      console.log('[SW] Clearing authentication cache');
+      caches.delete(CACHE_NAME);
+      caches.delete(STATIC_CACHE);
+      
+      // Notify all clients to clear localStorage
+      self.clients.matchAll().then(clients => {
+        clients.forEach(client => {
+          client.postMessage({ type: 'CLEAR_LOCAL_STORAGE' });
+        });
+      });
+    }
+  });
