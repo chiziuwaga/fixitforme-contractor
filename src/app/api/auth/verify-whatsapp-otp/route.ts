@@ -28,16 +28,28 @@ export async function POST(request: NextRequest) {
         console.warn('[DEMO BYPASS] Analytics tracking failed (non-blocking):', trackingError);
       }
 
-      // For demo mode, we'll assume it's a new contractor needing onboarding
-      // This avoids database dependency issues in demo mode
-      console.log('[DEMO BYPASS] Returning demo mode success response');
+      // Create a demo user object that matches normal auth response format
+      const demoUser = {
+        id: `demo-user-${phone.replace('+', '')}`,
+        phone: phone,
+        user_type: 'demo_contractor',
+        subscription_tier: 'demo',
+        created_at: new Date().toISOString(),
+        user_metadata: {
+          demo_mode: true,
+          verification_method: 'demo_bypass'
+        }
+      };
+
+      // Return unified response format that frontend expects
+      console.log('[DEMO BYPASS] Returning unified demo mode success response');
       return NextResponse.json({ 
-        success: true, 
-        exists: false, 
-        needsOnboarding: true,
-        demo_mode: true,
         message: 'DEMO MODE: Authentication successful with bypass code 209741',
-        bypass_active: true
+        user: demoUser,
+        contractor_profile: null, // Demo users don't have profiles yet
+        is_new_user: true,
+        demo_mode: true,
+        redirect_url: '/contractor/onboarding'
       });
     }
 
@@ -100,7 +112,7 @@ export async function POST(request: NextRequest) {
         const { data: contractor, error: contractorError } = await supabase
           .from('contractor_profiles')
           .select('*')
-          .eq('phone_number', phone)
+          .eq('contact_phone', phone)
           .single();
 
         if (contractorError && contractorError.code !== 'PGRST116') {
@@ -108,22 +120,38 @@ export async function POST(request: NextRequest) {
           return NextResponse.json({ error: 'Database error' }, { status: 500 });
         }
 
-        if (contractor) {
-          // Existing contractor - return success
-          return NextResponse.json({ 
-            success: true, 
-            exists: true,
+        // Create unified demo user object
+        const demoUser = {
+          id: contractor?.user_id || `demo-user-${phone.replace('+', '')}`,
+          phone: phone,
+          user_type: 'demo_contractor',
+          subscription_tier: 'demo',
+          created_at: contractor?.created_at || new Date().toISOString(),
+          user_metadata: {
             demo_mode: true,
-            message: 'DEMO MODE: Authentication successful with bypass code'
+            verification_method: 'demo_bypass'
+          }
+        };
+
+        if (contractor) {
+          // Existing contractor - return unified format
+          return NextResponse.json({ 
+            message: 'DEMO MODE: Authentication successful with bypass code',
+            user: demoUser,
+            contractor_profile: contractor,
+            is_new_user: false,
+            demo_mode: true,
+            redirect_url: contractor.onboarding_completed ? '/contractor/dashboard' : '/contractor/onboarding'
           });
         } else {
-          // New contractor - needs onboarding
+          // New contractor - return unified format
           return NextResponse.json({ 
-            success: true, 
-            exists: false, 
-            needsOnboarding: true,
+            message: 'DEMO MODE: New contractor detected, proceed to onboarding',
+            user: demoUser,
+            contractor_profile: null,
+            is_new_user: true,
             demo_mode: true,
-            message: 'DEMO MODE: New contractor detected, proceed to onboarding'
+            redirect_url: '/contractor/onboarding'
           });
         }
       }
@@ -359,14 +387,28 @@ export async function POST(request: NextRequest) {
         console.warn('[EMERGENCY DEMO] Analytics tracking failed (non-blocking):', trackingError);
       }
       
+      // Create unified demo user for emergency bypass
+      const emergencyDemoUser = {
+        id: `emergency-demo-${phoneFromRequest.replace('+', '')}`,
+        phone: phoneFromRequest,
+        user_type: 'demo_contractor',
+        subscription_tier: 'demo',
+        created_at: new Date().toISOString(),
+        user_metadata: {
+          demo_mode: true,
+          emergency_bypass: true,
+          verification_method: 'emergency_demo_bypass'
+        }
+      };
+      
       return NextResponse.json({
-        success: true,
-        exists: false,
-        needsOnboarding: true,
+        message: 'DEMO MODE: Emergency bypass activated due to system error',
+        user: emergencyDemoUser,
+        contractor_profile: null,
+        is_new_user: true,
         demo_mode: true,
         emergency_bypass: true,
-        message: 'DEMO MODE: Emergency bypass activated due to system error',
-        instructions: 'Demo authentication successful with code 209741'
+        redirect_url: '/contractor/onboarding'
       });
     }
     
