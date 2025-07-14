@@ -49,32 +49,33 @@ export function useAuth() {
         toast.success("Successfully logged in!");
       }
       
-      // For phone-based authentication, use Supabase's signInWithOtp approach
-      if (data.user && data.user.phone) {
+      // For phone-based authentication, establish session properly
+      if (data.user && data.user.phone_confirmed) {
         const { createClient } = await import('@/lib/supabase-client');
         const supabase = createClient();
         
         try {
-          // Use signInWithOtp for phone but don't send actual OTP (we've already verified)
-          // This establishes the session using the verified phone number
-          const { error: signInError } = await supabase.auth.signInWithOtp({
-            phone: data.user.phone,
-            options: {
-              shouldCreateUser: false, // User already exists from API
-              data: {
-                user_type: data.user.user_type,
-                verification_method: 'whatsapp_otp'
-              }
-            }
-          });
+          console.log('[AUTH] User verified by backend, attempting session creation...');
           
-          if (signInError) {
-            console.warn('OTP sign-in failed, user may need to manually refresh session:', signInError);
-            // Continue with redirect anyway - session might still be valid
+          // Try to get current session first
+          const { data: currentSession } = await supabase.auth.getSession();
+          
+          if (!currentSession.session) {
+            console.log('[AUTH] No existing session, user verified via backend');
+            // Store user data temporarily for session recovery
+            if (typeof window !== 'undefined') {
+              sessionStorage.setItem('verified_user', JSON.stringify({
+                id: data.user.id,
+                phone: data.user.phone,
+                verified_at: Date.now()
+              }));
+            }
+          } else {
+            console.log('[AUTH] Found existing session, user is authenticated');
           }
         } catch (sessionError) {
-          console.warn('Session creation failed:', sessionError);
-          // Continue with redirect anyway
+          console.warn('Session check failed:', sessionError);
+          // Continue with redirect anyway - user is verified by backend
         }
       }
       

@@ -5,15 +5,13 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { Progress } from "@/components/ui/progress"
-import { toast } from "sonner"
 import { useSubscription } from "@/hooks/useSubscription"
+import MockStripeUpgradeModal from "./MockStripeUpgradeModal"
 import { 
   CreditCard, 
   Crown, 
   Zap, 
   CheckCircle, 
-  AlertCircle, 
   Loader2,
   TrendingUp,
   Users,
@@ -27,24 +25,18 @@ export default function SubscriptionManager() {
     subscription, 
     loading, 
     fetchingSubscription,
-    handleUpgrade, 
-    handleManageSubscription,
-    TIER_CONFIGURATIONS
+    handleManageSubscription
   } = useSubscription()
   
-  const [isUpgrading, setIsUpgrading] = useState(false)
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false)
 
   const handleUpgradeClick = async () => {
-    setIsUpgrading(true)
-    try {
-      await handleUpgrade()
-      toast.success("Redirecting to payment...")
-    } catch (error) {
-      console.error('Upgrade error:', error)
-      toast.error("Failed to upgrade subscription")
-    } finally {
-      setIsUpgrading(false)
-    }
+    setShowUpgradeModal(true)
+  }
+
+  const handleUpgradeSuccess = () => {
+    // Refresh subscription data after successful upgrade
+    window.location.reload()
   }
 
   if (loading || fetchingSubscription) {
@@ -62,9 +54,10 @@ export default function SubscriptionManager() {
   const isScaleTier = subscription?.plan === "scale"
 
   return (
-    <div className={cn("space-y-6", SPACING.component.lg)}>
-      {/* Current Plan */}
-      <Card>
+    <>
+      <div className={cn("space-y-6", SPACING.component.lg)}>
+        {/* Current Plan */}
+        <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
@@ -223,22 +216,23 @@ export default function SubscriptionManager() {
               </div>
             </div>
 
-            <div className="mt-6 flex justify-center">
+            <div className="mt-6 flex flex-col gap-3 items-center">
               <Button 
                 onClick={handleUpgradeClick} 
-                disabled={isUpgrading}
+                disabled={false}
                 size="lg"
                 className="bg-yellow-600 hover:bg-yellow-700"
               >
-                {isUpgrading ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <Crown className="h-4 w-4" />
-                )}
+                <Crown className="h-4 w-4" />
                 <span className="ml-2">
-                  {isUpgrading ? "Upgrading..." : "Upgrade to Scale"}
+                  Upgrade to Scale
                 </span>
               </Button>
+              
+              {/* Secret upgrade hint */}
+              <p className="text-xs text-muted-foreground text-center">
+                🔓 Pro tip: Special codes unlock premium features
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -356,5 +350,13 @@ export default function SubscriptionManager() {
         </CardContent>
       </Card>
     </div>
+
+    {/* Mock Stripe Upgrade Modal */}
+    <MockStripeUpgradeModal
+      isOpen={showUpgradeModal}
+      onClose={() => setShowUpgradeModal(false)}
+      onUpgradeSuccess={handleUpgradeSuccess}
+    />
+  </>
   )
 }

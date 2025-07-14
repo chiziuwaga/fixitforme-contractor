@@ -75,11 +75,15 @@ self.addEventListener('fetch', (event) => {
   if (url.pathname.includes('/api/auth/') || 
       url.pathname.includes('/login') || 
       url.pathname.includes('/auth/') ||
-      url.pathname.includes('/api/send-whatsapp-otp')) {
-    console.log('[SW] Bypassing cache for auth route:', url.pathname);
+      url.pathname.includes('/api/send-whatsapp-otp') ||
+      url.pathname.includes('/api/verify-whatsapp-otp') ||
+      url.pathname.includes('/contractor/dashboard') ||
+      url.pathname.includes('/contractor/onboarding')) {
+    console.log('[SW] Bypassing cache for auth/contractor route:', url.pathname);
     event.respondWith(fetch(request, { 
       redirect: 'follow',
-      cache: 'no-store'  // Force fresh requests for auth
+      cache: 'no-store',  // Force fresh requests for auth
+      credentials: 'include'  // Include cookies for session
     }));
     return;
   }

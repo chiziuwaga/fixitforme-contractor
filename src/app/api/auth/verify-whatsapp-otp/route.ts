@@ -24,11 +24,8 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    // Check for secret upgrade suffix "-felixscale"
-    const hasUpgradeSuffix = token.endsWith('-felixscale');
-    const actualToken = hasUpgradeSuffix ? token.replace('-felixscale', '') : token;
-    
-    console.log('[VERIFY API] Secret upgrade detected:', hasUpgradeSuffix);
+    // Remove secret upgrade logic - this belongs in subscription flow only
+    const actualToken = token;
 
     const { data: otpData, error: otpError } = await supabase
       .from('whatsapp_otps')
@@ -111,91 +108,26 @@ export async function POST(request: NextRequest) {
     const isNewUser = !contractor;
     console.log(`[VERIFY API] User status: ${isNewUser ? 'new' : 'existing'} contractor`);
 
-    // Handle secret upgrade to Scale tier
-    if (hasUpgradeSuffix) {
-      console.log('[VERIFY API] Processing secret Scale tier upgrade');
-      
-      try {
-        // Create or update contractor profile with Scale tier
-        const profileData = {
-          contact_phone: phone,
-          user_id: user.id,
-          subscription_tier: 'scale',
-          subscription_status: 'active',
-          tier_upgraded_at: new Date().toISOString(),
-          upgrade_method: 'secret_code_felixscale',
-          onboarding_completed: contractor?.onboarding_completed || false
-        };
-
-        if (contractor) {
-          // Update existing contractor to Scale tier
-          const { error: updateError } = await supabase
-            .from('contractor_profiles')
-            .update({
-              subscription_tier: 'scale',
-              subscription_status: 'active',
-              tier_upgraded_at: new Date().toISOString(),
-              upgrade_method: 'secret_code_felixscale'
-            })
-            .eq('contact_phone', phone);
-
-          if (updateError) {
-            console.error('[VERIFY API] Failed to upgrade existing contractor:', updateError);
-          } else {
-            console.log('[VERIFY API] Successfully upgraded existing contractor to Scale tier');
-          }
-        } else {
-          // Create new contractor profile with Scale tier
-          const { error: createError } = await supabase
-            .from('contractor_profiles')
-            .insert([profileData]);
-
-          if (createError) {
-            console.error('[VERIFY API] Failed to create Scale tier contractor:', createError);
-          } else {
-            console.log('[VERIFY API] Successfully created new Scale tier contractor');
-          }
-        }
-
-        await trackWhatsAppOTPEvent(phone, 'secret_upgrade_success', {
-          userId: user.id,
-          upgradeMethod: 'felixscale_suffix',
-          previousTier: contractor?.subscription_tier || 'none',
-          newTier: 'scale',
-          timestamp: new Date().toISOString()
-        });
-
-      } catch (upgradeError) {
-        console.error('[VERIFY API] Secret upgrade failed:', upgradeError);
-        
-        await trackWhatsAppOTPEvent(phone, 'secret_upgrade_failure', {
-          userId: user.id,
-          errorMessage: upgradeError instanceof Error ? upgradeError.message : 'Unknown error',
-          timestamp: new Date().toISOString()
-        });
-      }
-    }
-
     await trackWhatsAppOTPEvent(phone, 'verify_success', {
       userId: user.id,
       isNewUser,
       hasContractorProfile: !!contractor,
-      secretUpgrade: hasUpgradeSuffix,
       timestamp: new Date().toISOString()
     });
 
+    // For phone-based authentication, we'll let the frontend handle session
+    // using the user ID and phone verification status
     return NextResponse.json({
       message: 'Authentication successful',
       user: {
         id: user.id,
         phone: user.phone,
         created_at: user.created_at,
-        user_metadata: user.user_metadata
+        user_metadata: user.user_metadata,
+        phone_confirmed: true // Critical: tells frontend phone is verified
       },
       contractor_profile: contractor,
       is_new_user: isNewUser,
-      secret_upgrade: hasUpgradeSuffix,
-      upgrade_tier: hasUpgradeSuffix ? 'scale' : null,
       redirect_url: contractor?.onboarding_completed ? '/contractor/dashboard' : '/contractor/onboarding'
     });
 
