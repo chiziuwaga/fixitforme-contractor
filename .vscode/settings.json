@@ -6,18 +6,6 @@
   "[typescript]": {
     "editor.defaultFormatter": "denoland.vscode-deno"
   },
-  "chat.agent": {
-    "default": {
-      "capabilities": [
-        "figma.devMode"
-      ],
-      "description": "An agent that can assist with Figma Dev Mode tasks.",
-      "mcpServer": "Figma Dev Mode MCP",
-      "name": "Figma Dev Mode Agent"
-    }
-  },
-  "chat.agent.enabled": true,
-  "chat.mcp.discovery.enabled": true,
   "deno.enablePaths": [
     "supabase/functions"
   ],

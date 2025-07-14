@@ -10,6 +10,26 @@ This guide shows you exactly how to use FixItForMe to find leads, create bids, a
 
 ---
 
+## 🎯 Demo Access Codes (For Sales Presentations)
+
+### Choose Your Contractor Experience:
+
+| Demo Code | Profile Type | Company | Tier | Experience | Revenue | Best For |
+|-----------|--------------|---------|------|------------|---------|----------|
+| **209741** | Basic Contractor | ABC Plumbing | Growth | 3 years | $8.5K | New user onboarding |
+| **503913** | Established Business | Smith Construction | Growth | 8 years | $45K | Growth features demo |
+| **058732** | Scale Tier User | Premier Home Solutions | Scale | 12 years | $125K | Premium showcase |
+| **002231** | Multi-Trade Pro | ProTrade Services | Growth | 6 years | $75K | Multi-specialty demo |
+
+### How to Use Demo Codes:
+1. Navigate to FixItForMe contractor login
+2. Enter any US phone number (format: 555-123-4567)  
+3. Click "Send WhatsApp Code"
+4. **Enter one of the demo codes above** instead of waiting for SMS
+5. Experience flows to the appropriate contractor dashboard
+
+---
+
 ## 📱 Demo: Your First 5 Minutes on the Platform
 
 **Follow these steps to see how FixItForMe works:**
@@ -20,6 +40,14 @@ This guide shows you exactly how to use FixItForMe to find leads, create bids, a
 2. **Enter your business phone number** (example: +1-555-123-4567)
 3. **Get SMS code** → Check your phone for the 6-digit verification code
 4. **Enter code** → You're automatically logged in and your contractor profile is created
+
+**Demo Mode: Use Secret Demo Codes**
+
+For instant access without SMS, use these demo codes:
+- **209741** - Experience the full onboarding process as a new contractor
+- **503913** - See established business features with minimal setup  
+- **058732** - Jump directly to Scale tier premium features
+- **002231** - Explore multi-trade contractor coordination
 
 **Alternative: WhatsApp Activation**
 

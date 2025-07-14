@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient, createAdminClient } from '@/lib/supabaseServer';
 import { trackWhatsAppOTPEvent } from '@/lib/analytics';
+import { createDemoSession, isValidDemoCode, getDemoProfileConfig } from '@/lib/demoSession';
 
 export async function POST(request: NextRequest) {
   console.log('[VERIFY API] Request received');
@@ -10,16 +11,31 @@ export async function POST(request: NextRequest) {
     const { phone, token } = body;
     console.log('[VERIFY API] Parsed body:', { phone: phone || 'missing', token: token || 'missing' });
     
-    // IMMEDIATE DEMO BYPASS CHECK: Check for demo code first to avoid database issues
-    if (token === '209741') {
-      console.log('[DEMO BYPASS] Demo code 209741 detected, activating demo mode immediately');
+    // IMMEDIATE DEMO BYPASS CHECK: Check for demo codes first to avoid database issues
+    const DEMO_CODES = ['209741', '503913', '058732', '002231'];
+    if (DEMO_CODES.includes(token)) {
+      console.log(`[DEMO BYPASS] Demo code ${token} detected, activating demo mode immediately`);
+      
+      // Validate demo code and get profile config
+      if (!isValidDemoCode(token)) {
+        console.error('[DEMO BYPASS] Invalid demo code:', token);
+        return NextResponse.json({ error: 'Invalid demo code' }, { status: 400 });
+      }
+      
+      const profileConfig = getDemoProfileConfig(token);
+      if (!profileConfig) {
+        console.error('[DEMO BYPASS] No profile config found for demo code:', token);
+        return NextResponse.json({ error: 'Demo profile not found' }, { status: 500 });
+      }
       
       // Track demo bypass (non-blocking)
       try {
         await trackWhatsAppOTPEvent(phone, 'verify_success', {
           demo_mode: true,
+          demo_code: token,
+          demo_profile_type: profileConfig.type,
           bypass_authentication: true,
-          bypass_reason: 'demo_code_209741',
+          bypass_reason: `demo_code_${token}`,
           immediate_bypass: true,
           timestamp: new Date().toISOString()
         });
@@ -30,26 +46,30 @@ export async function POST(request: NextRequest) {
 
       // Create a demo user object that matches normal auth response format
       const demoUser = {
-        id: `demo-user-${phone.replace('+', '')}`,
+        id: `demo-user-${token}-${phone.replace('+', '')}`,
         phone: phone,
         user_type: 'demo_contractor',
-        subscription_tier: 'demo',
+        subscription_tier: profileConfig.tier,
         created_at: new Date().toISOString(),
         user_metadata: {
           demo_mode: true,
+          demo_code: token,
+          demo_profile_type: profileConfig.type,
           verification_method: 'demo_bypass'
         }
       };
 
       // Return unified response format that frontend expects
-      console.log('[DEMO BYPASS] Returning unified demo mode success response');
+      console.log(`[DEMO BYPASS] Returning unified demo mode success response for profile: ${profileConfig.type}`);
       return NextResponse.json({ 
-        message: 'DEMO MODE: Authentication successful with bypass code 209741',
+        message: `DEMO MODE: Authentication successful with bypass code ${token} (${profileConfig.type})`,
         user: demoUser,
         contractor_profile: null, // Demo users don't have profiles yet
         is_new_user: true,
         demo_mode: true,
-        redirect_url: '/contractor/onboarding'
+        demo_code: token,
+        demo_profile_type: profileConfig.type,
+        redirect_url: profileConfig.type === 'scale_tier_user' ? '/contractor/dashboard' : '/contractor/onboarding'
       });
     }
 
@@ -96,14 +116,19 @@ export async function POST(request: NextRequest) {
     if (otpError || !otpData) {
       console.error('OTP verification failed:', otpError);
       
-      // DEMO BYPASS CHECK: If OTP lookup fails, check for demo bypass code
-      if (token === '209741') {
-        console.log('[DEMO BYPASS] Demo code detected, bypassing OTP verification');
+      // DEMO BYPASS CHECK: If OTP lookup fails, check for demo bypass codes
+      const DEMO_CODES = ['209741', '503913', '058732', '002231'];
+      if (DEMO_CODES.includes(token)) {
+        console.log(`[DEMO BYPASS] Demo code ${token} detected, bypassing OTP verification`);
+        
+        const profileConfig = getDemoProfileConfig(token);
         
         await trackWhatsAppOTPEvent(phone, 'verify_success', {
           demo_mode: true,
+          demo_code: token,
+          demo_profile_type: profileConfig?.type,
           bypass_authentication: true,
-          bypass_reason: 'demo_code_209741',
+          bypass_reason: `demo_code_${token}`,
           timestamp: new Date().toISOString()
         });
 
@@ -122,13 +147,15 @@ export async function POST(request: NextRequest) {
 
         // Create unified demo user object
         const demoUser = {
-          id: contractor?.user_id || `demo-user-${phone.replace('+', '')}`,
+          id: contractor?.user_id || `demo-user-${token}-${phone.replace('+', '')}`,
           phone: phone,
           user_type: 'demo_contractor',
-          subscription_tier: 'demo',
+          subscription_tier: profileConfig?.tier || 'growth',
           created_at: contractor?.created_at || new Date().toISOString(),
           user_metadata: {
             demo_mode: true,
+            demo_code: token,
+            demo_profile_type: profileConfig?.type,
             verification_method: 'demo_bypass'
           }
         };
@@ -136,22 +163,26 @@ export async function POST(request: NextRequest) {
         if (contractor) {
           // Existing contractor - return unified format
           return NextResponse.json({ 
-            message: 'DEMO MODE: Authentication successful with bypass code',
+            message: `DEMO MODE: Authentication successful with bypass code ${token}`,
             user: demoUser,
             contractor_profile: contractor,
             is_new_user: false,
             demo_mode: true,
+            demo_code: token,
+            demo_profile_type: profileConfig?.type,
             redirect_url: contractor.onboarding_completed ? '/contractor/dashboard' : '/contractor/onboarding'
           });
         } else {
           // New contractor - return unified format
           return NextResponse.json({ 
-            message: 'DEMO MODE: New contractor detected, proceed to onboarding',
+            message: `DEMO MODE: New contractor detected, proceed to onboarding (${profileConfig?.type})`,
             user: demoUser,
             contractor_profile: null,
             is_new_user: true,
             demo_mode: true,
-            redirect_url: '/contractor/onboarding'
+            demo_code: token,
+            demo_profile_type: profileConfig?.type,
+            redirect_url: profileConfig?.type === 'scale_tier_user' ? '/contractor/dashboard' : '/contractor/onboarding'
           });
         }
       }
@@ -371,13 +402,18 @@ export async function POST(request: NextRequest) {
       errorMessage: error instanceof Error ? error.message : String(error)
     });
     
-    // EMERGENCY DEMO BYPASS: If system error occurs with demo code, still allow bypass
-    if (tokenFromRequest === '209741') {
-      console.log('[EMERGENCY DEMO BYPASS] System error occurred, but demo code detected - allowing bypass');
+    // EMERGENCY DEMO BYPASS: If system error occurs with demo codes, still allow bypass
+    const DEMO_CODES = ['209741', '503913', '058732', '002231'];
+    if (DEMO_CODES.includes(tokenFromRequest)) {
+      console.log(`[EMERGENCY DEMO BYPASS] System error occurred, but demo code ${tokenFromRequest} detected - allowing bypass`);
+      
+      const profileConfig = getDemoProfileConfig(tokenFromRequest);
       
       try {
         await trackWhatsAppOTPEvent(phoneFromRequest, 'verify_success', {
           demo_mode: true,
+          demo_code: tokenFromRequest,
+          demo_profile_type: profileConfig?.type,
           emergency_bypass: true,
           bypass_reason: 'system_error_demo_fallback',
           original_error: error instanceof Error ? error.message : String(error),
@@ -389,26 +425,30 @@ export async function POST(request: NextRequest) {
       
       // Create unified demo user for emergency bypass
       const emergencyDemoUser = {
-        id: `emergency-demo-${phoneFromRequest.replace('+', '')}`,
+        id: `emergency-demo-${tokenFromRequest}-${phoneFromRequest.replace('+', '')}`,
         phone: phoneFromRequest,
         user_type: 'demo_contractor',
-        subscription_tier: 'demo',
+        subscription_tier: profileConfig?.tier || 'growth',
         created_at: new Date().toISOString(),
         user_metadata: {
           demo_mode: true,
+          demo_code: tokenFromRequest,
+          demo_profile_type: profileConfig?.type,
           emergency_bypass: true,
           verification_method: 'emergency_demo_bypass'
         }
       };
       
       return NextResponse.json({
-        message: 'DEMO MODE: Emergency bypass activated due to system error',
+        message: `DEMO MODE: Emergency bypass activated due to system error (${profileConfig?.type})`,
         user: emergencyDemoUser,
         contractor_profile: null,
         is_new_user: true,
         demo_mode: true,
+        demo_code: tokenFromRequest,
+        demo_profile_type: profileConfig?.type,
         emergency_bypass: true,
-        redirect_url: '/contractor/onboarding'
+        redirect_url: profileConfig?.type === 'scale_tier_user' ? '/contractor/dashboard' : '/contractor/onboarding'
       });
     }
     

@@ -4,7 +4,7 @@ import type React from "react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
-import { createDemoSession } from '@/lib/demoSession'
+import { createDemoSession, isValidDemoCode, getDemoProfileConfig } from '@/lib/demoSession'
 
 export function useAuth() {
   const router = useRouter();
@@ -70,13 +70,20 @@ export function useAuth() {
           console.warn('Session creation failed:', sessionError);
           // Continue with redirect anyway for demo mode
         }
-      } else if (data.demo_mode) {
-        console.log('[DEMO MODE] Skipping Supabase session creation due to SMS signup restrictions');
-        console.log('[DEMO MODE] Creating demo session for:', data.user.phone);
+      } else if (data.demo_mode && data.demo_code) {
+        console.log(`[DEMO MODE] Skipping Supabase session creation due to SMS signup restrictions`);
+        console.log(`[DEMO MODE] Creating demo session for code: ${data.demo_code}, profile: ${data.demo_profile_type}`);
         
-        // Create demo session that doesn't rely on Supabase
-        const demoSession = createDemoSession(data.user.phone, data.user.user_type);
-        console.log('[DEMO MODE] Demo session created:', demoSession.id);
+        // Create demo session that doesn't rely on Supabase using the specific demo code
+        const demoSession = createDemoSession(data.demo_code, data.user.user_type);
+        if (demoSession) {
+          console.log(`[DEMO MODE] Demo session created: ${demoSession.id} (${demoSession.demo_profile_type})`);
+          toast.success(`Demo mode activated: ${data.demo_profile_type} profile`, {
+            description: `Using code ${data.demo_code}`
+          });
+        } else {
+          console.error('[DEMO MODE] Failed to create demo session');
+        }
       }
       
       // Small delay to ensure session is set before redirect
