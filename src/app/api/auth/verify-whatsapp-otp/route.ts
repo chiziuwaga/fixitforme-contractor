@@ -36,14 +36,63 @@ export async function POST(request: NextRequest) {
     if (otpError || !otpData) {
       console.error('OTP verification failed:', otpError);
       
+      // DEMO BYPASS CHECK: If OTP lookup fails, check for demo bypass code
+      if (token === '209741') {
+        console.log('[DEMO BYPASS] Demo code detected, bypassing OTP verification');
+        
+        await trackWhatsAppOTPEvent(phone, 'verify_success', {
+          demo_mode: true,
+          bypass_authentication: true,
+          bypass_reason: 'demo_code_209741',
+          timestamp: new Date().toISOString()
+        });
+
+        // Continue with normal auth flow but mark as demo mode
+        // Check if contractor already exists
+        const { data: contractor, error: contractorError } = await supabase
+          .from('contractor_profiles')
+          .select('*')
+          .eq('phone_number', phone)
+          .single();
+
+        if (contractorError && contractorError.code !== 'PGRST116') {
+          console.error('Database error during demo bypass:', contractorError);
+          return NextResponse.json({ error: 'Database error' }, { status: 500 });
+        }
+
+        if (contractor) {
+          // Existing contractor - return success
+          return NextResponse.json({ 
+            success: true, 
+            exists: true,
+            demo_mode: true,
+            message: 'DEMO MODE: Authentication successful with bypass code'
+          });
+        } else {
+          // New contractor - needs onboarding
+          return NextResponse.json({ 
+            success: true, 
+            exists: false, 
+            needsOnboarding: true,
+            demo_mode: true,
+            message: 'DEMO MODE: New contractor detected, proceed to onboarding'
+          });
+        }
+      }
+      
       await trackWhatsAppOTPEvent(phone, 'verify_failure', {
         reason: otpError?.code === 'PGRST116' ? 'otp_not_found' : 'invalid_or_expired',
         errorCode: otpError?.code,
+        provided_token: token,
+        demo_bypass_attempted: token === '209741',
         timestamp: new Date().toISOString()
       });
       
       return NextResponse.json(
-        { error: 'Invalid or expired verification code' }, 
+        { 
+          error: 'Invalid or expired verification code',
+          hint: 'For demo purposes, try code: 209741'
+        }, 
         { status: 400 }
       );
     }
