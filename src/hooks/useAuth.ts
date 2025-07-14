@@ -4,6 +4,7 @@ import type React from "react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
+import { createDemoSession } from '@/lib/demoSession'
 
 export function useAuth() {
   const router = useRouter();
@@ -42,7 +43,8 @@ export function useAuth() {
       toast.success("Successfully logged in!");
       
       // For phone-based authentication, use Supabase's signInWithOtp approach
-      if (data.user && data.user.phone) {
+      // BUT skip this for demo mode to avoid SMS signup restrictions
+      if (data.user && data.user.phone && !data.demo_mode) {
         const { createClient } = await import('@/lib/supabase-client');
         const supabase = createClient();
         
@@ -68,6 +70,13 @@ export function useAuth() {
           console.warn('Session creation failed:', sessionError);
           // Continue with redirect anyway for demo mode
         }
+      } else if (data.demo_mode) {
+        console.log('[DEMO MODE] Skipping Supabase session creation due to SMS signup restrictions');
+        console.log('[DEMO MODE] Creating demo session for:', data.user.phone);
+        
+        // Create demo session that doesn't rely on Supabase
+        const demoSession = createDemoSession(data.user.phone, data.user.user_type);
+        console.log('[DEMO MODE] Demo session created:', demoSession.id);
       }
       
       // Small delay to ensure session is set before redirect
