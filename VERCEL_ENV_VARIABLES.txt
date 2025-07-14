@@ -1,0 +1,34 @@
+# VERCEL PRODUCTION ENVIRONMENT VARIABLES
+# Copy these to your Vercel dashboard: https://vercel.com/chiziuwagas-projects/fixitforme_contractor/settings/environment-variables
+
+# Supabase Configuration (Production)
+NEXT_PUBLIC_SUPABASE_URL=https://ehkklxbemxhofmjgxxgj.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=[GET_FROM_SUPABASE_DASHBOARD]
+SUPABASE_SERVICE_ROLE_KEY=[GET_FROM_SUPABASE_DASHBOARD]
+
+# Database Configuration (Production - Transaction Pooler for Serverless)
+POSTGRES_URL=postgres://postgres.ehkklxbemxhofmjgxxgj:[PASSWORD]@aws-0-us-west-1.pooler.supabase.com:6543/postgres
+POSTGRES_PRISMA_URL=postgres://postgres.ehkklxbemxhofmjgxxgj:[PASSWORD]@aws-0-us-west-1.pooler.supabase.com:6543/postgres
+POSTGRES_URL_NON_POOLING=postgres://postgres.ehkklxbemxhofmjgxxgj:[PASSWORD]@db.ehkklxbemxhofmjgxxgj.supabase.co:5432/postgres
+
+# App Configuration (Production)
+NEXT_PUBLIC_APP_URL=https://contractor.fixitforme.ai
+NEXT_PUBLIC_SITE_URL=https://contractor.fixitforme.ai
+
+# WhatsApp OTP Configuration (Twilio)
+TWILIO_ACCOUNT_SID=[GET_FROM_TWILIO]
+TWILIO_AUTH_TOKEN=[GET_FROM_TWILIO]
+TWILIO_WHATSAPP_FROM=whatsapp:+14155238886
+
+# AI Configuration
+DEEPSEEK_API_KEY=[GET_FROM_DEEPSEEK]
+AGENTQL_API_KEY=[GET_FROM_AGENTQL]
+
+# CRON Job Secret
+CRON_SECRET_KEY=[GENERATE_RANDOM_SECRET]
+
+# IMPORTANT NOTES:
+# 1. Use Transaction Pooler (port 6543) for Vercel serverless functions
+# 2. All URLs should use the correct project ID: ehkklxbemxhofmjgxxgj
+# 3. Production site URL should be your custom domain: contractor.fixitforme.ai
+# 4. Replace [PASSWORD] with your actual Supabase database password: Chioma2010@
