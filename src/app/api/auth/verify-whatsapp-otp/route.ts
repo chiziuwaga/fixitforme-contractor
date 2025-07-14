@@ -151,20 +151,30 @@ export async function POST(request: NextRequest) {
       .delete()
       .eq('phone_number', phone);
 
-    // Create or get user with WhatsApp phone number
-    // Use Supabase Auth admin API to create a verified user with phone
+    // Create or get user with WhatsApp phone number - PHONE NATIVE APPROACH
+    const isDemoMode = token === '209741';
+    const userType = isDemoMode ? 'demo_contractor' : 'contractor';
+    const subscriptionTier = isDemoMode ? 'demo' : 'growth';
+    
+    // Use Supabase's NATIVE phone authentication - no email conversion needed
     const { data: authData, error: authError } = await adminSupabase.auth.admin.createUser({
       phone: phone,
-      phone_confirm: true,
+      phone_confirm: true, // Mark phone as verified since we verified via WhatsApp/demo
       user_metadata: {
         platform: 'FixItForMe Contractor',
         role: 'contractor',
-        verification_method: 'whatsapp_otp'
+        verification_method: isDemoMode ? 'demo_bypass' : 'whatsapp_otp',
+        phone_number: phone,
+        user_type: userType,
+        subscription_tier: subscriptionTier
       }
     });
 
     if (authError && authError.message.includes('already been registered')) {
-      // User exists, get existing user by phone from our profile table
+      // User exists, handle existing user authentication with PHONE
+      console.log('User already exists, proceeding with existing user authentication');
+      
+      // Get contractor profile 
       const { data: existingUser, error: userError } = await supabase
         .from('contractor_profiles')
         .select('*')
@@ -191,14 +201,18 @@ export async function POST(request: NextRequest) {
         userId: existingUser.user_id,
         timeToVerify: Date.now() - startTime,
         isExistingUser: true,
+        user_type: userType,
+        authMethod: 'existing_user_phone_auth',
         timestamp: new Date().toISOString()
       }, existingUser.user_id);
 
+      // Return phone-based authentication tokens for frontend session creation
       return NextResponse.json({
         message: 'WhatsApp verification successful',
-        user: { id: existingUser.user_id, phone: phone },
+        user: { id: existingUser.user_id, phone: phone, user_type: userType },
         contractor_profile: existingUser,
         is_new_user: false,
+        demo_mode: isDemoMode,
         redirect_url: existingUser.onboarding_completed ? '/contractor/dashboard' : '/contractor/onboarding'
       });
     }
@@ -248,7 +262,8 @@ export async function POST(request: NextRequest) {
           id: authData.user.id,
           user_id: authData.user.id,
           contact_phone: phone,
-          tier: 'growth',
+          tier: subscriptionTier,
+          user_type: userType,
           created_at: new Date().toISOString(),
           onboarding_completed: false,
           profile_score: 20 // Phone verified via WhatsApp = 20%
@@ -261,6 +276,7 @@ export async function POST(request: NextRequest) {
           reason: 'profile_creation_error',
           error: createError.message,
           userId: authData.user.id,
+          user_type: userType,
           timestamp: new Date().toISOString()
         }, authData.user.id);
         
@@ -286,14 +302,23 @@ export async function POST(request: NextRequest) {
       userId: authData.user.id,
       timeToVerify: Date.now() - startTime,
       isNewUser: isNewUser,
+      user_type: userType,
+      subscription_tier: subscriptionTier,
+      demo_mode: isDemoMode,
       timestamp: new Date().toISOString()
     }, authData.user.id);
 
+    // Return phone-based authentication data for frontend session creation
     return NextResponse.json({
       message: 'WhatsApp verification successful',
-      user: authData.user,
+      user: { 
+        ...authData.user, 
+        user_type: userType,
+        subscription_tier: subscriptionTier
+      },
       contractor_profile: contractorProfile,
       is_new_user: isNewUser,
+      demo_mode: isDemoMode,
       redirect_url: isNewUser ? '/contractor/onboarding' : '/contractor/dashboard'
     });
 

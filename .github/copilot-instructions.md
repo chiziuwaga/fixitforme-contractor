@@ -528,3 +528,73 @@ This workspace represents a **production-ready, scalable contractor management p
 - **Brand validation process** established for future development
 
 **STATUS: BRAND RESTORATION 100% COMPLETE ✅**
+
+## 🎯 CRITICAL: MULTI-ORDER IMPACT ANALYSIS PROTOCOL
+
+### MANDATORY: Always Analyze Downstream Effects (1st-4th Order)
+**NEVER make changes without comprehensive impact analysis across multiple orders.**
+
+#### Multi-Order Analysis Process (STRICTLY ENFORCED)
+1. **🥇 1st Order Impact**: Direct code changes and immediate effects
+2. **🥈 2nd Order Impact**: Application flow and component interactions
+3. **🥉 3rd Order Impact**: User experience and state management
+4. **🏅 4th Order Impact**: Business logic and revenue optimization
+
+#### Critical System Constraints (ZERO TOLERANCE)
+- **Phone-Native Authentication**: NEVER convert phones to emails for Supabase auth
+- **Session Consistency**: Backend user creation MUST result in frontend session
+- **Architecture Preservation**: Maintain brain/skin separation at all costs
+- **Brand Identity**: Forest Green for Rex, Felix Gold for Lexi (no blue/purple)
+
+### Phone Authentication Standards (MANDATED)
+```typescript
+const PHONE_AUTH_PRINCIPLES = {
+  approach: "Phone-Native Supabase Authentication",
+  
+  // CORRECT: Use phone directly
+  correctAuth: {
+    method: "adminSupabase.auth.admin.createUser({ phone, phone_confirm: true })",
+    session: "supabase.auth.signInWithOtp({ phone, shouldCreateUser: false })",
+    identity: "phone_number as primary identifier"
+  },
+  
+  // BANNED: Email conversion patterns
+  bannedPatterns: [
+    "phone.replace('+', '') + '@domain.com'", // Email conversion
+    "signInWithPassword with temp passwords",   // Password workarounds
+    "magic links for phone authentication"     // Email-based flows
+  ],
+  
+  // Multi-Order Impact Check
+  validation: {
+    first_order: "Code compiles and auth API returns user",
+    second_order: "Frontend receives session tokens",
+    third_order: "User stays logged in after redirect", 
+    fourth_order: "Business features work with user context"
+  }
+}
+```
+
+### Architectural Decision Documentation
+```typescript
+const DECISION_FRAMEWORK = {
+  before_any_change: [
+    "1st Order: What code files are directly affected?",
+    "2nd Order: Which components/flows depend on this?", 
+    "3rd Order: How does this affect user experience?",
+    "4th Order: What business logic breaks or improves?"
+  ],
+  
+  session_management: {
+    principle: "Backend creates users, Frontend establishes sessions",
+    verification: "User can navigate protected routes after auth",
+    failure_point: "Session not set = infinite redirect loops"
+  },
+  
+  demo_upgrade_flow: {
+    identification: "Track demo users via user_type='demo_contractor'",
+    analytics: "Monitor login frequency for upgrade candidates", 
+    conversion: "Show upgrade prompts based on usage patterns"
+  }
+}
+```

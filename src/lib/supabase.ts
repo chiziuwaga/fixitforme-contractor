@@ -1,32 +1,30 @@
-import { cookies as nextCookies } from 'next/headers';
+import { createBrowserClient } from '@supabase/ssr';
 import { createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
+// Client-side Supabase client for browser/hooks usage
 export function createClient() {
-  // Provide a CookieMethodsServer implementation for SSR
-  const cookies = {
-    get: async (name: string) => {
-      const cookieStore = await nextCookies();
-      return cookieStore.get(name)?.value;
-    },
-    set: async (name: string, value: string, options: any) => {
-      const cookieStore = await nextCookies();
-      cookieStore.set(name, value, options);
-    },
-    remove: async (name: string, options: any) => {
-      const cookieStore = await nextCookies();
-      cookieStore.set(name, '', { ...options, maxAge: 0 });
-    },
-  };
-
-  return createServerClient(supabaseUrl, supabaseAnonKey, {
-    cookies,
-  });
+  return createBrowserClient(supabaseUrl, supabaseAnonKey);
 }
 
-// createClient is already exported by the function declaration above
-// No need for additional export statement
+// Server-side Supabase client for API routes and server components
+export async function createServerSupabaseClient() {
+  const cookieStore = await cookies();
+  
+  return createServerClient(supabaseUrl, supabaseAnonKey, {
+    cookies: {
+      get: (name: string) => cookieStore.get(name)?.value,
+      set: (name: string, value: string, options: { [key: string]: unknown }) => {
+        cookieStore.set(name, value, options);
+      },
+      remove: (name: string, options: { [key: string]: unknown }) => {
+        cookieStore.set(name, '', { ...options, maxAge: 0 });
+      },
+    },
+  });
+}
 
 

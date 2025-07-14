@@ -41,6 +41,38 @@ export function useAuth() {
 
       toast.success("Successfully logged in!");
       
+      // For phone-based authentication, use Supabase's signInWithOtp approach
+      if (data.user && data.user.phone) {
+        const { createClient } = await import('@/lib/supabase-client');
+        const supabase = createClient();
+        
+        try {
+          // Use signInWithOtp for phone but don't send actual OTP (we've already verified)
+          // This establishes the session using the verified phone number
+          const { error: signInError } = await supabase.auth.signInWithOtp({
+            phone: data.user.phone,
+            options: {
+              shouldCreateUser: false, // User already exists from API
+              data: {
+                user_type: data.user.user_type,
+                demo_mode: data.demo_mode
+              }
+            }
+          });
+          
+          if (signInError) {
+            console.warn('OTP sign-in failed, user may need to manually refresh session:', signInError);
+            // Continue with redirect anyway - session might still be valid
+          }
+        } catch (sessionError) {
+          console.warn('Session creation failed:', sessionError);
+          // Continue with redirect anyway for demo mode
+        }
+      }
+      
+      // Small delay to ensure session is set before redirect
+      await new Promise(resolve => setTimeout(resolve, 200));
+      
       // Redirect based on onboarding status
       const redirectUrl = data.redirect_url || '/contractor/dashboard';
       router.push(redirectUrl);

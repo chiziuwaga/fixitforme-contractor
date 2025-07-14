@@ -1,7 +1,7 @@
 // src/lib/analytics.ts
 // Utility functions for tracking WhatsApp OTP events
 
-import { createClient } from '@/lib/supabase';
+import { createClient } from '@/lib/supabase-client';
 
 /**
  * Track WhatsApp OTP events for analytics without requiring admin dashboard
