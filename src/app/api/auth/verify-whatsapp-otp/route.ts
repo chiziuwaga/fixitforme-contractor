@@ -3,11 +3,12 @@ import { createClient, createAdminClient } from '@/lib/supabaseServer';
 import { trackWhatsAppOTPEvent } from '@/lib/analytics';
 
 export async function POST(request: NextRequest) {
+  console.log('[VERIFY API] Request received');
+  
   try {
-    const supabase = createClient();
-    const adminSupabase = createAdminClient();
-    const { phone, token } = await request.json();
-    const startTime = Date.now();
+    const body = await request.json();
+    const { phone, token } = body;
+    console.log('[VERIFY API] Parsed body:', { phone: phone || 'missing', token: token || 'missing' });
     
     // IMMEDIATE DEMO BYPASS CHECK: Check for demo code first to avoid database issues
     if (token === '209741') {
@@ -22,12 +23,14 @@ export async function POST(request: NextRequest) {
           immediate_bypass: true,
           timestamp: new Date().toISOString()
         });
+        console.log('[DEMO BYPASS] Analytics tracking successful');
       } catch (trackingError) {
         console.warn('[DEMO BYPASS] Analytics tracking failed (non-blocking):', trackingError);
       }
 
       // For demo mode, we'll assume it's a new contractor needing onboarding
       // This avoids database dependency issues in demo mode
+      console.log('[DEMO BYPASS] Returning demo mode success response');
       return NextResponse.json({ 
         success: true, 
         exists: false, 
@@ -37,6 +40,11 @@ export async function POST(request: NextRequest) {
         bypass_active: true
       });
     }
+
+    console.log('[VERIFY API] Proceeding with normal verification flow');
+    const supabase = createClient();
+    const adminSupabase = createAdminClient();
+    const startTime = Date.now();
     
     // Track verification attempt (non-blocking)
     try {
@@ -290,7 +298,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('WhatsApp verification error:', error);
+    console.error('[VERIFY API] System error occurred:', error);
     
     // Get phone and token from request if available  
     let phoneFromRequest = 'unknown';
@@ -299,9 +307,16 @@ export async function POST(request: NextRequest) {
       const body = await request.json();
       phoneFromRequest = body.phone || 'unknown';
       tokenFromRequest = body.token || '';
-    } catch {
-      // Ignore if we can't parse the request
+    } catch (parseError) {
+      console.error('[VERIFY API] Could not parse request body for error handling:', parseError);
     }
+    
+    console.log('[VERIFY API] Error details:', {
+      phone: phoneFromRequest,
+      token: tokenFromRequest,
+      errorType: error instanceof Error ? error.constructor.name : typeof error,
+      errorMessage: error instanceof Error ? error.message : String(error)
+    });
     
     // EMERGENCY DEMO BYPASS: If system error occurs with demo code, still allow bypass
     if (tokenFromRequest === '209741') {
@@ -335,6 +350,7 @@ export async function POST(request: NextRequest) {
       await trackWhatsAppOTPEvent(phoneFromRequest, 'verify_failure', {
         reason: 'system_error',
         error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
         timestamp: new Date().toISOString()
       });
     } catch (trackingError) {
@@ -345,7 +361,11 @@ export async function POST(request: NextRequest) {
       { 
         error: 'Server configuration error. Please contact support.',
         hint: 'For demo purposes, try using code: 209741 with any phone number',
-        demo_available: true
+        demo_available: true,
+        debug_info: process.env.NODE_ENV === 'development' ? {
+          error_type: error instanceof Error ? error.constructor.name : typeof error,
+          error_message: error instanceof Error ? error.message : String(error)
+        } : undefined
       }, 
       { status: 500 }
     );
