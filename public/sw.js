@@ -1,8 +1,8 @@
 // FixItForMe Mobile PWA Service Worker
 // Focused on mobile contractor essential features with offline fallbacks
 
-const CACHE_NAME = 'fixitforme-mobile-v1.3.1'
-const STATIC_CACHE = 'fixitforme-static-v1.3.0'
+const CACHE_NAME = 'fixitforme-mobile-v1.4.0'
+const STATIC_CACHE = 'fixitforme-static-v1.4.0'
 
 // Essential files for mobile contractor experience
 // Note: Excluding '/' since it redirects to '/login' - causes service worker conflicts
