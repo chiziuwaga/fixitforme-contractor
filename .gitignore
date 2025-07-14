@@ -75,3 +75,5 @@ v0-analysis-data-*.json
 component-analysis-*.json
 ui-analysis-report-*.md
 *.backup-*
+
+.vercel
