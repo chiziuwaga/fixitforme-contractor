@@ -55,7 +55,9 @@ export async function POST(request: NextRequest) {
     await supabase.from('whatsapp_otps').delete().eq('id', otpData.id);
 
     let user;
+    
     try {
+      // Step 1: Try to create a new user
       const { data: newUser, error: createError } = await adminSupabase.auth.admin.createUser({
         phone,
         phone_confirm: true,
@@ -67,22 +69,24 @@ export async function POST(request: NextRequest) {
 
       if (createError) {
         if (createError.message.includes('already exists') || createError.message.includes('already registered')) {
-          console.log('[VERIFY API] User already exists, using simplified lookup...');
+          console.log('[VERIFY API] User already exists, finding existing user...');
           
-          // Simplified approach: Create a synthetic user object for phone authentication
-          // This bypasses the complex user lookup that's failing
-          user = {
-            id: `phone-user-${phone.replace(/\+/g, '')}`,
-            phone: phone,
-            created_at: new Date().toISOString(),
-            user_metadata: {
-              verification_method: 'whatsapp_otp',
-              created_via: 'contractor_portal',
-              synthetic_user: true // Flag to indicate this is a workaround
-            }
-          };
+          // Step 2: Find existing user by phone number using admin client
+          const { data: existingUsers, error: getUserError } = await adminSupabase.auth.admin.listUsers();
           
-          console.log('[VERIFY API] Using synthetic user object for phone:', user.id);
+          if (getUserError) {
+            throw new Error(`Failed to lookup existing users: ${getUserError.message}`);
+          }
+          
+          // Find user by phone number
+          const existingUser = existingUsers.users.find(u => u.phone === phone);
+          
+          if (!existingUser) {
+            throw new Error(`User with phone ${phone} not found in auth.users table`);
+          }
+          
+          user = existingUser;
+          console.log('[VERIFY API] Found existing user:', user.id);
         } else {
           throw createError;
         }
@@ -90,6 +94,7 @@ export async function POST(request: NextRequest) {
         user = newUser.user;
         console.log('[VERIFY API] Created new user:', user.id);
       }
+      
     } catch (userError) {
       console.error('[VERIFY API] User creation/retrieval failed:', userError);
       
@@ -177,8 +182,7 @@ export async function POST(request: NextRequest) {
       timestamp: new Date().toISOString()
     });
 
-    // The backend's only job is to confirm the OTP is valid in our database.
-    // The frontend will handle the session creation with Supabase client.
+    // Return OTP validation success - frontend will handle session creation
     return NextResponse.json({
       message: 'OTP validation successful',
       user: {

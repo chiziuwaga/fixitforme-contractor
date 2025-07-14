@@ -71,18 +71,11 @@ self.addEventListener('fetch', (event) => {
   const { request } = event
   const url = new URL(request.url)
 
-  // Let the browser handle navigation requests by default
+  // Bypass ALL navigation requests - let the browser handle them completely
+  // This prevents service worker interference with authentication redirects
   if (request.mode === 'navigate') {
-    // For offline, you can add a fallback here
-    event.respondWith(
-      fetch(request).catch(() => {
-        // You can return a generic offline page from the cache here
-        // For example: caches.match('/offline.html')
-        console.log('[SW] Network fetch failed for navigation. Serving from cache or failing.');
-        return caches.match(request) || Response.error();
-      })
-    );
-    return;
+    console.log('[SW] Allowing browser to handle navigation to:', url.pathname);
+    return; // Don't intercept navigation at all
   }
 
   // Bypass cache for all API calls to ensure fresh data
@@ -92,7 +85,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Use a standard cache-first strategy for static assets
+  // Cache-first strategy for static assets only (images, CSS, JS)
   event.respondWith(
     caches.match(request)
       .then((cachedResponse) => {
@@ -100,7 +93,7 @@ self.addEventListener('fetch', (event) => {
           return cachedResponse
         }
         return fetch(request).then((response) => {
-          if (response.status === 200) {
+          if (response.status === 200 && response.type === 'basic') {
             const responseClone = response.clone()
             caches.open(CACHE_NAME).then((cache) => {
               cache.put(request, responseClone)
@@ -110,6 +103,7 @@ self.addEventListener('fetch', (event) => {
         })
       })
   );
+});
 })
 
 // Background sync for offline actions
