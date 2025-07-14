@@ -75,13 +75,33 @@ self.addEventListener('fetch', (event) => {
   if (url.pathname.includes('/api/auth/') || 
       url.pathname.includes('/login') || 
       url.pathname.includes('/auth/') ||
-      url.pathname.includes('/api/send-whatsapp-otp') ||
-      url.pathname === '/') {
+      url.pathname.includes('/api/send-whatsapp-otp')) {
     console.log('[SW] Bypassing cache for auth route:', url.pathname);
     event.respondWith(fetch(request, { 
       redirect: 'follow',
       cache: 'no-store'  // Force fresh requests for auth
     }));
+    return;
+  }
+
+  // ROOT ROUTE SPECIAL HANDLING - Handle redirects properly
+  if (url.pathname === '/') {
+    console.log('[SW] Handling root route with redirect support');
+    event.respondWith(
+      fetch(request, { 
+        redirect: 'manual',  // Handle redirects manually
+        cache: 'no-store'
+      }).then(response => {
+        // If it's a redirect, let the browser handle it
+        if (response.type === 'opaqueredirect' || response.status >= 300 && response.status < 400) {
+          return Response.redirect('/login', 302);
+        }
+        return response;
+      }).catch(() => {
+        // Fallback: redirect to login if network fails
+        return Response.redirect('/login', 302);
+      })
+    );
     return;
   }
 
