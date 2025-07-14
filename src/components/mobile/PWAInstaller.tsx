@@ -22,16 +22,19 @@ export function PWAInstaller() {
   const [isStandalone, setIsStandalone] = useState(false)
 
   useEffect(() => {
+    console.log('[PWA] Service Worker registration DISABLED for debugging');
+    
+    // TEMPORARILY DISABLED FOR AUTHENTICATION DEBUGGING
     // Register service worker
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js')
-        .then((registration) => {
-          console.log('[PWA] Service Worker registered:', registration)
-        })
-        .catch((error) => {
-          console.error('[PWA] Service Worker registration failed:', error)
-        })
-    }
+    // if ('serviceWorker' in navigator) {
+    //   navigator.serviceWorker.register('/sw.js')
+    //     .then((registration) => {
+    //       console.log('[PWA] Service Worker registered:', registration)
+    //     })
+    //     .catch((error) => {
+    //       console.error('[PWA] Service Worker registration failed:', error)
+    //     })
+    // }
 
     // Detect iOS
     const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
