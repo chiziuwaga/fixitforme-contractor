@@ -177,16 +177,16 @@ export async function POST(request: NextRequest) {
       timestamp: new Date().toISOString()
     });
 
-    // For phone-based authentication, we'll let the frontend handle session
-    // using the user ID and phone verification status
+    // The backend's only job is to confirm the OTP is valid in our database.
+    // The frontend will handle the session creation with Supabase client.
     return NextResponse.json({
-      message: 'Authentication successful',
+      message: 'OTP validation successful',
       user: {
         id: user.id,
         phone: user.phone,
         created_at: user.created_at,
         user_metadata: user.user_metadata,
-        phone_confirmed: true // Critical: tells frontend phone is verified
+        phone_confirmed: true
       },
       contractor_profile: contractor,
       is_new_user: isNewUser,

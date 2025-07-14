@@ -39,6 +39,37 @@ export function useAuth() {
         throw new Error(data.error || 'Invalid verification code');
       }
 
+      // --- CRITICAL SESSION FIX START ---
+      // The backend has confirmed the OTP is valid.
+      // Now, we use the official Supabase client to verify and create the session.
+      const { createClient } = await import('@/lib/supabase-client');
+      const supabase = createClient();
+
+      console.log('[AUTH] Backend OTP check passed. Verifying with client to create session...');
+      
+      const { data: sessionData, error: sessionError } = await supabase.auth.verifyOtp({
+        phone: phone,
+        token: otp,
+        type: 'sms' // Use 'sms' type for phone verification
+      });
+
+      if (sessionError) {
+        console.error('Supabase client session error:', sessionError);
+        toast.error("Login Failed", { description: sessionError.message });
+        setLoading(false);
+        return; // Stop if session cannot be created
+      }
+
+      if (!sessionData.session) {
+        console.error('Supabase client verification failed: No session returned.');
+        toast.error("Login Failed", { description: "Could not establish a user session. Please try again." });
+        setLoading(false);
+        return; // Stop if session is null
+      }
+      
+      console.log('[AUTH] Client session established successfully.');
+      // --- CRITICAL SESSION FIX END ---
+
       // Check for secret upgrade success
       if (data.secret_upgrade) {
         toast.success("🎉 Secret Scale Tier Upgrade Activated!", { 
@@ -49,37 +80,7 @@ export function useAuth() {
         toast.success("Successfully logged in!");
       }
       
-      // For phone-based authentication, establish session properly
-      if (data.user && data.user.phone_confirmed) {
-        const { createClient } = await import('@/lib/supabase-client');
-        const supabase = createClient();
-        
-        try {
-          console.log('[AUTH] User verified by backend, attempting session creation...');
-          
-          // Try to get current session first
-          const { data: currentSession } = await supabase.auth.getSession();
-          
-          if (!currentSession.session) {
-            console.log('[AUTH] No existing session, user verified via backend');
-            // Store user data temporarily for session recovery
-            if (typeof window !== 'undefined') {
-              sessionStorage.setItem('verified_user', JSON.stringify({
-                id: data.user.id,
-                phone: data.user.phone,
-                verified_at: Date.now()
-              }));
-            }
-          } else {
-            console.log('[AUTH] Found existing session, user is authenticated');
-          }
-        } catch (sessionError) {
-          console.warn('Session check failed:', sessionError);
-          // Continue with redirect anyway - user is verified by backend
-        }
-      }
-      
-      // Small delay to ensure session is set before redirect
+      // Small delay to ensure UI updates before redirect
       await new Promise(resolve => setTimeout(resolve, 200));
       
       // Redirect based on onboarding status
