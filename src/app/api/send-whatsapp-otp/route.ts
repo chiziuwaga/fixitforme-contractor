@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabaseServer';
+import { trackWhatsAppOTPEvent } from '@/lib/analytics';
 
 // Twilio types
 interface TwilioError extends Error {
@@ -71,6 +72,14 @@ async function hasRecentlyJoined(phone: string): Promise<boolean> {
 export async function POST(request: NextRequest) {
   try {
     const { phone } = await request.json();
+    
+    // Start tracking - initial attempt
+    await trackWhatsAppOTPEvent(phone, 'send_attempt', {
+      isDemoMode: process.env.NEXT_PUBLIC_DEMO_MODE === 'true',
+      userAgent: request.headers.get('user-agent') || 'unknown',
+      timestamp: new Date().toISOString()
+    });
+    
     // --- ENVIRONMENT VARIABLE HARMONY CHECK ---
     const requiredVars = [
       'TWILIO_ACCOUNT_SID',
@@ -83,6 +92,14 @@ export async function POST(request: NextRequest) {
     const missingVars = requiredVars.filter((v) => !process.env[v]);
     if (missingVars.length > 0) {
       console.error(`Critical environment variables missing: ${missingVars.join(', ')}`);
+      
+      // Track failure due to environment configuration
+      await trackWhatsAppOTPEvent(phone, 'send_failure', {
+        reason: 'env_vars_missing',
+        missingVars,
+        timestamp: new Date().toISOString()
+      });
+      
       return NextResponse.json({
         error: 'Server configuration error. Please contact support.',
         details: process.env.NODE_ENV === 'development' ? `Missing: ${missingVars.join(', ')}` : undefined
@@ -90,11 +107,22 @@ export async function POST(request: NextRequest) {
     }
 
     if (!phone) {
+      await trackWhatsAppOTPEvent(phone, 'send_failure', {
+        reason: 'missing_phone',
+        timestamp: new Date().toISOString()
+      });
+      
       return NextResponse.json({ error: 'Phone number is required' }, { status: 400 });
     }
+    
     // Validate phone number format
     const phoneRegex = /^\+?[1-9]\d{1,14}$/;
     if (!phoneRegex.test(phone)) {
+      await trackWhatsAppOTPEvent(phone, 'send_failure', {
+        reason: 'invalid_phone_format',
+        timestamp: new Date().toISOString()
+      });
+      
       return NextResponse.json({ error: 'Invalid phone number format' }, { status: 400 });
     }
 

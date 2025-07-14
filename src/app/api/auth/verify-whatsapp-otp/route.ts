@@ -1,13 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient, createAdminClient } from '@/lib/supabaseServer';
+import { trackWhatsAppOTPEvent } from '@/lib/analytics';
 
 export async function POST(request: NextRequest) {
   try {
     const supabase = createClient();
     const adminSupabase = createAdminClient();
     const { phone, token } = await request.json();
+    const startTime = Date.now();
+    
+    // Track verification attempt
+    await trackWhatsAppOTPEvent(phone, 'verify_attempt', {
+      otpLength: token?.length || 0,
+      timestamp: new Date().toISOString()
+    });
     
     if (!phone || !token) {
+      await trackWhatsAppOTPEvent(phone, 'verify_failure', {
+        reason: 'missing_parameters',
+        timestamp: new Date().toISOString()
+      });
+      
       return NextResponse.json({ error: 'Phone number and verification code are required' }, { status: 400 });
     }
 
@@ -22,6 +35,13 @@ export async function POST(request: NextRequest) {
 
     if (otpError || !otpData) {
       console.error('OTP verification failed:', otpError);
+      
+      await trackWhatsAppOTPEvent(phone, 'verify_failure', {
+        reason: otpError?.code === 'PGRST116' ? 'otp_not_found' : 'invalid_or_expired',
+        errorCode: otpError?.code,
+        timestamp: new Date().toISOString()
+      });
+      
       return NextResponse.json(
         { error: 'Invalid or expired verification code' }, 
         { status: 400 }
@@ -56,11 +76,26 @@ export async function POST(request: NextRequest) {
 
       if (userError) {
         console.error('Error getting contractor profile:', userError);
+        
+        await trackWhatsAppOTPEvent(phone, 'verify_failure', {
+          reason: 'profile_fetch_error',
+          error: userError.message,
+          timestamp: new Date().toISOString()
+        });
+        
         return NextResponse.json(
           { error: 'Failed to get contractor profile' }, 
           { status: 500 }
         );
       }
+
+      // Track successful verification for existing user
+      await trackWhatsAppOTPEvent(phone, 'verify_success', {
+        userId: existingUser.user_id,
+        timeToVerify: Date.now() - startTime,
+        isExistingUser: true,
+        timestamp: new Date().toISOString()
+      }, existingUser.user_id);
 
       return NextResponse.json({
         message: 'WhatsApp verification successful',
@@ -73,6 +108,13 @@ export async function POST(request: NextRequest) {
 
     if (authError) {
       console.error('WhatsApp auth creation error:', authError);
+      
+      await trackWhatsAppOTPEvent(phone, 'verify_failure', {
+        reason: 'auth_creation_error',
+        error: authError.message,
+        timestamp: new Date().toISOString()
+      });
+      
       return NextResponse.json(
         { error: 'Failed to create user account' }, 
         { status: 500 }
@@ -80,6 +122,11 @@ export async function POST(request: NextRequest) {
     }
 
     if (!authData.user) {
+      await trackWhatsAppOTPEvent(phone, 'verify_failure', {
+        reason: 'no_user_created',
+        timestamp: new Date().toISOString()
+      });
+      
       return NextResponse.json(
         { error: 'Verification failed' }, 
         { status: 400 }
@@ -112,6 +159,14 @@ export async function POST(request: NextRequest) {
 
       if (createError) {
         console.error('Error creating contractor profile:', createError);
+        
+        await trackWhatsAppOTPEvent(phone, 'verify_failure', {
+          reason: 'profile_creation_error',
+          error: createError.message,
+          userId: authData.user.id,
+          timestamp: new Date().toISOString()
+        }, authData.user.id);
+        
         return NextResponse.json(
           { error: 'Failed to create contractor profile' }, 
           { status: 500 }
@@ -129,6 +184,14 @@ export async function POST(request: NextRequest) {
         });
     }
 
+    // Track successful verification with timing data
+    await trackWhatsAppOTPEvent(phone, 'verify_success', {
+      userId: authData.user.id,
+      timeToVerify: Date.now() - startTime,
+      isNewUser: isNewUser,
+      timestamp: new Date().toISOString()
+    }, authData.user.id);
+
     return NextResponse.json({
       message: 'WhatsApp verification successful',
       user: authData.user,
@@ -139,6 +202,22 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error('WhatsApp verification error:', error);
+    
+    // Get phone from request if available  
+    let phoneFromRequest = 'unknown';
+    try {
+      const body = await request.json();
+      phoneFromRequest = body.phone || 'unknown';
+    } catch {
+      // Ignore if we can't parse the request
+    }
+    
+    await trackWhatsAppOTPEvent(phoneFromRequest, 'verify_failure', {
+      reason: 'system_error',
+      error: error instanceof Error ? error.message : String(error),
+      timestamp: new Date().toISOString()
+    });
+    
     return NextResponse.json(
       { error: 'Internal server error' }, 
       { status: 500 }

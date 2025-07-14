@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 // deploy-whatsapp-tracking.mjs
-// Script to deploy the WhatsApp tracking table to your Supabase database
-// Run with: node deploy-whatsapp-tracking.mjs
+// Script to deploy the WhatsApp tracking and analytics tables to your Supabase database
+// Run with: node deploy-whatsapp-tracking.mjs-tracking.mjs
 
 import fs from 'fs';
 import path from 'path';
@@ -51,17 +51,35 @@ function checkEnvVars() {
   return true;
 }
 
-// Read the SQL script
+// Read the SQL scripts
 function readSqlScript() {
-  const filePath = path.join(__dirname, 'database', 'whatsapp-tracking-table.sql');
+  const trackingTablePath = path.join(__dirname, 'database', 'whatsapp-tracking-table.sql');
+  const analyticsTablePath = path.join(__dirname, 'database', 'whatsapp-otp-analytics-table.sql');
   
   try {
-    if (!fs.existsSync(filePath)) {
-      console.error(`${colors.red}Error: SQL script not found at ${filePath}${colors.reset}`);
+    let sqlScript = '';
+    
+    // Read tracking table SQL
+    if (!fs.existsSync(trackingTablePath)) {
+      console.error(`${colors.red}Error: Tracking table SQL script not found at ${trackingTablePath}${colors.reset}`);
+    } else {
+      sqlScript += fs.readFileSync(trackingTablePath, 'utf8') + '\n\n';
+      console.log(`${colors.green}✓ Read tracking table SQL${colors.reset}`);
+    }
+    
+    // Read analytics table SQL
+    if (!fs.existsSync(analyticsTablePath)) {
+      console.error(`${colors.red}Error: Analytics table SQL script not found at ${analyticsTablePath}${colors.reset}`);
+    } else {
+      sqlScript += fs.readFileSync(analyticsTablePath, 'utf8');
+      console.log(`${colors.green}✓ Read analytics table SQL${colors.reset}`);
+    }
+    
+    if (!sqlScript) {
       return null;
     }
     
-    return fs.readFileSync(filePath, 'utf8');
+    return sqlScript;
   } catch (error) {
     console.error(`${colors.red}Error reading SQL file:${colors.reset}`, error);
     return null;
@@ -91,12 +109,23 @@ async function deploySqlScript(sql) {
   try {
     console.log(`${colors.cyan}Executing SQL script...${colors.reset}`);
     
-    // Execute the SQL script
-    const { error } = await supabase.rpc('pg_execute', { query: sql });
+    // Split SQL into individual statements and execute
+    const statements = sql.split(';').filter(stmt => stmt.trim());
     
-    if (error) {
-      console.error(`${colors.red}Error deploying SQL script:${colors.reset}`, error);
-      return false;
+    for (const statement of statements) {
+      if (statement.trim()) {
+        const { error } = await supabase.from('_placeholder_').select('1').limit(0); // Test connection first
+        if (error && error.message === "relation \"_placeholder_\" does not exist") {
+          // Connection is good, now execute via SQL function
+          const { error: execError } = await supabase.rpc('exec_sql', { sql_query: statement.trim() });
+          if (execError && execError.code !== 'PGRST116') { // Ignore function not found - use manual approach
+            console.log(`${colors.yellow}RPC method not available, using manual SQL execution...${colors.reset}`);
+            // For tables that don't exist, we'll need manual deployment
+            console.log(`${colors.yellow}Please manually execute the SQL in Supabase SQL Editor${colors.reset}`);
+            return false;
+          }
+        }
+      }
     }
     
     return true;

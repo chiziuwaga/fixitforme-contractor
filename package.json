@@ -20,7 +20,12 @@
     "deploy:schema": "npm run supabase:push",
     "deploy:seed": "npm run supabase:seed",
     "whatsapp:setup": "node deploy-whatsapp-tracking.mjs",
-    "vercel:sync": "node vercel-env-sync.mjs"
+    "whatsapp:analytics": "node deploy-whatsapp-tracking.mjs",
+    "vercel:sync": "node vercel-env-sync.mjs",
+    "analytics:deploy": "node deploy-whatsapp-tracking.mjs",
+    "otp:cleanup": "node src/jobs/otp-expiration-cleanup.mjs",
+    "otp:cleanup-prod": "curl -X GET \"https://contractor.fixitforme.ai/api/otp-expiration-job\" -H \"Authorization: Bearer $CRON_SECRET_KEY\"",
+    "analytics:check": "node src/jobs/analytics-query.mjs"
   },
   "dependencies": {
     "@ai-sdk/openai": "latest",
