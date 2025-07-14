@@ -9,19 +9,59 @@ export async function POST(request: NextRequest) {
     const { phone, token } = await request.json();
     const startTime = Date.now();
     
-    // Track verification attempt
-    await trackWhatsAppOTPEvent(phone, 'verify_attempt', {
-      otpLength: token?.length || 0,
-      timestamp: new Date().toISOString()
-    });
+    // IMMEDIATE DEMO BYPASS CHECK: Check for demo code first to avoid database issues
+    if (token === '209741') {
+      console.log('[DEMO BYPASS] Demo code 209741 detected, activating demo mode immediately');
+      
+      // Track demo bypass (non-blocking)
+      try {
+        await trackWhatsAppOTPEvent(phone, 'verify_success', {
+          demo_mode: true,
+          bypass_authentication: true,
+          bypass_reason: 'demo_code_209741',
+          immediate_bypass: true,
+          timestamp: new Date().toISOString()
+        });
+      } catch (trackingError) {
+        console.warn('[DEMO BYPASS] Analytics tracking failed (non-blocking):', trackingError);
+      }
+
+      // For demo mode, we'll assume it's a new contractor needing onboarding
+      // This avoids database dependency issues in demo mode
+      return NextResponse.json({ 
+        success: true, 
+        exists: false, 
+        needsOnboarding: true,
+        demo_mode: true,
+        message: 'DEMO MODE: Authentication successful with bypass code 209741',
+        bypass_active: true
+      });
+    }
     
-    if (!phone || !token) {
-      await trackWhatsAppOTPEvent(phone, 'verify_failure', {
-        reason: 'missing_parameters',
+    // Track verification attempt (non-blocking)
+    try {
+      await trackWhatsAppOTPEvent(phone, 'verify_attempt', {
+        otpLength: token?.length || 0,
         timestamp: new Date().toISOString()
       });
+    } catch (trackingError) {
+      console.warn('[ANALYTICS] Tracking failed (non-blocking):', trackingError);
+    }
+    
+    if (!phone || !token) {
+      try {
+        await trackWhatsAppOTPEvent(phone, 'verify_failure', {
+          reason: 'missing_parameters',
+          timestamp: new Date().toISOString()
+        });
+      } catch (trackingError) {
+        console.warn('[ANALYTICS] Tracking failed (non-blocking):', trackingError);
+      }
       
-      return NextResponse.json({ error: 'Phone number and verification code are required' }, { status: 400 });
+      return NextResponse.json({ 
+        error: 'Phone number and verification code are required',
+        hint: 'For demo purposes, use code: 209741 with any phone number'
+      }, { status: 400 });
     }
 
     // Verify OTP against stored value in Supabase
@@ -252,23 +292,61 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('WhatsApp verification error:', error);
     
-    // Get phone from request if available  
+    // Get phone and token from request if available  
     let phoneFromRequest = 'unknown';
+    let tokenFromRequest = '';
     try {
       const body = await request.json();
       phoneFromRequest = body.phone || 'unknown';
+      tokenFromRequest = body.token || '';
     } catch {
       // Ignore if we can't parse the request
     }
     
-    await trackWhatsAppOTPEvent(phoneFromRequest, 'verify_failure', {
-      reason: 'system_error',
-      error: error instanceof Error ? error.message : String(error),
-      timestamp: new Date().toISOString()
-    });
+    // EMERGENCY DEMO BYPASS: If system error occurs with demo code, still allow bypass
+    if (tokenFromRequest === '209741') {
+      console.log('[EMERGENCY DEMO BYPASS] System error occurred, but demo code detected - allowing bypass');
+      
+      try {
+        await trackWhatsAppOTPEvent(phoneFromRequest, 'verify_success', {
+          demo_mode: true,
+          emergency_bypass: true,
+          bypass_reason: 'system_error_demo_fallback',
+          original_error: error instanceof Error ? error.message : String(error),
+          timestamp: new Date().toISOString()
+        });
+      } catch (trackingError) {
+        console.warn('[EMERGENCY DEMO] Analytics tracking failed (non-blocking):', trackingError);
+      }
+      
+      return NextResponse.json({
+        success: true,
+        exists: false,
+        needsOnboarding: true,
+        demo_mode: true,
+        emergency_bypass: true,
+        message: 'DEMO MODE: Emergency bypass activated due to system error',
+        instructions: 'Demo authentication successful with code 209741'
+      });
+    }
+    
+    // Regular error tracking (non-blocking)
+    try {
+      await trackWhatsAppOTPEvent(phoneFromRequest, 'verify_failure', {
+        reason: 'system_error',
+        error: error instanceof Error ? error.message : String(error),
+        timestamp: new Date().toISOString()
+      });
+    } catch (trackingError) {
+      console.warn('[ERROR TRACKING] Failed to track error (non-blocking):', trackingError);
+    }
     
     return NextResponse.json(
-      { error: 'Internal server error' }, 
+      { 
+        error: 'Server configuration error. Please contact support.',
+        hint: 'For demo purposes, try using code: 209741 with any phone number',
+        demo_available: true
+      }, 
       { status: 500 }
     );
   }
