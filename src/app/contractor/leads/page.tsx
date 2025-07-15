@@ -3,19 +3,25 @@
 import { useState } from "react"
 import { motion } from "framer-motion"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { LeadFeed } from "@/components/dashboard/LeadFeed"
 import { Search, Filter, MapPin, DollarSign, Clock } from "lucide-react"
 import { useDashboard } from "@/hooks/useDashboard"
+import { useUser } from "@/hooks/useUser"
+import { LeadsEmptyState } from "@/components/ui/ResponsiveLexiOnboarding"
 
 export default function LeadsPage() {
+  const { profile } = useUser()
   const [searchQuery, setSearchQuery] = useState("")
   const [urgencyFilter, setUrgencyFilter] = useState("all")
   const [serviceFilter, setServiceFilter] = useState("all")
   const { leads, loading } = useDashboard()
+
+  // Show Lexi intro if not onboarded
+  if (!profile?.onboarded) {
+    return <LeadsEmptyState onboardingStep="not_started" />
+  }
 
   return (
     <motion.div 

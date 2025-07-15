@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/AgentComponents"
 import { motion, AnimatePresence } from "framer-motion"
 import { cn } from "@/lib/utils"
+import { useEnhancedChat } from "@/hooks/useEnhancedChat"
 
 export type AgentType = "lexi" | "alex" | "rex"
 
@@ -28,7 +29,7 @@ export interface Message {
   agentType?: AgentType
   ui_assets?: {
     type: string
-    data: Record<string, any>
+    data: Record<string, unknown>
   }
   actions?: Array<{
     type: string
@@ -43,9 +44,6 @@ export interface ChatWindowProps {
   isMinimized?: boolean
   onMinimize: () => void
   onClose: () => void
-  onSendMessage: (message: string, agentType: AgentType) => void
-  messages: Message[]
-  isTyping?: boolean
 }
 
 const AGENT_CONFIG = {
@@ -57,23 +55,23 @@ const AGENT_CONFIG = {
 function GenerativeUIRenderer({ ui_assets }: { ui_assets: Message["ui_assets"] }) {
   if (!ui_assets) return null
 
+  // Use type assertion for dynamic UI assets
+  const data = ui_assets.data as Record<string, unknown>
+
   switch (ui_assets.type) {
     case "alex_cost_breakdown":
-      return <AlexCostBreakdown data={ui_assets.data as any} />
     case "alex_timeline_chart":
-      return <AlexCostBreakdown data={ui_assets.data as any} />
     case "alex_material_calculator":
-      return <AlexCostBreakdown data={ui_assets.data as any} />
     case "alex_competitive_analysis":
-      return <AlexCostBreakdown data={ui_assets.data as any} />
+      return <AlexCostBreakdown data={data as Parameters<typeof AlexCostBreakdown>[0]['data']} />
     case "rex_lead_dashboard":
-      return <RexLeadDashboard data={ui_assets.data as any} />
+      return <RexLeadDashboard data={data as Parameters<typeof RexLeadDashboard>[0]['data']} />
     case "lexi_onboarding":
-      return <LexiOnboarding data={ui_assets.data as any} />
+      return <LexiOnboarding data={data as Parameters<typeof LexiOnboarding>[0]['data']} />
     case "upgrade_prompt":
-      return <UpgradePrompt data={ui_assets.data as any} />
+      return <UpgradePrompt data={data as Parameters<typeof UpgradePrompt>[0]['data']} />
     case "system_message":
-      return <SystemMessage message={ui_assets.data.message as string} />
+      return <SystemMessage message={data.message as string} />
     default:
       return (
         <div className="p-2 my-2 text-xs bg-red-100 border border-red-300 rounded-md">
@@ -88,23 +86,25 @@ export function ChatWindow({
   isMinimized,
   onMinimize,
   onClose,
-  onSendMessage,
-  messages,
-  isTyping,
 }: ChatWindowProps) {
   const viewport = useRef<HTMLDivElement>(null)
   const [inputValue, setInputValue] = useState("")
   const config = AGENT_CONFIG[agentType]
+  
+  // 🔄 NEW: Use database-integrated chat hook
+  const { messages, isTyping, loading, error, sendMessage } = useEnhancedChat(agentType)
 
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    if (!inputValue.trim()) return
-    onSendMessage(inputValue, agentType)
+    if (!inputValue.trim() || isTyping || loading) return
+    sendMessage(inputValue)
     setInputValue("")
   }
 
   const handlePromptClick = (prompt: string) => {
-    onSendMessage(prompt, agentType)
+    if (!isTyping && !loading) {
+      sendMessage(prompt)
+    }
   }
 
   // Handle window resize and overflow
@@ -156,6 +156,24 @@ export function ChatWindow({
   }, [messages])
 
   const lastMessage = messages[messages.length - 1]
+
+  // Show error if chat initialization failed
+  if (error) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="fixed bottom-24 right-6 w-[400px] bg-card border rounded-xl shadow-lg p-4"
+      >
+        <div className="text-red-600 text-sm">
+          <strong>Chat Error:</strong> {error}
+        </div>
+        <Button onClick={onClose} variant="outline" size="sm" className="mt-2">
+          Close
+        </Button>
+      </motion.div>
+    )
+  }
 
   return (
     <motion.div

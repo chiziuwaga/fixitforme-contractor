@@ -7,9 +7,15 @@ import { Badge } from "@/components/ui/badge"
 import { MessageCircle, Users, TrendingUp } from "lucide-react"
 import { motion } from "framer-motion"
 import { MobileLayout } from "@/components/dashboard/MobileLayout"
+import { DashboardEmptyState } from "@/components/ui/ResponsiveLexiOnboarding"
 
 export default function DashboardPage() {
   const { profile } = useUser()
+
+  // Show Lexi intro if not onboarded
+  if (!profile?.onboarded) {
+    return <DashboardEmptyState onboardingStep="not_started" />
+  }
 
   return (
     <MobileLayout fallbackToMobile={true}>

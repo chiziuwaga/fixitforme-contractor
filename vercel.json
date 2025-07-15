@@ -1,5 +1,6 @@
 {
   "framework": "nextjs",
+  "buildCommand": "npm run build",
   "headers": [
     {
       "source": "/manifest.json",
@@ -30,6 +31,23 @@
           "value": "public, max-age=0, must-revalidate"
         }
       ]
+    },
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods", 
+          "value": "GET, POST, PUT, DELETE, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type, Authorization"
+        }
+      ]
     }
   ],
   "crons": [
@@ -45,6 +63,18 @@
   "functions": {
     "src/app/api/cron/login-health/route.ts": {
       "maxDuration": 30
+    },
+    "src/app/api/agents/*/route.ts": {
+      "maxDuration": 60
+    },
+    "src/app/api/payments/*/route.ts": {
+      "maxDuration": 30
     }
-  }
+  },
+  "rewrites": [
+    {
+      "source": "/api/health",
+      "destination": "/api/cron/login-health"
+    }
+  ]
 }

@@ -1,79 +1,54 @@
 "use client"
 
-import Image from "next/image"
-import { useOnboarding } from "@/hooks/useOnboarding"
-import { Button } from "@/components/ui/button"
-import { Progress } from "@/components/ui/progress"
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { Loader2 } from "lucide-react"
-import { motion, AnimatePresence } from "framer-motion"
-import { OnboardingStep1 } from "@/components/onboarding/Step1-CompanyInfo"
-import { OnboardingStep2 } from "@/components/onboarding/Step2-Services"
-import { OnboardingStep3 } from "@/components/onboarding/Step3-Credentials"
-import { OnboardingStep4 } from "@/components/onboarding/Step4-Confirmation"
+import { Card, CardHeader, CardTitle } from "@/components/ui/card"
+import { motion } from "framer-motion"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import EnhancedChatManager from "@/components/EnhancedChatManager"
+import { MessageCircle, Sparkles } from "lucide-react"
 
 export default function OnboardingPage() {
-  const onboarding = useOnboarding()
-  const { step, totalSteps, loading, progress, canContinue, nextStep, prevStep } = onboarding
-
-  const containerVariants = {
-    hidden: { opacity: 0, x: 50 },
-    visible: { opacity: 1, x: 0, transition: { type: "spring" as const, stiffness: 100, damping: 20 } },
-    exit: { opacity: 0, x: -50, transition: { ease: "easeInOut" as const } },
-  }
-
-  const renderStepContent = () => {
-    switch (step) {
-      case 1:
-        return <OnboardingStep1 {...onboarding} />
-      case 2:
-        return <OnboardingStep2 {...onboarding} />
-      case 3:
-        return <OnboardingStep3 {...onboarding} />
-      case 4:
-        return <OnboardingStep4 {...onboarding} />
-      default:
-        return null
-    }
-  }
-
   return (
-    <div className="min-h-screen bg-muted/40 flex flex-col items-center justify-center p-4">
-      <div className="w-full max-w-2xl">
-        <div className="flex justify-center mb-6">
-          <Image src="/logo.png" alt="FixItForMe Logo" width={60} height={60} />
-        </div>
-        <Card className="shadow-xl">
-          <CardHeader>
-            <Progress value={progress} className="h-2" />
-            <p className="text-sm text-muted-foreground text-center pt-3">
-              Step {step} of {totalSteps}
+    <div className="min-h-screen bg-muted/40 p-4">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="max-w-6xl mx-auto"
+      >
+        {/* Header with Lexi intro */}
+        <Card className="mb-6 bg-gradient-to-r from-primary/5 to-secondary/5 border-primary/20">
+          <CardHeader className="text-center pb-4">
+            <div className="mx-auto mb-4 relative">
+              <Avatar className="h-16 w-16 border-4 border-primary/20">
+                <AvatarImage src="/lexi-avatar.png" alt="Lexi the Liaison" />
+                <AvatarFallback className="bg-primary/10 text-primary text-xl font-bold">L</AvatarFallback>
+              </Avatar>
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+                className="absolute -top-1 -right-1 p-1 bg-primary rounded-full"
+              >
+                <Sparkles className="h-3 w-3 text-primary-foreground" />
+              </motion.div>
+            </div>
+
+            <CardTitle className="text-xl flex items-center justify-center gap-2">
+              <MessageCircle className="h-5 w-5" />
+              Chat with Lexi to Get Started
+            </CardTitle>
+            
+            <p className="text-sm text-muted-foreground max-w-2xl mx-auto">
+              Hi! I&apos;m Lexi, your AI liaison. I&apos;ll guide you through setting up your contractor profile 
+              in a friendly conversation. Ask me anything, upload documents, or share your website - 
+              I&apos;ll handle the rest!
             </p>
           </CardHeader>
-          <CardContent className="py-10 px-8 min-h-[380px] flex items-center">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={step}
-                variants={containerVariants}
-                initial="hidden"
-                animate="visible"
-                exit="exit"
-                className="w-full"
-              >
-                {renderStepContent()}
-              </motion.div>
-            </AnimatePresence>
-          </CardContent>
-          <div className="border-t p-6 flex justify-between items-center">
-            <Button variant="ghost" onClick={prevStep} disabled={step === 1 || loading}>
-              Back
-            </Button>
-            <Button onClick={nextStep} disabled={!canContinue || loading}>
-              {loading ? <Loader2 className="animate-spin" /> : step === totalSteps ? "Go to Dashboard" : "Continue"}
-            </Button>
-          </div>
         </Card>
-      </div>
+
+        {/* Chat Interface */}
+        <div className="h-[calc(100vh-240px)]">
+          <EnhancedChatManager />
+        </div>
+      </motion.div>
     </div>
   )
 }
