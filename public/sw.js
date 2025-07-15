@@ -104,7 +104,6 @@ self.addEventListener('fetch', (event) => {
       })
   );
 });
-})
 
 // Background sync for offline actions
 self.addEventListener('sync', (event) => {

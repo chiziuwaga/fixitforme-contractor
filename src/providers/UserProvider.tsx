@@ -16,7 +16,32 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      // Normal Supabase session handling
+      // Check for WhatsApp verified user first (pure WhatsApp OTP)
+      const whatsappUser = localStorage.getItem('whatsapp_verified_user');
+      if (whatsappUser) {
+        try {
+          const whatsappUserData = JSON.parse(whatsappUser);
+          console.log('[USER PROVIDER] Using WhatsApp verified user:', whatsappUserData.id);
+          
+          // Fetch contractor profile using phone number
+          const { data: profileData } = await supabaseClient
+            .from("contractor_profiles")
+            .select("*")
+            .eq("contact_phone", whatsappUserData.phone)
+            .single()
+          
+          if (profileData) {
+            setProfile(profileData as ContractorProfile);
+            console.log('[USER PROVIDER] Profile loaded via WhatsApp auth');
+          }
+        } catch (error) {
+          console.error("Error fetching WhatsApp user profile:", error)
+        }
+        setLoading(false)
+        return;
+      }
+      
+      // Fallback: Normal Supabase session handling (if session exists)
       if (user) {
         setLoading(true)
         try {
@@ -26,6 +51,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
             .eq("user_id", user.id)
             .single()
           setProfile(profileData as ContractorProfile)
+          console.log('[USER PROVIDER] Profile loaded via Supabase session');
         } catch (error) {
           console.error("Error fetching user profile:", error)
         } finally {

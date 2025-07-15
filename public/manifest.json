@@ -50,7 +50,7 @@
       "name": "Desktop Version",
       "short_name": "Desktop",
       "description": "Access full platform features",
-      "url": "https://fixitforme.ai",
+      "url": "/contractor/dashboard?desktop_hint=true",
       "icons": [{ "src": "/logo.png", "sizes": "96x96" }]
     }
   ],

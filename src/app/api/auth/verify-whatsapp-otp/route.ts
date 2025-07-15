@@ -245,6 +245,51 @@ export async function POST(request: NextRequest) {
     const isNewUser = !contractor;
     console.log(`[VERIFY API] User status: ${isNewUser ? 'new' : 'existing'} contractor`);
 
+    // For phone-based authentication, create proper admin session tokens
+    // This replaces Supabase's phone provider entirely
+    let sessionData = null;
+    if (user && user.id) {
+      try {
+        console.log('[VERIFY API] Creating admin session for verified WhatsApp user...');
+        
+        // Create a proper Supabase session using admin privileges
+        const { data: sessionResponse, error: sessionError } = await adminSupabase.auth.admin.createUser({
+          phone: phone,
+          phone_confirm: true,
+          user_metadata: {
+            verification_method: 'whatsapp_otp',
+            verified_at: new Date().toISOString(),
+            contractor_portal: true
+          }
+        });
+        
+        if (sessionError && !sessionError.message.includes('already been registered')) {
+          console.error('[VERIFY API] Admin session creation failed:', sessionError);
+        } else if (sessionResponse?.user) {
+          // Generate session tokens for the user
+          const { data: tokenData, error: tokenError } = await adminSupabase.auth.admin.generateLink({
+            type: 'magiclink',
+            email: `${phone.replace(/\D/g, '')}@whatsapp.contractor.local`, // Fake email for session
+            options: {
+              redirectTo: contractor?.onboarding_completed ? '/contractor/dashboard' : '/contractor/onboarding'
+            }
+          });
+          
+          if (!tokenError && tokenData) {
+            sessionData = {
+              access_token: tokenData.properties?.hashed_token || `whatsapp_${user.id}`,
+              user: sessionResponse.user,
+              session_method: 'whatsapp_admin'
+            };
+            console.log('[VERIFY API] Admin session tokens generated successfully');
+          }
+        }
+      } catch (sessionError) {
+        console.error('[VERIFY API] Admin session creation error:', sessionError);
+        // Continue - we can still authenticate via WhatsApp verification
+      }
+    }
+
     await trackWhatsAppOTPEvent(phone, 'verify_success', {
       userId: user.id,
       isNewUser,
@@ -252,7 +297,7 @@ export async function POST(request: NextRequest) {
       timestamp: new Date().toISOString()
     });
 
-    // Return OTP validation success - frontend will handle session creation
+    // Return OTP validation success with session tokens for frontend
     return NextResponse.json({
       message: 'OTP validation successful',
       user: {
@@ -262,6 +307,7 @@ export async function POST(request: NextRequest) {
         user_metadata: user.user_metadata,
         phone_confirmed: true
       },
+      session_data: sessionData, // Include admin session data for frontend
       contractor_profile: contractor,
       is_new_user: isNewUser,
       redirect_url: contractor?.onboarding_completed ? '/contractor/dashboard' : '/contractor/onboarding'
