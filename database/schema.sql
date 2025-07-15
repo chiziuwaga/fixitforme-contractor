@@ -37,13 +37,99 @@ FOR ALL USING (auth.role() = 'service_role');
 GRANT ALL ON whatsapp_otps TO service_role;
 GRANT USAGE ON SEQUENCE whatsapp_otps_id_seq TO service_role;
 
--- Create function to automatically clean up expired OTPs
+-- Create function to automatically clean up expired OTPs (with secure search_path)
 CREATE OR REPLACE FUNCTION cleanup_expired_otps()
-RETURNS void AS $$
+RETURNS void 
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
 BEGIN
-  DELETE FROM whatsapp_otps WHERE expires_at < NOW();
+  DELETE FROM whatsapp_otps WHERE expires_at < CURRENT_TIMESTAMP;
 END;
-$$ LANGUAGE plpgsql;
+$$;
+
+-- ================================
+-- AUTHENTICATION FUNCTIONS
+-- ================================
+
+-- Function to ensure contractor profile exists (with secure search_path)
+CREATE OR REPLACE FUNCTION public.ensure_contractor_profile(user_uuid uuid, phone_number text)
+RETURNS TABLE(profile_id uuid, is_new boolean)
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, extensions
+AS $$
+DECLARE
+    existing_profile_id uuid;
+    new_profile_id uuid;
+BEGIN
+    -- Check for existing profile by user_id first
+    SELECT id INTO existing_profile_id
+    FROM contractor_profiles 
+    WHERE user_id = user_uuid;
+    
+    IF existing_profile_id IS NOT NULL THEN
+        RETURN QUERY SELECT existing_profile_id, false;
+        RETURN;
+    END IF;
+    
+    -- Check for existing profile by phone
+    SELECT id INTO existing_profile_id
+    FROM contractor_profiles 
+    WHERE contact_phone = phone_number;
+    
+    IF existing_profile_id IS NOT NULL THEN
+        -- Update existing profile with user_id using explicit timestamp
+        UPDATE contractor_profiles 
+        SET user_id = user_uuid,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = existing_profile_id;
+        
+        RETURN QUERY SELECT existing_profile_id, false;
+        RETURN;
+    END IF;
+    
+    -- Create new profile with explicit timestamp instead of NOW()
+    INSERT INTO contractor_profiles (
+        user_id,
+        contact_phone,
+        tier,
+        created_at,
+        updated_at
+    ) VALUES (
+        user_uuid,
+        phone_number,
+        'growth',
+        CURRENT_TIMESTAMP,
+        CURRENT_TIMESTAMP
+    ) RETURNING id INTO new_profile_id;
+    
+    RETURN QUERY SELECT new_profile_id, true;
+END;
+$$;
+
+-- Function to sync phone number to contractor profile (application-callable)
+-- Note: This function exists for completeness but cannot be used as a trigger on auth.users
+CREATE OR REPLACE FUNCTION public.sync_phone_to_contractor_profile(user_uuid uuid, new_phone text)
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, extensions
+AS $$
+BEGIN
+    -- Update contractor profile when phone changes (called from application)
+    UPDATE contractor_profiles 
+    SET contact_phone = new_phone,
+        updated_at = CURRENT_TIMESTAMP
+    WHERE user_id = user_uuid;
+END;
+$$;
+
+-- Grant permissions to service role for authentication functions
+GRANT EXECUTE ON FUNCTION public.ensure_contractor_profile(uuid, text) TO service_role;
+GRANT EXECUTE ON FUNCTION public.sync_phone_to_contractor_profile(uuid, text) TO service_role;
+GRANT EXECUTE ON FUNCTION public.cleanup_expired_otps() TO service_role;
 
 -- ================================
 -- CONTRACTOR PROFILES
@@ -67,17 +153,51 @@ CREATE TABLE contractor_profiles (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- RLS Policies for contractor_profiles
+-- RLS Policies for contractor_profiles  
 ALTER TABLE contractor_profiles ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Contractors can view own profile" ON contractor_profiles
-    FOR SELECT USING (auth.uid() = user_id);
+-- Optimized RLS policies with efficient auth function calls (fixes auth_rls_initplan warning)
+CREATE POLICY "contractor_profiles_select_policy" ON contractor_profiles
+    FOR SELECT
+    TO authenticated, anon
+    USING (
+        -- Use subquery to avoid re-evaluation per row
+        user_id = (SELECT auth.uid()) 
+        OR 
+        (SELECT current_setting('request.jwt.claims', true)::jsonb ->> 'role') = 'service_role'
+    );
 
-CREATE POLICY "Contractors can update own profile" ON contractor_profiles
-    FOR UPDATE USING (auth.uid() = user_id);
+CREATE POLICY "contractor_profiles_insert_policy" ON contractor_profiles
+    FOR INSERT
+    TO authenticated, anon
+    WITH CHECK (
+        user_id = (SELECT auth.uid())
+        OR 
+        (SELECT current_setting('request.jwt.claims', true)::jsonb ->> 'role') = 'service_role'
+    );
 
-CREATE POLICY "Contractors can insert own profile" ON contractor_profiles
-    FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "contractor_profiles_update_policy" ON contractor_profiles
+    FOR UPDATE
+    TO authenticated, anon
+    USING (
+        user_id = (SELECT auth.uid())
+        OR 
+        (SELECT current_setting('request.jwt.claims', true)::jsonb ->> 'role') = 'service_role'
+    )
+    WITH CHECK (
+        user_id = (SELECT auth.uid())
+        OR 
+        (SELECT current_setting('request.jwt.claims', true)::jsonb ->> 'role') = 'service_role'
+    );
+
+CREATE POLICY "contractor_profiles_delete_policy" ON contractor_profiles
+    FOR DELETE
+    TO authenticated, anon
+    USING (
+        user_id = (SELECT auth.uid())
+        OR 
+        (SELECT current_setting('request.jwt.claims', true)::jsonb ->> 'role') = 'service_role'
+    );
 
 -- ================================
 -- CONTRACTOR DOCUMENTS
