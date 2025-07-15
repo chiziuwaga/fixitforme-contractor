@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from "next"
 import { Inter } from "next/font/google"
 import { Toaster } from "@/components/ui/sonner"
 import { UserProvider } from "@/providers/UserProvider"
+import { NotificationProvider } from "@/components/ui/NotificationCenter"
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary"
 import { PWAInstaller } from "@/components/mobile/PWAInstaller"
 import { MobileAddToHomeScreenTrigger } from "@/components/mobile/MobileAddToHomeScreenTrigger"
@@ -66,10 +67,12 @@ export default function RootLayout({
       <body className={inter.className}>
         <ErrorBoundary>
           <UserProvider>
-            <main>{children}</main>
-            <Toaster />
-            <PWAInstaller />
-            <MobileAddToHomeScreenTrigger />
+            <NotificationProvider>
+              <main>{children}</main>
+              <Toaster />
+              <PWAInstaller />
+              <MobileAddToHomeScreenTrigger />
+            </NotificationProvider>
           </UserProvider>
         </ErrorBoundary>
       </body>
