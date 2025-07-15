@@ -17,7 +17,6 @@ import {
 } from "@/components/ui/AgentComponents"
 import { motion, AnimatePresence } from "framer-motion"
 import { cn } from "@/lib/utils"
-import { useEnhancedChat } from "@/hooks/useEnhancedChat"
 
 export type AgentType = "lexi" | "alex" | "rex"
 
@@ -41,9 +40,12 @@ export interface Message {
 
 export interface ChatWindowProps {
   agentType: AgentType
+  messages: Message[]
+  onSendMessage: (message: string, agentType: AgentType) => Promise<void>
   isMinimized?: boolean
   onMinimize: () => void
   onClose: () => void
+  isTyping?: boolean
 }
 
 const AGENT_CONFIG = {
@@ -83,27 +85,27 @@ function GenerativeUIRenderer({ ui_assets }: { ui_assets: Message["ui_assets"] }
 
 export function ChatWindow({
   agentType,
+  messages,
+  onSendMessage,
   isMinimized,
   onMinimize,
   onClose,
+  isTyping = false,
 }: ChatWindowProps) {
   const viewport = useRef<HTMLDivElement>(null)
   const [inputValue, setInputValue] = useState("")
   const config = AGENT_CONFIG[agentType]
-  
-  // 🔄 NEW: Use database-integrated chat hook
-  const { messages, isTyping, loading, error, sendMessage } = useEnhancedChat(agentType)
 
-  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    if (!inputValue.trim() || isTyping || loading) return
-    sendMessage(inputValue)
+    if (!inputValue.trim() || isTyping) return
+    await onSendMessage(inputValue, agentType)
     setInputValue("")
   }
 
-  const handlePromptClick = (prompt: string) => {
-    if (!isTyping && !loading) {
-      sendMessage(prompt)
+  const handlePromptClick = async (prompt: string) => {
+    if (!isTyping) {
+      await onSendMessage(prompt, agentType)
     }
   }
 
@@ -157,23 +159,7 @@ export function ChatWindow({
 
   const lastMessage = messages[messages.length - 1]
 
-  // Show error if chat initialization failed
-  if (error) {
-    return (
-      <motion.div
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="fixed bottom-24 right-6 w-[400px] bg-card border rounded-xl shadow-lg p-4"
-      >
-        <div className="text-red-600 text-sm">
-          <strong>Chat Error:</strong> {error}
-        </div>
-        <Button onClick={onClose} variant="outline" size="sm" className="mt-2">
-          Close
-        </Button>
-      </motion.div>
-    )
-  }
+  // Chat window UI rendering
 
   return (
     <motion.div
