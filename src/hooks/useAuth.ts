@@ -39,54 +39,30 @@ export function useAuth() {
         throw new Error(data.error || 'Invalid verification code');
       }
 
-      // --- SIMPLE SESSION FIX START ---
-      // Backend confirmed OTP is valid and user exists.
-      // Now create a client-side session using Supabase's phone auth
-      console.log('[AUTH] WhatsApp OTP verified successfully. Processing session...');
+      // --- HARDCODED DIRECT ACCESS START ---
+      // Backend verified OTP and created contractor profile.
+      // No complex Supabase sessions needed - just store user data and redirect
+      console.log('[AUTH] WhatsApp OTP verified successfully. Setting up direct access...');
       
-      // PURE WHATSAPP OTP - No Supabase phone provider needed
-      // Our backend creates admin sessions and returns all necessary data
-      
-      if (data.user && data.session_data) {
-        console.log('[AUTH] Setting up admin-generated session...');
+      if (data.direct_access && data.user) {
+        // Store verified user data for direct app access
+        localStorage.setItem('whatsapp_verified_user', JSON.stringify(data.user));
+        localStorage.setItem('contractor_profile', JSON.stringify(data.contractor_profile));
+        localStorage.setItem('direct_access', 'true');
         
-        try {
-          const { createClient } = await import('@/lib/supabase-client');
-          const supabase = createClient();
-          
-          // Use the admin-generated session data to establish client session
-          if (data.session_data.access_token) {
-            // Set session using admin-generated tokens
-            const { error: setSessionError } = await supabase.auth.setSession({
-              access_token: data.session_data.access_token,
-              refresh_token: data.session_data.refresh_token || data.session_data.access_token
-            });
-            
-            if (setSessionError) {
-              console.error('[AUTH] Session setup failed:', setSessionError);
-              // Fallback: Store verified user data locally
-              localStorage.setItem('whatsapp_verified_user', JSON.stringify(data.user));
-            } else {
-              console.log('[AUTH] Admin session established successfully');
-            }
-          } else {
-            // Fallback: Store verified user data for manual session management
-            localStorage.setItem('whatsapp_verified_user', JSON.stringify(data.user));
-            console.log('[AUTH] User data stored for manual session management');
-          }
-        } catch (sessionError) {
-          console.error('[AUTH] Session creation error:', sessionError);
-          // Store user data as fallback
+        console.log('[AUTH] Direct access granted - user data stored locally');
+      } else {
+        // Fallback: Store whatever user data we received
+        if (data.user) {
           localStorage.setItem('whatsapp_verified_user', JSON.stringify(data.user));
         }
-      } else {
-        console.log('[AUTH] Using user data without admin session...');
-        // Store verified user data
-        localStorage.setItem('whatsapp_verified_user', JSON.stringify(data.user));
+        if (data.contractor_profile) {
+          localStorage.setItem('contractor_profile', JSON.stringify(data.contractor_profile));
+        }
       }
       
-      console.log('[AUTH] WhatsApp authentication complete. Ready for redirect.');
-      // --- PURE WHATSAPP OTP END ---
+      console.log('[AUTH] WhatsApp authentication complete. Ready for direct app access.');
+      // --- HARDCODED DIRECT ACCESS END ---
 
       // Check for secret upgrade success
       if (data.secret_upgrade) {

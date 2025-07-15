@@ -9,7 +9,6 @@ import { Home, Settings, Briefcase, User, LogOut, Bell } from "lucide-react"
 import { useUser } from "@/hooks/useUser"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { useSupabaseClient } from "@supabase/auth-helpers-react"
 
 const navItems = [
   { name: "Dashboard", href: "/contractor/dashboard", icon: Home },
@@ -21,13 +20,12 @@ const Sidebar = () => {
   const pathname = usePathname()
   const router = useRouter()
   const { loading, profile } = useUser()
-  const supabaseClient = useSupabaseClient()
-
   const handleLogout = async () => {
-    const { error } = await supabaseClient.auth.signOut()
-    if (!error) {
-      router.push("/login")
-    }
+    // Pure WhatsApp OTP logout - clear localStorage
+    localStorage.removeItem('whatsapp_verified_user');
+    localStorage.removeItem('direct_access');
+    localStorage.removeItem('contractor_profile');
+    router.push("/login");
   }
 
   return (

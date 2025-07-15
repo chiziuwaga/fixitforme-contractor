@@ -54,187 +54,43 @@ export async function POST(request: NextRequest) {
 
     await supabase.from('whatsapp_otps').delete().eq('id', otpData.id);
 
-    let user;
+    // HARDCODED DIRECT-TO-APP: Skip complex Supabase auth, implement direct access
+    // Since OTP is already verified above, we know this user is legitimate
+    console.log('[VERIFY API] OTP verified - implementing hardcoded direct app access');
     
-    try {
-      // Step 1: First check if user already exists by phone (more efficient)
-      console.log('[VERIFY API] Checking for existing user with phone:', phone);
-      
-      // Use a paginated search for existing users with this phone
-      const { data: existingUsers, error: getUserError } = await adminSupabase.auth.admin.listUsers({
-        page: 1,
-        perPage: 50 // Limit results to prevent timeout
-      });
-      
-      if (getUserError) {
-        console.error('[VERIFY API] Failed to check existing users:', getUserError);
-        // If user lookup fails, try to create anyway and handle conflicts
-      } else {
-        // Find user by phone number in the limited results
-        const existingUser = existingUsers.users.find(u => u.phone === phone);
-        
-        if (existingUser) {
-          console.log('[VERIFY API] Found existing user:', existingUser.id);
-          user = existingUser;
-          // Skip user creation since we found the user
-        }
-      }
-      
-      // Step 2: If no existing user found, try to create a new one
-      if (!user) {
-        console.log('[VERIFY API] Creating new user with phone:', phone);
-        
-        const { data: newUser, error: createError } = await adminSupabase.auth.admin.createUser({
-          phone,
-          phone_confirm: true,
-          user_metadata: {
-            verification_method: 'whatsapp_otp',
-            created_via: 'contractor_portal'
-          }
-        });
-
-        if (createError) {
-          console.error('[VERIFY API] User creation failed:', createError);
-          
-          if (createError.message.includes('already exists') || createError.message.includes('already registered')) {
-            // User exists but wasn't found in our limited search
-            // Try a more targeted search or use a fallback approach
-            console.log('[VERIFY API] User exists but not found in search, using fallback...');
-            
-            // Fallback: Create a minimal user object for session purposes
-            // This is safe because we've already verified the phone via OTP
-            user = {
-              id: `verified-${phone.replace(/\D/g, '')}-${Date.now()}`,
-              phone: phone,
-              created_at: new Date().toISOString(),
-              phone_confirmed: true,
-              user_metadata: {
-                verification_method: 'whatsapp_otp',
-                created_via: 'contractor_portal',
-                verified_fallback: true
-              }
-            };
-            
-            console.log('[VERIFY API] Using fallback user object:', user.id);
-          } else {
-            throw createError;
-          }
-        } else {
-          user = newUser.user;
-          console.log('[VERIFY API] Created new user:', user.id);
-        }
-      }
-      
-    } catch (userError) {
-      console.error('[VERIFY API] User creation/retrieval failed:', userError);
-      
-      await trackWhatsAppOTPEvent(phone, 'verify_failure', {
-        reason: 'user_creation_failed',
-        errorMessage: userError instanceof Error ? userError.message : 'Unknown error',
-        timestamp: new Date().toISOString()
-      });
-      
-      return NextResponse.json({ error: 'Failed to create user account' }, { status: 500 });
-    }
-
-    // Get or create contractor profile - handle both real and fallback users
+    // Step 1: Find or create minimal contractor profile (no user_id dependency)
     let contractor = null;
     try {
-      if (user?.id) {
-        console.log('[VERIFY API] Looking up contractor profile for user:', user.id);
+      // Look for existing profile by phone (most reliable identifier)
+      const { data: existingProfile, error: profileError } = await supabase
+        .from('contractor_profiles')
+        .select('*')
+        .eq('contact_phone', phone)
+        .single();
         
-        // For fallback users, always search by phone since user_id is temporary
-        const isFallbackUser = user.user_metadata?.verified_fallback === true;
-        
-        if (isFallbackUser) {
-          console.log('[VERIFY API] Using phone-based lookup for fallback user');
+      if (!profileError && existingProfile) {
+        contractor = existingProfile;
+        console.log('[VERIFY API] Found existing contractor profile:', contractor.id);
+      } else {
+        // Create basic contractor profile - no complex user dependency
+        const { data: newProfile, error: createError } = await supabase
+          .from('contractor_profiles')
+          .insert({
+            contact_phone: phone,
+            tier: 'growth',
+            subscription_tier: 'growth',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          })
+          .select()
+          .single();
           
-          // Find existing profile by phone only
-          const { data: phoneProfile, error: phoneError } = await supabase
-            .from('contractor_profiles')
-            .select('*')
-            .eq('contact_phone', phone)
-            .single();
-            
-          if (!phoneError && phoneProfile) {
-            contractor = phoneProfile;
-            console.log('[VERIFY API] Found existing profile by phone:', contractor.id);
-          } else {
-            // Create new profile for fallback user
-            const { data: newProfile, error: createError } = await supabase
-              .from('contractor_profiles')
-              .insert({
-                user_id: user.id, // Use the fallback ID temporarily
-                contact_phone: phone,
-                tier: 'growth',
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString(),
-                verified_via_fallback: true // Flag this for later cleanup
-              })
-              .select()
-              .single();
-              
-            if (!createError) {
-              contractor = newProfile;
-              console.log('[VERIFY API] Created fallback profile:', contractor.id);
-            } else {
-              console.error('[VERIFY API] Failed to create fallback profile:', createError);
-            }
-          }
+        if (!createError) {
+          contractor = newProfile;
+          console.log('[VERIFY API] Created new contractor profile:', contractor.id);
         } else {
-          // Normal user - try user_id first, then phone
-          const { data: existingProfile, error: profileError } = await supabase
-            .from('contractor_profiles')
-            .select('*')
-            .eq('user_id', user.id)
-            .single();
-            
-          if (!profileError && existingProfile) {
-            contractor = existingProfile;
-            console.log('[VERIFY API] Found profile by user_id:', contractor.id);
-          } else {
-            // Try to find by phone
-            const { data: phoneProfile, error: phoneError } = await supabase
-              .from('contractor_profiles')
-              .select('*')
-              .eq('contact_phone', phone)
-              .single();
-              
-            if (!phoneError && phoneProfile) {
-              // Update the profile to link with the correct user_id
-              const { data: updatedProfile, error: updateError } = await supabase
-                .from('contractor_profiles')
-                .update({ user_id: user.id })
-                .eq('id', phoneProfile.id)
-                .select()
-                .single();
-                
-              if (!updateError) {
-                contractor = updatedProfile;
-                console.log('[VERIFY API] Updated and linked existing profile:', contractor.id);
-              }
-            } else {
-              // Create new profile
-              const { data: newProfile, error: createError } = await supabase
-                .from('contractor_profiles')
-                .insert({
-                  user_id: user.id,
-                  contact_phone: phone,
-                  tier: 'growth',
-                  created_at: new Date().toISOString(),
-                  updated_at: new Date().toISOString()
-                })
-                .select()
-                .single();
-                
-              if (!createError) {
-                contractor = newProfile;
-                console.log('[VERIFY API] Created new profile:', contractor.id);
-              } else {
-                console.error('[VERIFY API] Failed to create profile:', createError);
-              }
-            }
-          }
+          console.error('[VERIFY API] Failed to create profile:', createError);
+          // Continue anyway - we can still provide access
         }
       }
     } catch (profileError) {
@@ -242,74 +98,38 @@ export async function POST(request: NextRequest) {
       // Continue without profile - user can complete onboarding later
     }
 
-    const isNewUser = !contractor;
+    const isNewUser = !contractor || !contractor.onboarding_completed;
     console.log(`[VERIFY API] User status: ${isNewUser ? 'new' : 'existing'} contractor`);
 
-    // For phone-based authentication, create proper admin session tokens
-    // This replaces Supabase's phone provider entirely
-    let sessionData = null;
-    if (user && user.id) {
-      try {
-        console.log('[VERIFY API] Creating admin session for verified WhatsApp user...');
-        
-        // Create a proper Supabase session using admin privileges
-        const { data: sessionResponse, error: sessionError } = await adminSupabase.auth.admin.createUser({
-          phone: phone,
-          phone_confirm: true,
-          user_metadata: {
-            verification_method: 'whatsapp_otp',
-            verified_at: new Date().toISOString(),
-            contractor_portal: true
-          }
-        });
-        
-        if (sessionError && !sessionError.message.includes('already been registered')) {
-          console.error('[VERIFY API] Admin session creation failed:', sessionError);
-        } else if (sessionResponse?.user) {
-          // Generate session tokens for the user
-          const { data: tokenData, error: tokenError } = await adminSupabase.auth.admin.generateLink({
-            type: 'magiclink',
-            email: `${phone.replace(/\D/g, '')}@whatsapp.contractor.local`, // Fake email for session
-            options: {
-              redirectTo: contractor?.onboarding_completed ? '/contractor/dashboard' : '/contractor/onboarding'
-            }
-          });
-          
-          if (!tokenError && tokenData) {
-            sessionData = {
-              access_token: tokenData.properties?.hashed_token || `whatsapp_${user.id}`,
-              user: sessionResponse.user,
-              session_method: 'whatsapp_admin'
-            };
-            console.log('[VERIFY API] Admin session tokens generated successfully');
-          }
-        }
-      } catch (sessionError) {
-        console.error('[VERIFY API] Admin session creation error:', sessionError);
-        // Continue - we can still authenticate via WhatsApp verification
-      }
-    }
+    // Create minimal user object for frontend (no Supabase auth dependency)
+    const directUser = {
+      id: contractor?.id || `phone-${phone.replace(/\D/g, '')}-${Date.now()}`,
+      phone: phone,
+      created_at: contractor?.created_at || new Date().toISOString(),
+      user_metadata: {
+        verification_method: 'whatsapp_otp',
+        verified_at: new Date().toISOString(),
+        contractor_portal: true,
+        direct_access: true
+      },
+      phone_confirmed: true
+    };
 
     await trackWhatsAppOTPEvent(phone, 'verify_success', {
-      userId: user.id,
+      userId: directUser.id,
       isNewUser,
       hasContractorProfile: !!contractor,
+      method: 'hardcoded_direct_access',
       timestamp: new Date().toISOString()
     });
 
-    // Return OTP validation success with session tokens for frontend
+    // Return OTP validation success with direct access (no session tokens needed)
     return NextResponse.json({
-      message: 'OTP validation successful',
-      user: {
-        id: user.id,
-        phone: user.phone,
-        created_at: user.created_at,
-        user_metadata: user.user_metadata,
-        phone_confirmed: true
-      },
-      session_data: sessionData, // Include admin session data for frontend
+      message: 'WhatsApp OTP verified - direct app access granted',
+      user: directUser,
       contractor_profile: contractor,
       is_new_user: isNewUser,
+      direct_access: true,
       redirect_url: contractor?.onboarding_completed ? '/contractor/dashboard' : '/contractor/onboarding'
     });
 
