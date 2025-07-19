@@ -263,7 +263,7 @@ export function useOnboarding() {
     toast.promise(promise(), {
       loading: "Finalizing your profile...",
       success: () => {
-        setTimeout(() => router.push("/contractor/dashboard"), 1000)
+        setTimeout(() => router.push("/contractor"), 1000)
         return "Welcome aboard! Redirecting to your dashboard..."
       },
       error: (err) => `Failed to save: ${err.message}`,

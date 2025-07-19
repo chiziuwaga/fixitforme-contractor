@@ -82,12 +82,14 @@ interface UnifiedChatInterfaceProps {
   className?: string;
   defaultAgent?: AgentType;
   forceViewport?: ViewportSize;
+  fullscreen?: boolean; // New prop for chat-centric mode
 }
 
 export default function UnifiedChatInterface({ 
   className,
   defaultAgent = 'lexi',
-  forceViewport
+  forceViewport,
+  fullscreen = false
 }: UnifiedChatInterfaceProps) {
   // Viewport Detection with override capability
   const [currentViewport, setCurrentViewport] = useState<ViewportSize>(
@@ -405,7 +407,8 @@ export default function UnifiedChatInterface({
     <div 
       ref={containerRef}
       className={cn(
-        "flex bg-background border rounded-lg overflow-hidden shadow-lg",
+        "flex bg-background overflow-hidden",
+        fullscreen ? "h-full" : "border rounded-lg shadow-lg",
         responsiveClasses.container,
         className
       )}

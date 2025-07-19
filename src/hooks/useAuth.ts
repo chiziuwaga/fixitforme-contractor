@@ -78,7 +78,7 @@ export function useAuth() {
       await new Promise(resolve => setTimeout(resolve, 200));
       
       // Redirect based on onboarding status
-      const redirectUrl = data.redirect_url || '/contractor/dashboard';
+      const redirectUrl = data.redirect_url || '/contractor';
       router.push(redirectUrl);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Invalid verification code';

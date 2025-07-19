@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import AppLayout from "@/components/layout/AppLayout"
+import ChatCentricLayout from "@/components/layout/ChatCentricLayout"
 import { useUser } from "@/hooks/useUser"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
@@ -57,5 +57,5 @@ export default function ContractorLayout({
     )
   }
 
-  return <AppLayout>{children}</AppLayout>
+  return <ChatCentricLayout>{children}</ChatCentricLayout>
 }

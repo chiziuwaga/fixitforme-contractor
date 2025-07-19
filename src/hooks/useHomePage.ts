@@ -49,7 +49,7 @@ export function useHomePage() {
         const { data: { session } } = await supabase.auth.getSession()
         if (session?.user) {
           setUser(session.user)
-          router.push('/contractor/dashboard')
+          router.push('/contractor')
           return
         }
         setLoading(false)
@@ -64,7 +64,7 @@ export function useHomePage() {
       (event, session) => {
         if (session?.user) {
           setUser(session.user)
-          router.push('/contractor/dashboard')
+          router.push('/contractor')
         } else {
           setUser(null)
         }
@@ -80,11 +80,11 @@ export function useHomePage() {
   }
 
   const navigateToOnboarding = () => {
-    router.push('/contractor/onboarding')
+    router.push('/contractor')
   }
 
   const navigateToDashboard = () => {
-    router.push('/contractor/dashboard')
+    router.push('/contractor')
   }
 
   // Email link handler for mobile users
